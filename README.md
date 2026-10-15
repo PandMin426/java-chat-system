@@ -1,4 +1,4 @@
-# Chat System — Final Project
+# Java Chat System — Final Project
 
 Đồ án cuối kỳ môn **Lập trình ứng dụng Java**.
 
@@ -29,7 +29,7 @@
 ## 3. Cấu trúc thư mục dự kiến
 
 ```text
-chat-system/
+java-chat-system/
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
