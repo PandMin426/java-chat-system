@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- D03/D05 Hộp thoại xác nhận dùng chung (xóa lịch sử, chặn, hủy kết bạn, xóa thành viên) -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.ConfirmController" styleClass="dialog-root" prefWidth="440">
+    <VBox styleClass="dialog-head">
+        <Label fx:id="titleLabel" text="Xác nhận" styleClass="h2" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="dialog-body">
+        <Label fx:id="messageLabel" wrapText="true"/>
+        <Label fx:id="noteLabel" styleClass="small,muted" wrapText="true"/>
+    </VBox>
+    <HBox styleClass="dialog-footer">
+        <Button fx:id="cancelButton" text="Hủy" cancelButton="true" onAction="#onClose"/>
+        <Button fx:id="confirmButton" text="Xác nhận" styleClass="danger,primary" onAction="#onClose"/>
+    </HBox>
+</VBox>

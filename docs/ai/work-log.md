@@ -140,6 +140,26 @@
 [08/11/2026 19:37] | DOC_CREATED | project-setup | Created docs/ai/project-setup/project-setup.md
 [08/11/2026 19:37] | COMMIT_REMINDER | project-setup | Reminded user: feat(project-setup): add Maven multi-module JavaFX skeleton with shared theme
 [08/11/2026 19:37] | SESSION_END | project-setup | project-setup DONE; ui-user-screens next after the user commits
+[08/11/2026 19:43] | SESSION_START | ui-user-screens | User committed project-setup (d60fe42 on feature/project-setup); start user screens
+[08/11/2026 19:43] | CODE_START | ui-user-screens | Navigator, SampleData, 13 FXML views + controllers, user.css, FxmlLoadTest, ScreenshotTool
+[08/11/2026 19:45] | PLAN_UPDATED | ui-user-screens | Iteration 1: shared ChatViews helper for conversation cells, avatars and bubbles
+[08/11/2026 19:58] | FILE_MODIFIED | ui-user-screens | pom.xml, src/user/pom.xml - Ikonli 12.3.1 (javafx + feather), JUnit 5.11.4
+[08/11/2026 19:58] | FILE_CREATED | ui-user-screens | Navigator.java, sample/SampleData.java, controller/ChatViews.java + 13 controllers, 13 FXML views, user.css
+[08/11/2026 19:58] | FILE_CREATED | ui-user-screens | test: FxmlLoadTest.java (+FxTestSupport), ScreenshotTool.java
+[08/11/2026 19:58] | BUG_FOUND | ui-user-screens | Screenshots: selected conversation row empty, outgoing bubble text black on black, "Gửi" button shrunk to "…", chat header title top-aligned
+[08/11/2026 19:58] | BUG_FIXED | ui-user-screens | Probe showed selected cell graphic had no CSS/skin (added during layout) - ScreenshotTool takes a warm-up snapshot; Text nodes get style class "text" via ChatViews.text(); send buttons minWidth=USE_PREF_SIZE; header VBox alignment CENTER_LEFT
+[08/11/2026 19:58] | BUG_FOUND | ui-user-screens | A PowerShell bulk edit failed to read files (wrong .NET current dir) but wrote 3 empty FXML files into the repo root
+[08/11/2026 19:58] | BUG_FIXED | ui-user-screens | Edits redone with the Edit tool; the 3 empty stray files deleted (checked 0 bytes first)
+[08/11/2026 20:00] | PLAN_UPDATED | ui-user-screens | Iteration 2: theme.css fixes (combo-box cell, arrow buttons, checkbox mark), vi-VN locale for DatePicker, NavigationTest for criterion 2
+[08/11/2026 20:00] | FILE_MODIFIED | ui-user-screens | src/common/.../theme.css - combo-box list cell, arrow buttons transparent, checkbox -fx-mark-color white
+[08/11/2026 20:00] | FILE_CREATED | ui-user-screens | src/user/src/test/java/com/chatapp/user/NavigationTest.java
+[08/11/2026 20:01] | BUG_FOUND | ui-user-screens | NavigationTest: showMain only swapped content of a stale MainController because buildMain() also wrote the static Navigator.main field
+[08/11/2026 20:01] | BUG_FIXED | ui-user-screens | Navigator keeps the MainController as the root's user data; showMain checks the root actually on screen; static field removed
+[08/11/2026 20:02] | CODE_DONE | ui-user-screens | 13 views implemented; interactive states needing logic left for V2 (listed in feature doc)
+[08/11/2026 20:02] | VERIFIED | ui-user-screens | mvnw -pl src/user test: 23/23 PASS (FxmlLoadTest 19, NavigationTest 4); ScreenshotTool wrote 13 PNGs, all reviewed against prototype; javafx:run alive 20 s with clean log
+[08/11/2026 20:02] | DOC_CREATED | ui-user-screens | Created docs/ai/ui-user-screens/ui-user-screens.md
+[08/11/2026 20:02] | COMMIT_REMINDER | ui-user-screens | Reminded user: feat(ui-user-screens): add JavaFX screens for the user subsystem
+[08/11/2026 20:02] | SESSION_END | ui-user-screens | ui-user-screens DONE; ui-admin-screens next after the user commits
 ```
 
 <!-- APPEND NEW ENTRIES DIRECTLY ABOVE THIS LINE (chronological order, newest at the bottom). Keep this marker as the LAST line of section 4. Do NOT write below it. -->
@@ -160,8 +180,8 @@
 | Feature | Plan | Code | Verified | Doc | Committed |
 |---|---|---|---|---|---|
 | requirements-analysis | ✅ | ✅ | 🔄 | ✅ | ⬜ |
-| project-setup | ✅ | ✅ | ✅ | ✅ | ⬜ |
-| ui-user-screens | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
+| project-setup | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ui-user-screens | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | ui-admin-screens | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-server | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-client | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |

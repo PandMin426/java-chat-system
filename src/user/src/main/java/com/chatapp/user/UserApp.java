@@ -1,19 +1,21 @@
 package com.chatapp.user;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import java.util.Locale;
 
 /** Entry point of user.jar. */
 public class UserApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(new BorderPane(), 1280, 800);
-        scene.getStylesheets().add(UserApp.class.getResource("/com/chatapp/common/theme.css").toExternalForm());
+        Locale.setDefault(Navigator.LOCALE);
+        Navigator.init(stage);
+        stage.setScene(Navigator.scene(Navigator.load("LoginView"), Navigator.WIDTH, Navigator.HEIGHT));
         stage.setTitle("ChatApp");
-        stage.setScene(scene);
+        stage.setMinWidth(1100);
+        stage.setMinHeight(700);
         stage.show();
     }
 

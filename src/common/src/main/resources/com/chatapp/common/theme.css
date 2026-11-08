@@ -112,12 +112,13 @@
 .text-field.error, .password-field.error { -fx-border-color: -c-danger; }
 .text-area .content { -fx-background-color: white; -fx-background-radius: 8; }
 .combo-box-base { -fx-pref-height: 32; -fx-padding: 0 4; }
+.combo-box > .list-cell { -fx-background-color: transparent; -fx-padding: 0 6; -fx-text-fill: -c-ink; }
+.combo-box-base > .arrow-button, .date-picker > .arrow-button { -fx-background-color: transparent; }
 .date-picker > .text-field { -fx-border-color: transparent; -fx-background-color: transparent; -fx-pref-height: 30; }
 .spinner > .text-field { -fx-border-color: transparent; -fx-background-color: transparent; -fx-pref-height: 30; }
 .check-box > .box, .radio-button > .radio { -fx-background-color: white; -fx-border-color: #BDBDBD; -fx-border-radius: 4; -fx-background-radius: 4; }
 .radio-button > .radio { -fx-border-radius: 999; -fx-background-radius: 999; }
-.check-box:selected > .box { -fx-background-color: -c-ink; -fx-border-color: -c-ink; }
-.check-box:selected > .box > .mark { -fx-background-color: white; }
+.check-box:selected > .box { -fx-background-color: -c-ink; -fx-border-color: -c-ink; -fx-mark-color: white; -fx-mark-highlight-color: transparent; }
 .radio-button:selected > .radio > .dot { -fx-background-color: -c-ink; }
 
 /* Search field: StackPane with class "search" holding an icon + text field */

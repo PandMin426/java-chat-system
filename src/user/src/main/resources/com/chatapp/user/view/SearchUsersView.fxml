@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!-- S07 Tìm người dùng (UC-07, UC-08) -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.SearchUsersController">
+    <HBox styleClass="page-head">
+        <VBox spacing="4">
+            <Label text="Tìm người dùng" styleClass="h1"/>
+            <Label text="Tìm theo tên đăng nhập hoặc họ tên để gửi lời mời kết bạn." styleClass="small,muted"/>
+        </VBox>
+    </HBox>
+    <HBox styleClass="toolbar">
+        <StackPane styleClass="search" alignment="CENTER_LEFT" prefWidth="480">
+            <TextField text="nguyen"/>
+            <FontIcon iconLiteral="fth-search" translateX="10" mouseTransparent="true"/>
+        </StackPane>
+        <Label text="4 kết quả" styleClass="small,muted"/>
+    </HBox>
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <VBox fx:id="resultBox" styleClass="row-list,border-top"/>
+    </ScrollPane>
+</VBox>

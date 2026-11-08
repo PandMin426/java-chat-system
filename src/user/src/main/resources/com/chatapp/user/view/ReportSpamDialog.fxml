@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- D02 Báo cáo spam (UC-12) -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.ReportSpamController" styleClass="dialog-root" prefWidth="460">
+    <fx:define>
+        <ToggleGroup fx:id="reasonGroup"/>
+    </fx:define>
+    <VBox styleClass="dialog-head">
+        <Label text="Báo cáo spam" styleClass="h2"/>
+        <Label text="Báo cáo kevin.tran tới quản trị viên. Người này không được thông báo."
+               styleClass="small,muted" wrapText="true"/>
+    </VBox>
+    <VBox styleClass="dialog-body">
+        <Label text="LÝ DO" styleClass="section-label"/>
+        <VBox spacing="6">
+            <RadioButton text="Quảng cáo, mời chào" toggleGroup="$reasonGroup" selected="true"
+                         styleClass="radio-row" maxWidth="Infinity"/>
+            <RadioButton text="Quấy rối, xúc phạm" toggleGroup="$reasonGroup" styleClass="radio-row" maxWidth="Infinity"/>
+            <RadioButton text="Lừa đảo" toggleGroup="$reasonGroup" styleClass="radio-row" maxWidth="Infinity"/>
+            <RadioButton text="Khác" toggleGroup="$reasonGroup" styleClass="radio-row" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="6">
+            <Label text="Ghi chú thêm (không bắt buộc)" styleClass="small,strong"/>
+            <TextArea text="Liên tục mời chào dịch vụ làm đồ án thuê." prefRowCount="2" wrapText="true"/>
+        </VBox>
+        <CheckBox text="Chặn luôn người này" selected="true"/>
+    </VBox>
+    <HBox styleClass="dialog-footer">
+        <Button fx:id="cancelButton" text="Hủy" cancelButton="true" onAction="#onClose"/>
+        <Button text="Gửi báo cáo" styleClass="danger,primary" defaultButton="true" onAction="#onClose"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- S09 Hồ sơ (UC-05, UC-06) -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.chatapp.user.controller.ProfileController"
+            fitToWidth="true" hbarPolicy="NEVER" styleClass="profile-page">
+    <VBox alignment="TOP_CENTER" styleClass="profile-page">
+        <padding><Insets top="28" bottom="28" left="24" right="24"/></padding>
+        <VBox spacing="20" maxWidth="680">
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <Label text="AN" styleClass="avatar,lg"/>
+                <VBox spacing="4">
+                    <Label text="Nguyễn Văn An" styleClass="h1"/>
+                    <Label text="an.nguyen · tham gia 12/09/2026" styleClass="small,muted"/>
+                </VBox>
+            </HBox>
+            <VBox styleClass="card">
+                <TabPane tabClosingPolicy="UNAVAILABLE">
+                    <Tab text="Thông tin cá nhân">
+                        <VBox spacing="16">
+                            <padding><Insets top="20" bottom="20" left="20" right="20"/></padding>
+                            <GridPane hgap="16" vgap="14">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50"/>
+                                    <ColumnConstraints percentWidth="50"/>
+                                </columnConstraints>
+                                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Tên đăng nhập" styleClass="small,strong"/>
+                                    <TextField text="an.nguyen" disable="true" styleClass="mono"/>
+                                    <Label text="Không đổi được." styleClass="hint"/>
+                                </VBox>
+                                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Họ tên" styleClass="small,strong"/>
+                                    <TextField text="Nguyễn Văn An"/>
+                                </VBox>
+                                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                                    <Label text="Email" styleClass="small,strong"/>
+                                    <TextField text="an.nguyen@gmail.com"/>
+                                </VBox>
+                                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Ngày sinh" styleClass="small,strong"/>
+                                    <DatePicker fx:id="birthDatePicker" maxWidth="Infinity"/>
+                                </VBox>
+                                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="Giới tính" styleClass="small,strong"/>
+                                    <ComboBox maxWidth="Infinity">
+                                        <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                                <String fx:value="Nam"/>
+                                                <String fx:value="Nữ"/>
+                                                <String fx:value="Khác"/>
+                                                <String fx:value="Không muốn nêu"/>
+                                            </FXCollections>
+                                        </items>
+                                        <value><String fx:value="Nam"/></value>
+                                    </ComboBox>
+                                </VBox>
+                                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                                    <Label text="Địa chỉ" styleClass="small,strong"/>
+                                    <TextField text="227 Nguyễn Văn Cừ, Quận 5, TP.HCM"/>
+                                </VBox>
+                            </GridPane>
+                            <HBox spacing="8" alignment="CENTER_RIGHT">
+                                <Button text="Hoàn tác"/>
+                                <Button text="Lưu thay đổi" styleClass="primary"/>
+                            </HBox>
+                        </VBox>
+                    </Tab>
+                    <Tab text="Đổi mật khẩu">
+                        <VBox spacing="14" maxWidth="420">
+                            <padding><Insets top="20" bottom="20" left="20" right="20"/></padding>
+                            <VBox spacing="6">
+                                <Label text="Mật khẩu hiện tại" styleClass="small,strong"/>
+                                <PasswordField/>
+                            </VBox>
+                            <VBox spacing="6">
+                                <Label text="Mật khẩu mới" styleClass="small,strong"/>
+                                <PasswordField/>
+                                <Label text="Ít nhất 8 ký tự, có chữ và số." styleClass="hint"/>
+                            </VBox>
+                            <VBox spacing="6">
+                                <Label text="Nhập lại mật khẩu mới" styleClass="small,strong"/>
+                                <PasswordField/>
+                            </VBox>
+                            <HBox alignment="CENTER_LEFT">
+                                <Button text="Đổi mật khẩu" styleClass="primary"/>
+                            </HBox>
+                        </VBox>
+                    </Tab>
+                </TabPane>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
