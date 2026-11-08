@@ -1,5 +1,6 @@
 package com.chatapp.user.controller;
 
+import com.chatapp.common.DateFields;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 
@@ -13,6 +14,7 @@ public class ProfileController {
 
     @FXML
     private void initialize() {
+        DateFields.useDayMonthYear(birthDatePicker);
         birthDatePicker.setValue(LocalDate.of(2004, 5, 12));
     }
 }

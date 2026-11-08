@@ -1,5 +1,6 @@
 package com.chatapp.user.controller;
 
+import com.chatapp.common.DateFields;
 import com.chatapp.user.Navigator;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -26,6 +27,11 @@ public class RegisterController {
     private ComboBox<String> genderBox;
     @FXML
     private TextField addressField;
+
+    @FXML
+    private void initialize() {
+        DateFields.useDayMonthYear(birthDatePicker);
+    }
 
     @FXML
     private void onRegister() {

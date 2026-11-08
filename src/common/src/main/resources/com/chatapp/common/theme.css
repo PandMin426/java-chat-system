@@ -216,7 +216,8 @@
 .table-view .column-header.num .label { -fx-alignment: center-right; }
 .table-row-cell { -fx-background-color: white; -fx-border-color: transparent transparent #F4F4F4 transparent; -fx-cell-size: 44; }
 .table-row-cell:hover { -fx-background-color: -c-subtle; }
-.table-row-cell:selected { -fx-background-color: #EEF4FF; }
+.table-row-cell:selected { -fx-background-color: #EEF4FF; -fx-table-cell-border-color: transparent; }
+.table-row-cell:empty { -fx-background-color: transparent; -fx-border-color: transparent; }
 .table-cell { -fx-padding: 0 12; -fx-alignment: center-left; -fx-text-fill: -c-ink; }
 .table-row-cell:selected .table-cell { -fx-text-fill: -c-ink; }
 .table-cell.num { -fx-alignment: center-right; -fx-font-family: "Consolas"; }

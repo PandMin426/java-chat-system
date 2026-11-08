@@ -160,6 +160,27 @@
 [08/11/2026 20:02] | DOC_CREATED | ui-user-screens | Created docs/ai/ui-user-screens/ui-user-screens.md
 [08/11/2026 20:02] | COMMIT_REMINDER | ui-user-screens | Reminded user: feat(ui-user-screens): add JavaFX screens for the user subsystem
 [08/11/2026 20:02] | SESSION_END | ui-user-screens | ui-user-screens DONE; ui-admin-screens next after the user commits
+[08/11/2026 20:51] | SESSION_START | ui-admin-screens | User committed ui-user-screens (4946313 on feature/ui-user-screens); start admin screens
+[08/11/2026 20:51] | CODE_START | ui-admin-screens | AdminNavigator, SampleData, 11 FXML views + controllers, admin.css, BarCharts, tests
+[08/11/2026 20:52] | PLAN_UPDATED | ui-admin-screens | Iteration 1: Tables + MonthlyChart helpers, FxTestSupport, NavigationTest
+[08/11/2026 20:52] | FILE_MODIFIED | ui-admin-screens | src/admin/pom.xml - Ikonli + JUnit 5
+[08/11/2026 20:57] | FILE_CREATED | ui-admin-screens | AdminNavigator, sample/SampleData, controller/Tables, controller/MonthlyChart, 11 controllers, 11 FXML views, admin.css
+[08/11/2026 20:57] | FILE_CREATED | ui-admin-screens | test: FxTestSupport, FxmlLoadTest, NavigationTest, ScreenshotTool
+[08/11/2026 20:58] | BUG_FOUND | ui-admin-screens | FXML "IntegerSpinnerValueFactory is not a valid type" (dotted import and SpinnerValueFactory.IntegerSpinnerValueFactory element both rejected)
+[08/11/2026 20:59] | BUG_FIXED | ui-admin-screens | Spinners use Spinner(min, max, initialValue) constructor args
+[08/11/2026 20:59] | BUG_FOUND | ui-admin-screens | NavigationTest looked for texts inside table cells / column headers, which do not exist without a skin
+[08/11/2026 20:59] | BUG_FIXED | ui-admin-screens | Assertions check page labels instead
+[08/11/2026 21:00] | BUG_FOUND | ui-admin-screens | Screenshots: DatePicker "1/11/2026" (admin) and "12/5/2004" (user, already committed - the ui-user-screens doc wrongly said dd/MM/yyyy); vertical borders on selected table row; chart card cut at window bottom
+[08/11/2026 21:00] | PLAN_UPDATED | ui-admin-screens | Iteration 2: common DateFields helper (common gets javafx-controls), theme row fixes, chart bottom padding; also touches user Register/Profile controllers
+[08/11/2026 21:02] | FILE_CREATED | ui-admin-screens | src/common/src/main/java/com/chatapp/common/DateFields.java
+[08/11/2026 21:02] | FILE_MODIFIED | ui-admin-screens | src/common/pom.xml, src/common/.../theme.css, src/user/.../RegisterController.java, ProfileController.java, 5 admin controllers, admin.css, NewUsersView/ActiveUsersView.fxml
+[08/11/2026 21:02] | BUG_FIXED | ui-admin-screens | Dates show 01/11/2026 and 12/05/2004; selected rows without cell borders; chart card fully visible; admin login footer shortened (was truncated)
+[08/11/2026 21:04] | FILE_MODIFIED | ui-user-screens | docs/ai/ui-user-screens/ui-user-screens.md - corrected the date-format statement; docs/screens/user/S09-ho-so.png regenerated
+[08/11/2026 21:04] | CODE_DONE | ui-admin-screens | 11 views implemented; actions/filters left for V2 (listed in feature doc)
+[08/11/2026 21:04] | VERIFIED | ui-admin-screens | Full install: user 24/24, admin 24/24 tests PASS; 13 admin screenshots reviewed; admin javafx:run alive 20 s with clean log; requirement checklist A1a-A9 complete
+[08/11/2026 21:04] | DOC_CREATED | ui-admin-screens | Created docs/ai/ui-admin-screens/ui-admin-screens.md
+[08/11/2026 21:04] | COMMIT_REMINDER | ui-admin-screens | Reminded user: feat(ui-admin-screens): add JavaFX screens for the admin subsystem
+[08/11/2026 21:04] | SESSION_END | ui-admin-screens | V1 screens for both subsystems DONE
 ```
 
 <!-- APPEND NEW ENTRIES DIRECTLY ABOVE THIS LINE (chronological order, newest at the bottom). Keep this marker as the LAST line of section 4. Do NOT write below it. -->
@@ -181,8 +202,8 @@
 |---|---|---|---|---|---|
 | requirements-analysis | ✅ | ✅ | 🔄 | ✅ | ⬜ |
 | project-setup | ✅ | ✅ | ✅ | ✅ | ✅ |
-| ui-user-screens | ✅ | ✅ | ✅ | ✅ | ⬜ |
-| ui-admin-screens | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
+| ui-user-screens | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ui-admin-screens | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | socket-server | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-client | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | auth | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |

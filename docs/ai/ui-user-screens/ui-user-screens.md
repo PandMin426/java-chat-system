@@ -98,7 +98,7 @@ Click "Đăng nhập" (no check in V1) → main window. Rail: Trò chuyện / B�
 - `Navigator` keeps no static view state: the main window's controller is stored as the root node's user data, and `showMain` checks the root actually on screen. (A first version stored it in a static field; `NavigationTest` caught that `buildMain` from another caller left the field pointing at a view not on screen.)
 - `Text` nodes have no default style class; `ChatViews.text()` adds `"text"` so `.bubble.me > .text` (white text on dark bubbles) applies.
 - List cells created during a layout pass get CSS on the next pulse. On screen this is invisible, but a single `Scene.snapshot` showed the selected conversation empty; `ScreenshotTool` takes one warm-up snapshot first.
-- Locale vi-VN is set at start-up so DatePicker shows dd/MM/yyyy and Vietnamese month names.
+- Locale vi-VN is set at start-up for Vietnamese month names. **Correction (08/11/2026, ui-admin-screens Iteration 2):** the vi-VN short style still printed "12/5/2004" (no leading zeros); dd/MM/yyyy now comes from `com.chatapp.common.DateFields`, called in `RegisterController` and `ProfileController`.
 - `minWidth="-Infinity"` (USE_PREF_SIZE) keeps the "Gửi" button from shrinking to "…" next to the growing text area.
 - Networking: none; no WebSocket.
 

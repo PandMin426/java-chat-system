@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Admin main window: left navigation + content area (set by AdminMainController.setContent) -->
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.chatapp.admin.controller.AdminMainController">
+    <fx:define>
+        <ToggleGroup fx:id="navGroup"/>
+    </fx:define>
+    <left>
+        <VBox styleClass="nav">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="CA" styleClass="logo"/>
+                <VBox>
+                    <Label text="ChatApp" styleClass="strong"/>
+                    <Label text="Quản trị hệ thống" styleClass="xs,muted"/>
+                </VBox>
+            </HBox>
+            <Label text="QUẢN LÝ" styleClass="nav-group"/>
+            <ToggleButton fx:id="usersButton" text="Người dùng" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onUsers"/>
+            <ToggleButton fx:id="loginLogButton" text="Nhật ký đăng nhập" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onLoginLog"/>
+            <ToggleButton fx:id="groupsButton" text="Nhóm chat" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onGroups"/>
+            <ToggleButton fx:id="spamButton" text="Báo cáo spam" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onSpam">
+                <graphic><Label text="4" styleClass="badge,bad"/></graphic>
+            </ToggleButton>
+            <Label text="THỐNG KÊ" styleClass="nav-group"/>
+            <ToggleButton fx:id="newUsersButton" text="Đăng ký mới" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onNewUsers"/>
+            <ToggleButton fx:id="friendStatsButton" text="Số lượng bạn bè" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onFriendStats"/>
+            <ToggleButton fx:id="activeButton" text="Người dùng hoạt động" styleClass="nav-item" toggleGroup="$navGroup"
+                          maxWidth="Infinity" onAction="#onActive"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <HBox styleClass="nav-footer">
+                <Label text="AD" styleClass="avatar,sm"/>
+                <Label text="admin" styleClass="small,mono" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                <Button text="Đăng xuất" styleClass="ghost,sm" onAction="#onLogout"/>
+            </HBox>
+        </VBox>
+    </left>
+</BorderPane>

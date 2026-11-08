@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!-- S13 Nhóm chat (UC-39..41: A3a–A3d) -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.admin.controller.GroupsController">
+
+    <VBox HBox.hgrow="ALWAYS">
+        <HBox styleClass="page-head">
+            <VBox spacing="4">
+                <Label text="Nhóm chat" styleClass="h1"/>
+                <Label text="Chỉ xem thông tin nhóm và thành viên. Quản trị viên không xem được nội dung tin nhắn."
+                       styleClass="small,muted"/>
+            </VBox>
+        </HBox>
+        <HBox styleClass="toolbar">
+            <StackPane styleClass="search" alignment="CENTER_LEFT" prefWidth="280">
+                <TextField promptText="Lọc theo tên nhóm" styleClass="sm"/>
+                <FontIcon iconLiteral="fth-search" translateX="10" mouseTransparent="true"/>
+            </StackPane>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="86 nhóm" styleClass="small,muted"/>
+        </HBox>
+        <StackPane styleClass="table-host" VBox.vgrow="ALWAYS">
+            <TableView fx:id="table">
+                <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+                <columns>
+                    <TableColumn fx:id="nameColumn" text="Tên nhóm" prefWidth="240"/>
+                    <TableColumn fx:id="membersColumn" text="Thành viên" sortable="false" prefWidth="110"/>
+                    <TableColumn fx:id="encryptedColumn" text="Mã hóa" sortable="false" prefWidth="100"/>
+                    <TableColumn fx:id="createdColumn" text="Ngày tạo"/>
+                </columns>
+            </TableView>
+        </StackPane>
+        <HBox styleClass="pager">
+            <Label text="Hiển thị 1–8 / 86"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Trước" styleClass="sm" disable="true"/>
+            <Label text="1 / 11" styleClass="mono"/>
+            <Button text="Sau" styleClass="sm"/>
+        </HBox>
+    </VBox>
+
+    <VBox styleClass="detail">
+        <VBox styleClass="detail-head" spacing="6">
+            <Label fx:id="groupNameLabel" styleClass="h3"/>
+            <Label fx:id="groupInfoLabel" styleClass="small,muted"/>
+        </VBox>
+        <TabPane fx:id="memberTabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+            <Tab fx:id="membersTab">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER"><VBox fx:id="memberBox"/></ScrollPane>
+            </Tab>
+            <Tab fx:id="adminsTab">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER"><VBox fx:id="adminBox"/></ScrollPane>
+            </Tab>
+        </TabPane>
+    </VBox>
+</HBox>
