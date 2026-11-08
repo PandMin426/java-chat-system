@@ -6,10 +6,10 @@
 
 | Thành viên | Phụ trách        |
 | ---------- | ---------------- |
-| Minh       | Database — MySQL |
-| Trang      | Frontend — React |
+| Minh       | Database — PostgreSQL |
+| Trang      | Frontend — JavaFX |
 
-**Deadline lần 1:** 19:30, Chủ nhật, 18/10/2026.
+**Deadline lần 1:** 23:00, Chủ nhật, 22/11/2026.
 
 **Yêu cầu lần 1:**
 
@@ -21,8 +21,8 @@
 
 | Thành phần              | Công nghệ                        |
 | ----------------------- | -------------------------------- |
-| Frontend                | React                            |
-| Database                | MySQL                            |
+| Frontend                | JavaFX                           |
+| Database                | PostgreSQL                            |
 | Backend (giai đoạn sau) | Java — framework chưa thống nhất |
 | Version Control         | Git + GitHub                     |
 
