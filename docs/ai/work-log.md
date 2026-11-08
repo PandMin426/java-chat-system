@@ -112,6 +112,34 @@
 [08/11/2026 18:25] | QUESTION | requirements-analysis | Still open: M7 (friends-of-friends count), M12 (block also blocks 1-1 chat), M15 (delete history only on own side), M18 (member permissions in group), M17 (LLM provider)
 [08/11/2026 18:25] | COMMIT_REMINDER | requirements-analysis | Reminded user: docs(requirements-analysis): add use-case specification, prototype and fix README stack
 [08/11/2026 18:25] | SESSION_END | requirements-analysis | Decisions applied to spec, README and prototype; waiting for answers to questions 5-9
+[08/11/2026 18:39] | SESSION_START | project-setup | Plan V1 JavaFX screen coding; checked environment: Temurin JDK 25.0.4.1, Maven 3.9.16 bundled with IntelliJ IDEA 2026.2.3 (not on PATH), no Scene Builder, no JavaFX in local Maven repo, drive C: 0.8 GB free
+[08/11/2026 18:39] | DECISION | project-setup | Split V1 UI work into 3 features for separate commits: project-setup, ui-user-screens, ui-admin-screens
+[08/11/2026 18:39] | PLAN_CREATED | project-setup | Created docs/ai/project-setup/plan.md - approach: Maven multi-module (src/common, src/user, src/admin) + Maven Wrapper, --release 21, JavaFX 21.0.6, shared theme.css
+[08/11/2026 18:39] | PLAN_CREATED | ui-user-screens | Created docs/ai/ui-user-screens/plan.md - approach: 13 FXML views + controllers matching prototype boards S01-S09, D01-D03, sample data, FXML load test
+[08/11/2026 18:39] | PLAN_CREATED | ui-admin-screens | Created docs/ai/ui-admin-screens/plan.md - approach: 11 FXML views + controllers matching boards S10-S17, BarChart for A6/A9, FXML load test
+[08/11/2026 18:39] | NOTE | project-setup | .gitignore is a Node.js template with no Java entries; plan appends a Java section and leaves Node entries unchanged
+[08/11/2026 18:39] | QUESTION | project-setup | Asked user: Minh's JDK version; free space on C: or move Maven repository to D:
+[08/11/2026 18:39] | QUESTION | ui-user-screens | Asked user: V1 navigation wiring, hardcoded sample data, Ikonli vs SVGPath icons, system vs bundled fonts, ScreenshotTool
+[08/11/2026 18:39] | SESSION_END | project-setup | 3 plans AWAITING_APPROVAL; no code written
+[08/11/2026 19:30] | SESSION_START | project-setup | Start coding V1 skeleton after plan approval
+[08/11/2026 19:30] | PLAN_APPROVED | project-setup | User approved plan; Minh's JDK is above 21; user freed drive C: (1.2 GB free), Maven repository stays on C:
+[08/11/2026 19:30] | PLAN_APPROVED | ui-user-screens | User approved plan with all recommendations: navigation wiring, SampleData, Ikonli Feather icons, Segoe UI + Consolas, ScreenshotTool
+[08/11/2026 19:30] | PLAN_APPROVED | ui-admin-screens | User approved plan; shared decisions follow ui-user-screens answers
+[08/11/2026 19:30] | CODE_START | project-setup | Creating parent POM, Maven Wrapper, common/user/admin modules
+[08/11/2026 19:37] | FILE_CREATED | project-setup | pom.xml, src/common/pom.xml, src/user/pom.xml, src/admin/pom.xml
+[08/11/2026 19:37] | FILE_CREATED | project-setup | src/common/src/main/resources/com/chatapp/common/theme.css
+[08/11/2026 19:37] | FILE_CREATED | project-setup | src/user/src/main/java/com/chatapp/user/UserApp.java, src/admin/src/main/java/com/chatapp/admin/AdminApp.java
+[08/11/2026 19:37] | FILE_CREATED | project-setup | mvnw, mvnw.cmd, .mvn/wrapper/maven-wrapper.properties (generated with IntelliJ-bundled Maven 3.9.16: mvn -N wrapper:wrapper -Dmaven=3.9.9)
+[08/11/2026 19:37] | FILE_MODIFIED | project-setup | .gitignore - appended Java/Maven/IDE section
+[08/11/2026 19:37] | BUG_FOUND | project-setup | Background launch failed: "'mvnw.cmd' is not recognized" because NoDefaultCurrentDirectoryInExePath=1 in this environment
+[08/11/2026 19:37] | BUG_FIXED | project-setup | Launch mvnw.cmd by full path with Start-Process -WorkingDirectory; documented ".\mvnw.cmd" usage in feature doc
+[08/11/2026 19:37] | CODE_DONE | project-setup | Skeleton implemented as planned
+[08/11/2026 19:37] | VERIFIED | project-setup | 1) mvnw package exit 0, 3 jars built, theme.css in common jar - PASS; 2) user javafx:run window opened, clean log - PASS; 3) admin javafx:run process alive, clean log - PASS (window hidden behind VS Code in capture); 4) git status shows no target/ - PASS
+[08/11/2026 19:37] | NOTE | project-setup | JDK 25 prints harmless native-access/Unsafe warnings from Maven 3.9.9 and JavaFX NativeLibLoader; left as is
+[08/11/2026 19:37] | NOTE | global | .gitignore entry ".agent/" also ignores code/.agent/rules/rule.md; src/user/.gitkeep and src/admin/.gitkeep now redundant; left unchanged
+[08/11/2026 19:37] | DOC_CREATED | project-setup | Created docs/ai/project-setup/project-setup.md
+[08/11/2026 19:37] | COMMIT_REMINDER | project-setup | Reminded user: feat(project-setup): add Maven multi-module JavaFX skeleton with shared theme
+[08/11/2026 19:37] | SESSION_END | project-setup | project-setup DONE; ui-user-screens next after the user commits
 ```
 
 <!-- APPEND NEW ENTRIES DIRECTLY ABOVE THIS LINE (chronological order, newest at the bottom). Keep this marker as the LAST line of section 4. Do NOT write below it. -->
@@ -132,6 +160,9 @@
 | Feature | Plan | Code | Verified | Doc | Committed |
 |---|---|---|---|---|---|
 | requirements-analysis | ✅ | ✅ | 🔄 | ✅ | ⬜ |
+| project-setup | ✅ | ✅ | ✅ | ✅ | ⬜ |
+| ui-user-screens | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
+| ui-admin-screens | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-server | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-client | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | auth | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |

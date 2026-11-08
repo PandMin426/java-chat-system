@@ -150,3 +150,11 @@ vite.config.ts.timestamp-*
 
 #folders
 .agent/
+
+# Java / Maven / IDE
+target/
+*.class
+.idea/
+*.iml
+.vscode/
+!.mvn/wrapper/maven-wrapper.properties
