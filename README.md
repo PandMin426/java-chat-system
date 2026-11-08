@@ -4,12 +4,13 @@
 
 ## 1. Thông tin nhóm
 
-| Thành viên | Phụ trách        |
-| ---------- | ---------------- |
-| Minh       | Database — MySQL |
-| Trang      | Frontend — React |
+| Thành viên | Phụ trách               |
+| ---------- | ----------------------- |
+| Minh       | Database — PostgreSQL   |
+| Trang      | Frontend — JavaFX       |
 
-**Deadline lần 1:** 19:30, Chủ nhật, 18/10/2026.
+**Deadline lần 1 (V1 — 20%):** Chủ nhật, 22/11/2026.
+**Deadline lần 2 (V2 — 80%):** Thứ bảy, 12/12/2026.
 
 **Yêu cầu lần 1:**
 
@@ -19,31 +20,34 @@
 
 ## 2. Công nghệ
 
-| Thành phần              | Công nghệ                        |
-| ----------------------- | -------------------------------- |
-| Frontend                | React                            |
-| Database                | MySQL                            |
-| Backend (giai đoạn sau) | Java — framework chưa thống nhất |
-| Version Control         | Git + GitHub                     |
+| Thành phần              | Công nghệ                                                        |
+| ----------------------- | ---------------------------------------------------------------- |
+| Frontend                | JavaFX (giao diện desktop Windows, viết bằng Java)               |
+| Database                | PostgreSQL                                                       |
+| Backend (giai đoạn sau) | Java — framework chưa thống nhất                                 |
+| Kết nối mạng            | Socket Java thuần (`java.net.Socket` / `ServerSocket`), **không dùng WebSocket** |
+| Version Control         | Git + GitHub                                                     |
+
+**Kiến trúc đã chốt:** 3 file jar — `server.jar` (socket server + truy cập CSDL), `user.jar` (phân hệ người dùng), `admin.jar` (phân hệ quản trị) — dùng chung 1 file `config.properties`. Client chỉ kết nối tới server, không kết nối thẳng CSDL.
+
+Yêu cầu và use case: [docs/ai/requirements-analysis/use-case-specification.md](docs/ai/requirements-analysis/use-case-specification.md).
 
 ## 3. Cấu trúc thư mục dự kiến
 
 ```text
 java-chat-system/
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── admin/
-│   │   │   └── user/
-│   │   ├── components/    # Chứa những thành phần có thế tái sử dụng
-│   │   └── assets/        # Chứa hình ảnh, biểu tượng,...
-│   └── package.json       # file cấu hình
+├── src/
+│   ├── admin/             # Phân hệ quản trị (admin.jar)
+│   ├── user/              # Phân hệ người dùng (user.jar)
+│   └── server/            # Socket server (server.jar) — vị trí chốt trong plan của feature socket-server
 │
 ├── script/
-│   ├── schema.sql
-│   └── seed.sql
+│   └── create_db.sql      # Script tạo CSDL PostgreSQL
 │
-├── docs/                  # Tài nguyên chung
+├── release/               # V2: admin.jar, user.jar, server.jar, config.properties
+├── git/                   # Ảnh chụp commit của từng thành viên
+├── docs/
+│   └── ai/                # plan.md, <feature>.md, work-log.md (bắt buộc khi dùng AI)
 ├── .gitignore
 └── README.md
 ```
@@ -198,7 +202,7 @@ Không gom toàn bộ công việc vào một commit cuối cùng.
 
 - [ ] Hoàn thành giao diện Admin.
 - [ ] Hoàn thành giao diện User.
-- [ ] Hoàn thành thiết kế MySQL.
+- [ ] Hoàn thành thiết kế PostgreSQL.
 - [ ] Có SQL script tạo database.
 - [ ] Có sơ đồ thiết kế cơ sở dữ liệu cho báo cáo.
 - [ ] Có hình chụp các màn hình đã thiết kế.

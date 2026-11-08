@@ -85,6 +85,35 @@
 [24/10/2026 19:25] | SESSION_END | setup | Finished setting up templates and rules
 ```
 
+### [08/11/2026]
+```
+[08/11/2026 17:23] | SESSION_START | requirements-analysis | Read Final Project.pdf, rule.md, README.md, roadmap, framework notes and existing design-ui/ mockups; goal: list ambiguities, write use-case specification, build clickable prototype before any UI code
+[08/11/2026 17:23] | NOTE | global | Figma connector is not authorized in this session; prototype will be built as an HTML artifact instead of a Figma file
+[08/11/2026 17:23] | NOTE | global | Conflicting tech stack in repo: README.md says React + MySQL, work-log DECISION says JavaFX + Spring Boot + PostgreSQL; React violates the Java-only frontend requirement. Left unchanged, raised with user
+[08/11/2026 17:23] | NOTE | global | rule.md references docs/ai/templates/ but the real folder is docs/ai/_template/; left unchanged (out of scope)
+[08/11/2026 17:24] | PLAN_CREATED | requirements-analysis | Created docs/ai/requirements-analysis/plan.md - approach: requirement ambiguity list + use-case specification (docs only) + HTML clickable prototype; no Java code
+[08/11/2026 17:46] | FILE_CREATED | requirements-analysis | docs/ai/requirements-analysis/use-case-specification.md - 6 blocking issues (K1-K6), 23 ambiguities with proposed defaults (M1-M23), 45 use cases, traceability matrix, BR-01..BR-15, screen inventory
+[08/11/2026 17:46] | DECISION | requirements-analysis | Prototype built as a claude.ai Design canvas (22 linked artboards) instead of Figma; Figma connector not authorized
+[08/11/2026 17:46] | BLOCKED | requirements-analysis | Drive C: has 0 GB free; writing to the session scratchpad failed with ENOSPC. Moved prototype source to design-ui/prototype-canvas/ on drive D:
+[08/11/2026 17:46] | PLAN_UPDATED | requirements-analysis | Iteration 1: single HTML file replaced by Design canvas with 22 artboards; source path changed to ../design-ui/prototype-canvas/ because drive C: is full
+[08/11/2026 17:46] | FILE_CREATED | requirements-analysis | ../design-ui/prototype-canvas/ (project/canvas.json, 22 project/*.dc.html boards, assets/app.css), published to https://claude.ai/artifact/MxZtuhNSYunZ2YF3Z4odwA
+[08/11/2026 17:46] | VERIFIED | requirements-analysis | Criteria 1-2 PASS (traceability and UC structure checked against PDF); criterion 3 NOT RUN - click-through must be done by the user in Play mode
+[08/11/2026 17:46] | DOC_CREATED | requirements-analysis | Created docs/ai/requirements-analysis/requirements-analysis.md
+[08/11/2026 17:46] | QUESTION | requirements-analysis | Asked user to confirm: tech stack (K1), 3-jar architecture (K3), group encryption design (K4), deadlines (K5), and defaults M7, M12, M15, M17, M18
+[08/11/2026 17:46] | COMMIT_REMINDER | requirements-analysis | Reminded user: docs(requirements-analysis): add use-case specification and prototype review
+[08/11/2026 17:46] | SESSION_END | requirements-analysis | Spec and 22-screen prototype done; waiting for user review before planning the UI coding feature
+[08/11/2026 18:25] | SESSION_START | requirements-analysis | Apply user answers to open questions K1, K3, K4, K5
+[08/11/2026 18:25] | DECISION | requirements-analysis | User confirmed: DB = PostgreSQL (K1), 3-jar architecture server/user/admin + config.properties (K3), simple group encryption with server-held key (K4), V1 22/11/2026 and V2 12/12/2026 (K5); other [ĐX] defaults accepted except M7, M12, M15, M17, M18 (answer pending)
+[08/11/2026 18:25] | PLAN_UPDATED | requirements-analysis | Iteration 2: E2EE design replaced by encryption at rest with per-group AES-256 key wrapped by crypto.masterKey; README.md added to file list
+[08/11/2026 18:25] | FILE_MODIFIED | requirements-analysis | README.md - stack table (React->JavaFX, MySQL->PostgreSQL, added plain socket + 3-jar note), member roles, deadlines V1 22/11/2026 and V2 12/12/2026, folder structure (src/admin, src/user, src/server, script, release, git, docs/ai), checklist MySQL->PostgreSQL
+[08/11/2026 18:25] | FILE_MODIFIED | requirements-analysis | docs/ai/requirements-analysis/use-case-specification.md - v0.2: K1/K3/K4/K5 marked resolved, UC-28 rewritten for server-held key, E2EE references removed from UC-04/06/20/21/22/24/26/36, section 8 updated
+[08/11/2026 18:25] | FILE_MODIFIED | requirements-analysis | ../design-ui/prototype-canvas/project/{U-GroupChat,D-CreateGroup,U-Chat,U-ForgotPassword,U-Profile,A-UserDialogs}.dc.html - removed E2EE wording, fingerprint and key re-share notes; AI button enabled in group chat; republished artifact
+[08/11/2026 18:25] | NOTE | global | README folder structure lists src/server/ for server.jar; exact location to be confirmed in the socket-server plan
+[08/11/2026 18:25] | QUESTION | requirements-analysis | Still open: M7 (friends-of-friends count), M12 (block also blocks 1-1 chat), M15 (delete history only on own side), M18 (member permissions in group), M17 (LLM provider)
+[08/11/2026 18:25] | COMMIT_REMINDER | requirements-analysis | Reminded user: docs(requirements-analysis): add use-case specification, prototype and fix README stack
+[08/11/2026 18:25] | SESSION_END | requirements-analysis | Decisions applied to spec, README and prototype; waiting for answers to questions 5-9
+```
+
 <!-- APPEND NEW ENTRIES DIRECTLY ABOVE THIS LINE (chronological order, newest at the bottom). Keep this marker as the LAST line of section 4. Do NOT write below it. -->
 
 ---
@@ -102,6 +131,7 @@
 
 | Feature | Plan | Code | Verified | Doc | Committed |
 |---|---|---|---|---|---|
+| requirements-analysis | ✅ | ✅ | 🔄 | ✅ | ⬜ |
 | socket-server | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-client | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | auth | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
