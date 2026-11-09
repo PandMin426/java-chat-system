@@ -1,0 +1,88 @@
+/* Admin-app styles, applied on top of /com/chatapp/common/theme.css */
+
+/* ---------- Login ---------- */
+.login-bg { -fx-background-color: -c-ink; }
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 32;
+    -fx-spacing: 18;
+}
+
+/* ---------- Left navigation ---------- */
+.nav {
+    -fx-background-color: -c-subtle;
+    -fx-border-color: transparent -c-line transparent transparent;
+    -fx-padding: 16 10 10 10;
+    -fx-spacing: 2;
+    -fx-min-width: 224; -fx-pref-width: 224; -fx-max-width: 224;
+}
+.nav-group { -fx-font-family: "Segoe UI Semibold"; -fx-font-size: 11px; -fx-text-fill: -c-muted; -fx-padding: 14 8 6 8; }
+.toggle-button.nav-item {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 8;
+    -fx-alignment: center-left;
+    -fx-padding: 0 10;
+    -fx-pref-height: 34; -fx-min-height: 34;
+    -fx-text-fill: -c-ink-3;
+    -fx-content-display: right;
+    -fx-graphic-text-gap: 8;
+}
+.toggle-button.nav-item:hover { -fx-background-color: #EFEFEF; -fx-text-fill: -c-ink; }
+.toggle-button.nav-item:selected { -fx-background-color: -c-ink; -fx-text-fill: white; }
+.nav-item .ikonli-font-icon { -fx-icon-size: 16px; }
+.nav-footer { -fx-padding: 10 6 2 6; -fx-spacing: 8; -fx-alignment: center-left; -fx-border-color: -c-line transparent transparent transparent; }
+
+/* ---------- Pages ---------- */
+.page-head { -fx-padding: 22 24 14 24; -fx-spacing: 12; -fx-alignment: bottom-left; }
+.toolbar { -fx-padding: 0 24 12 24; -fx-spacing: 8; -fx-alignment: center-left; }
+.table-host { -fx-padding: 0 24; }
+.pager { -fx-padding: 10 24 16 24; -fx-spacing: 8; -fx-alignment: center-left; }
+.pager .label { -fx-font-size: 12px; -fx-text-fill: -c-muted; }
+.date-picker { -fx-pref-width: 150; }
+.spinner { -fx-pref-width: 90; -fx-pref-height: 32; }
+.tab-pane.page-tabs > .tab-header-area { -fx-padding: 0 24; }
+.tab-pane.page-tabs .tab-content-area { -fx-padding: 12 0 0 0; }
+
+/* ---------- Detail pane (users, groups) ---------- */
+.detail {
+    -fx-min-width: 340; -fx-pref-width: 340; -fx-max-width: 340;
+    -fx-background-color: -c-subtle;
+    -fx-border-color: transparent transparent transparent -c-line;
+}
+.detail-head { -fx-padding: 20 16 14 16; -fx-spacing: 12; -fx-border-color: transparent transparent -c-line transparent; }
+.detail .tab-pane > .tab-header-area { -fx-padding: 0 8; }
+.detail .tab-pane > .tab-header-area > .tab-header-background { -fx-background-color: -c-subtle; }
+.detail .tab-pane > .tab-content-area { -fx-background-color: -c-subtle; }
+.kv { -fx-padding: 16; -fx-hgap: 12; -fx-vgap: 10; }
+.kv .key { -fx-text-fill: -c-muted; -fx-font-size: 12px; }
+.member-row { -fx-padding: 10 16; -fx-spacing: 10; -fx-alignment: center-left; -fx-border-color: transparent transparent #EFEFEF transparent; }
+.detail .table-view { -fx-border-color: transparent; -fx-background-radius: 0; -fx-border-radius: 0; -fx-background-color: -c-subtle; }
+.detail .table-view .column-header-background { -fx-background-radius: 0; }
+.detail .table-row-cell { -fx-cell-size: 36; -fx-background-color: -c-subtle; }
+.detail .table-cell { -fx-font-size: 12px; }
+
+/* ---------- Charts (dataviz: one series, recessive grid, accent only on the current month) ---------- */
+.chart-card { -fx-padding: 20 24 12 24; -fx-spacing: 4; }
+.chart-host { -fx-padding: 0 24 20 24; }
+.chart { -fx-padding: 8 0 0 0; }
+.chart-plot-background { -fx-background-color: transparent; }
+.chart-vertical-grid-lines { -fx-stroke: transparent; }
+.chart-horizontal-grid-lines { -fx-stroke: -c-line; -fx-stroke-dash-array: none; }
+.chart-vertical-zero-line, .chart-horizontal-zero-line { -fx-stroke: transparent; }
+.chart .axis { -fx-tick-label-fill: -c-muted; -fx-tick-label-font: 11px "Consolas"; }
+.chart .axis-label { -fx-text-fill: -c-muted; -fx-font-size: 11px; }
+.chart .axis:bottom { -fx-border-color: -c-line-strong transparent transparent transparent; }
+.chart .axis:left { -fx-border-color: transparent; }
+.axis-tick-mark, .axis-minor-tick-mark { -fx-stroke: transparent; }
+.bar-chart .chart-bar { -fx-background-color: -c-ink; -fx-background-radius: 4 4 0 0; }
+.bar-chart .chart-bar:hover { -fx-background-color: -c-ink-2; }
+.bar-chart .chart-bar.current { -fx-background-color: -c-accent; }
+.bar-chart .chart-bar.current:hover { -fx-background-color: #1252B3; }
+.bar-value { -fx-font-family: "Consolas"; -fx-font-size: 11px; -fx-fill: -c-ink; }
+.chart-legend-swatch { -fx-background-radius: 3; }
+
+/* ---------- Dialogs ---------- */
+.dialog-head { -fx-padding: 18 20 4 20; -fx-spacing: 12; -fx-alignment: top-left; }
+.dialog-body { -fx-padding: 12 20 16 20; -fx-spacing: 14; }

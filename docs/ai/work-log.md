@@ -112,6 +112,75 @@
 [08/11/2026 18:25] | QUESTION | requirements-analysis | Still open: M7 (friends-of-friends count), M12 (block also blocks 1-1 chat), M15 (delete history only on own side), M18 (member permissions in group), M17 (LLM provider)
 [08/11/2026 18:25] | COMMIT_REMINDER | requirements-analysis | Reminded user: docs(requirements-analysis): add use-case specification, prototype and fix README stack
 [08/11/2026 18:25] | SESSION_END | requirements-analysis | Decisions applied to spec, README and prototype; waiting for answers to questions 5-9
+[08/11/2026 18:39] | SESSION_START | project-setup | Plan V1 JavaFX screen coding; checked environment: Temurin JDK 25.0.4.1, Maven 3.9.16 bundled with IntelliJ IDEA 2026.2.3 (not on PATH), no Scene Builder, no JavaFX in local Maven repo, drive C: 0.8 GB free
+[08/11/2026 18:39] | DECISION | project-setup | Split V1 UI work into 3 features for separate commits: project-setup, ui-user-screens, ui-admin-screens
+[08/11/2026 18:39] | PLAN_CREATED | project-setup | Created docs/ai/project-setup/plan.md - approach: Maven multi-module (src/common, src/user, src/admin) + Maven Wrapper, --release 21, JavaFX 21.0.6, shared theme.css
+[08/11/2026 18:39] | PLAN_CREATED | ui-user-screens | Created docs/ai/ui-user-screens/plan.md - approach: 13 FXML views + controllers matching prototype boards S01-S09, D01-D03, sample data, FXML load test
+[08/11/2026 18:39] | PLAN_CREATED | ui-admin-screens | Created docs/ai/ui-admin-screens/plan.md - approach: 11 FXML views + controllers matching boards S10-S17, BarChart for A6/A9, FXML load test
+[08/11/2026 18:39] | NOTE | project-setup | .gitignore is a Node.js template with no Java entries; plan appends a Java section and leaves Node entries unchanged
+[08/11/2026 18:39] | QUESTION | project-setup | Asked user: Minh's JDK version; free space on C: or move Maven repository to D:
+[08/11/2026 18:39] | QUESTION | ui-user-screens | Asked user: V1 navigation wiring, hardcoded sample data, Ikonli vs SVGPath icons, system vs bundled fonts, ScreenshotTool
+[08/11/2026 18:39] | SESSION_END | project-setup | 3 plans AWAITING_APPROVAL; no code written
+[08/11/2026 19:30] | SESSION_START | project-setup | Start coding V1 skeleton after plan approval
+[08/11/2026 19:30] | PLAN_APPROVED | project-setup | User approved plan; Minh's JDK is above 21; user freed drive C: (1.2 GB free), Maven repository stays on C:
+[08/11/2026 19:30] | PLAN_APPROVED | ui-user-screens | User approved plan with all recommendations: navigation wiring, SampleData, Ikonli Feather icons, Segoe UI + Consolas, ScreenshotTool
+[08/11/2026 19:30] | PLAN_APPROVED | ui-admin-screens | User approved plan; shared decisions follow ui-user-screens answers
+[08/11/2026 19:30] | CODE_START | project-setup | Creating parent POM, Maven Wrapper, common/user/admin modules
+[08/11/2026 19:37] | FILE_CREATED | project-setup | pom.xml, src/common/pom.xml, src/user/pom.xml, src/admin/pom.xml
+[08/11/2026 19:37] | FILE_CREATED | project-setup | src/common/src/main/resources/com/chatapp/common/theme.css
+[08/11/2026 19:37] | FILE_CREATED | project-setup | src/user/src/main/java/com/chatapp/user/UserApp.java, src/admin/src/main/java/com/chatapp/admin/AdminApp.java
+[08/11/2026 19:37] | FILE_CREATED | project-setup | mvnw, mvnw.cmd, .mvn/wrapper/maven-wrapper.properties (generated with IntelliJ-bundled Maven 3.9.16: mvn -N wrapper:wrapper -Dmaven=3.9.9)
+[08/11/2026 19:37] | FILE_MODIFIED | project-setup | .gitignore - appended Java/Maven/IDE section
+[08/11/2026 19:37] | BUG_FOUND | project-setup | Background launch failed: "'mvnw.cmd' is not recognized" because NoDefaultCurrentDirectoryInExePath=1 in this environment
+[08/11/2026 19:37] | BUG_FIXED | project-setup | Launch mvnw.cmd by full path with Start-Process -WorkingDirectory; documented ".\mvnw.cmd" usage in feature doc
+[08/11/2026 19:37] | CODE_DONE | project-setup | Skeleton implemented as planned
+[08/11/2026 19:37] | VERIFIED | project-setup | 1) mvnw package exit 0, 3 jars built, theme.css in common jar - PASS; 2) user javafx:run window opened, clean log - PASS; 3) admin javafx:run process alive, clean log - PASS (window hidden behind VS Code in capture); 4) git status shows no target/ - PASS
+[08/11/2026 19:37] | NOTE | project-setup | JDK 25 prints harmless native-access/Unsafe warnings from Maven 3.9.9 and JavaFX NativeLibLoader; left as is
+[08/11/2026 19:37] | NOTE | global | .gitignore entry ".agent/" also ignores code/.agent/rules/rule.md; src/user/.gitkeep and src/admin/.gitkeep now redundant; left unchanged
+[08/11/2026 19:37] | DOC_CREATED | project-setup | Created docs/ai/project-setup/project-setup.md
+[08/11/2026 19:37] | COMMIT_REMINDER | project-setup | Reminded user: feat(project-setup): add Maven multi-module JavaFX skeleton with shared theme
+[08/11/2026 19:37] | SESSION_END | project-setup | project-setup DONE; ui-user-screens next after the user commits
+[08/11/2026 19:43] | SESSION_START | ui-user-screens | User committed project-setup (d60fe42 on feature/project-setup); start user screens
+[08/11/2026 19:43] | CODE_START | ui-user-screens | Navigator, SampleData, 13 FXML views + controllers, user.css, FxmlLoadTest, ScreenshotTool
+[08/11/2026 19:45] | PLAN_UPDATED | ui-user-screens | Iteration 1: shared ChatViews helper for conversation cells, avatars and bubbles
+[08/11/2026 19:58] | FILE_MODIFIED | ui-user-screens | pom.xml, src/user/pom.xml - Ikonli 12.3.1 (javafx + feather), JUnit 5.11.4
+[08/11/2026 19:58] | FILE_CREATED | ui-user-screens | Navigator.java, sample/SampleData.java, controller/ChatViews.java + 13 controllers, 13 FXML views, user.css
+[08/11/2026 19:58] | FILE_CREATED | ui-user-screens | test: FxmlLoadTest.java (+FxTestSupport), ScreenshotTool.java
+[08/11/2026 19:58] | BUG_FOUND | ui-user-screens | Screenshots: selected conversation row empty, outgoing bubble text black on black, "Gửi" button shrunk to "…", chat header title top-aligned
+[08/11/2026 19:58] | BUG_FIXED | ui-user-screens | Probe showed selected cell graphic had no CSS/skin (added during layout) - ScreenshotTool takes a warm-up snapshot; Text nodes get style class "text" via ChatViews.text(); send buttons minWidth=USE_PREF_SIZE; header VBox alignment CENTER_LEFT
+[08/11/2026 19:58] | BUG_FOUND | ui-user-screens | A PowerShell bulk edit failed to read files (wrong .NET current dir) but wrote 3 empty FXML files into the repo root
+[08/11/2026 19:58] | BUG_FIXED | ui-user-screens | Edits redone with the Edit tool; the 3 empty stray files deleted (checked 0 bytes first)
+[08/11/2026 20:00] | PLAN_UPDATED | ui-user-screens | Iteration 2: theme.css fixes (combo-box cell, arrow buttons, checkbox mark), vi-VN locale for DatePicker, NavigationTest for criterion 2
+[08/11/2026 20:00] | FILE_MODIFIED | ui-user-screens | src/common/.../theme.css - combo-box list cell, arrow buttons transparent, checkbox -fx-mark-color white
+[08/11/2026 20:00] | FILE_CREATED | ui-user-screens | src/user/src/test/java/com/chatapp/user/NavigationTest.java
+[08/11/2026 20:01] | BUG_FOUND | ui-user-screens | NavigationTest: showMain only swapped content of a stale MainController because buildMain() also wrote the static Navigator.main field
+[08/11/2026 20:01] | BUG_FIXED | ui-user-screens | Navigator keeps the MainController as the root's user data; showMain checks the root actually on screen; static field removed
+[08/11/2026 20:02] | CODE_DONE | ui-user-screens | 13 views implemented; interactive states needing logic left for V2 (listed in feature doc)
+[08/11/2026 20:02] | VERIFIED | ui-user-screens | mvnw -pl src/user test: 23/23 PASS (FxmlLoadTest 19, NavigationTest 4); ScreenshotTool wrote 13 PNGs, all reviewed against prototype; javafx:run alive 20 s with clean log
+[08/11/2026 20:02] | DOC_CREATED | ui-user-screens | Created docs/ai/ui-user-screens/ui-user-screens.md
+[08/11/2026 20:02] | COMMIT_REMINDER | ui-user-screens | Reminded user: feat(ui-user-screens): add JavaFX screens for the user subsystem
+[08/11/2026 20:02] | SESSION_END | ui-user-screens | ui-user-screens DONE; ui-admin-screens next after the user commits
+[08/11/2026 20:51] | SESSION_START | ui-admin-screens | User committed ui-user-screens (4946313 on feature/ui-user-screens); start admin screens
+[08/11/2026 20:51] | CODE_START | ui-admin-screens | AdminNavigator, SampleData, 11 FXML views + controllers, admin.css, BarCharts, tests
+[08/11/2026 20:52] | PLAN_UPDATED | ui-admin-screens | Iteration 1: Tables + MonthlyChart helpers, FxTestSupport, NavigationTest
+[08/11/2026 20:52] | FILE_MODIFIED | ui-admin-screens | src/admin/pom.xml - Ikonli + JUnit 5
+[08/11/2026 20:57] | FILE_CREATED | ui-admin-screens | AdminNavigator, sample/SampleData, controller/Tables, controller/MonthlyChart, 11 controllers, 11 FXML views, admin.css
+[08/11/2026 20:57] | FILE_CREATED | ui-admin-screens | test: FxTestSupport, FxmlLoadTest, NavigationTest, ScreenshotTool
+[08/11/2026 20:58] | BUG_FOUND | ui-admin-screens | FXML "IntegerSpinnerValueFactory is not a valid type" (dotted import and SpinnerValueFactory.IntegerSpinnerValueFactory element both rejected)
+[08/11/2026 20:59] | BUG_FIXED | ui-admin-screens | Spinners use Spinner(min, max, initialValue) constructor args
+[08/11/2026 20:59] | BUG_FOUND | ui-admin-screens | NavigationTest looked for texts inside table cells / column headers, which do not exist without a skin
+[08/11/2026 20:59] | BUG_FIXED | ui-admin-screens | Assertions check page labels instead
+[08/11/2026 21:00] | BUG_FOUND | ui-admin-screens | Screenshots: DatePicker "1/11/2026" (admin) and "12/5/2004" (user, already committed - the ui-user-screens doc wrongly said dd/MM/yyyy); vertical borders on selected table row; chart card cut at window bottom
+[08/11/2026 21:00] | PLAN_UPDATED | ui-admin-screens | Iteration 2: common DateFields helper (common gets javafx-controls), theme row fixes, chart bottom padding; also touches user Register/Profile controllers
+[08/11/2026 21:02] | FILE_CREATED | ui-admin-screens | src/common/src/main/java/com/chatapp/common/DateFields.java
+[08/11/2026 21:02] | FILE_MODIFIED | ui-admin-screens | src/common/pom.xml, src/common/.../theme.css, src/user/.../RegisterController.java, ProfileController.java, 5 admin controllers, admin.css, NewUsersView/ActiveUsersView.fxml
+[08/11/2026 21:02] | BUG_FIXED | ui-admin-screens | Dates show 01/11/2026 and 12/05/2004; selected rows without cell borders; chart card fully visible; admin login footer shortened (was truncated)
+[08/11/2026 21:04] | FILE_MODIFIED | ui-user-screens | docs/ai/ui-user-screens/ui-user-screens.md - corrected the date-format statement; docs/screens/user/S09-ho-so.png regenerated
+[08/11/2026 21:04] | CODE_DONE | ui-admin-screens | 11 views implemented; actions/filters left for V2 (listed in feature doc)
+[08/11/2026 21:04] | VERIFIED | ui-admin-screens | Full install: user 24/24, admin 24/24 tests PASS; 13 admin screenshots reviewed; admin javafx:run alive 20 s with clean log; requirement checklist A1a-A9 complete
+[08/11/2026 21:04] | DOC_CREATED | ui-admin-screens | Created docs/ai/ui-admin-screens/ui-admin-screens.md
+[08/11/2026 21:04] | COMMIT_REMINDER | ui-admin-screens | Reminded user: feat(ui-admin-screens): add JavaFX screens for the admin subsystem
+[08/11/2026 21:04] | SESSION_END | ui-admin-screens | V1 screens for both subsystems DONE
 ```
 
 <!-- APPEND NEW ENTRIES DIRECTLY ABOVE THIS LINE (chronological order, newest at the bottom). Keep this marker as the LAST line of section 4. Do NOT write below it. -->
@@ -132,6 +201,9 @@
 | Feature | Plan | Code | Verified | Doc | Committed |
 |---|---|---|---|---|---|
 | requirements-analysis | ✅ | ✅ | 🔄 | ✅ | ⬜ |
+| project-setup | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ui-user-screens | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ui-admin-screens | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | socket-server | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | socket-client | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | auth | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
