@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!-- S05 Nhóm chat mã hóa (UC-23..28) -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.GroupChatController">
+
+    <!-- Conversation column -->
+    <VBox styleClass="column">
+        <VBox styleClass="column-head">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Trò chuyện" styleClass="h2"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Nhóm mới" styleClass="sm" onAction="#onNewGroup">
+                    <graphic><FontIcon iconLiteral="fth-plus"/></graphic>
+                </Button>
+            </HBox>
+            <Button text="Tìm tin nhắn trong mọi cuộc trò chuyện" styleClass="search-link" maxWidth="Infinity"
+                    onAction="#onSearchMessages">
+                <graphic><FontIcon iconLiteral="fth-search"/></graphic>
+            </Button>
+        </VBox>
+        <ListView fx:id="conversationList" VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+    <!-- Chat area -->
+    <VBox HBox.hgrow="ALWAYS">
+        <HBox styleClass="chat-header">
+            <Label text="ĐA" styleClass="avatar,group"/>
+            <VBox HBox.hgrow="ALWAYS" spacing="2" alignment="CENTER_LEFT">
+                <Label text="Đồ án Java" styleClass="strong"/>
+                <HBox spacing="6" alignment="CENTER_LEFT">
+                    <Label text="Nhóm mã hóa" styleClass="badge,ok">
+                        <graphic><FontIcon iconLiteral="fth-lock" styleClass="inline-icon"/></graphic>
+                    </Label>
+                    <Label text="4 thành viên · 3 online" styleClass="small,muted"/>
+                </HBox>
+            </VBox>
+            <Button styleClass="ghost,icon">
+                <graphic><FontIcon iconLiteral="fth-search"/></graphic>
+                <tooltip><Tooltip text="Tìm trong nhóm"/></tooltip>
+            </Button>
+            <Button styleClass="ghost,icon">
+                <graphic><FontIcon iconLiteral="fth-info"/></graphic>
+                <tooltip><Tooltip text="Thông tin nhóm"/></tooltip>
+            </Button>
+        </HBox>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+            <VBox fx:id="messageBox" styleClass="messages"/>
+        </ScrollPane>
+        <HBox styleClass="composer">
+            <Button styleClass="ghost,icon">
+                <graphic><FontIcon iconLiteral="fth-zap"/></graphic>
+                <tooltip><Tooltip text="Mở trợ lý AI"/></tooltip>
+            </Button>
+            <TextArea promptText="Nhắn tin tới nhóm…" prefRowCount="1" wrapText="true" HBox.hgrow="ALWAYS"/>
+            <Button text="Gửi" styleClass="primary" defaultButton="true" minWidth="-Infinity">
+                <graphic><FontIcon iconLiteral="fth-send"/></graphic>
+            </Button>
+        </HBox>
+    </VBox>
+
+    <!-- Group info panel -->
+    <VBox styleClass="side-panel">
+        <HBox styleClass="side-head">
+            <Label text="Thông tin nhóm" styleClass="h3"/>
+        </HBox>
+        <VBox styleClass="side-section" alignment="TOP_CENTER">
+            <Label text="ĐA" styleClass="avatar,lg,group"/>
+            <HBox spacing="4" alignment="CENTER">
+                <Label text="Đồ án Java" styleClass="h3"/>
+                <Button styleClass="ghost,sm,icon">
+                    <graphic><FontIcon iconLiteral="fth-edit-2"/></graphic>
+                    <tooltip><Tooltip text="Đổi tên nhóm"/></tooltip>
+                </Button>
+            </HBox>
+            <Label text="Tạo ngày 02/11/2026 bởi An" styleClass="xs,muted"/>
+        </VBox>
+        <VBox styleClass="side-section">
+            <Label text="NHÓM MÃ HÓA" styleClass="section-label"/>
+            <Label text="Tin nhắn của nhóm được mã hóa khi lưu trên máy chủ. Không thể tắt mã hóa."
+                   styleClass="small" wrapText="true"/>
+        </VBox>
+        <VBox styleClass="side-section,last" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="THÀNH VIÊN · 4" styleClass="section-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Thêm thành viên" styleClass="sm" onAction="#onAddMember"/>
+            </HBox>
+            <VBox fx:id="memberBox" spacing="10"/>
+        </VBox>
+    </VBox>
+</HBox>

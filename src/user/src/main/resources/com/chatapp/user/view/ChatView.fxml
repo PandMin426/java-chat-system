@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!-- S04 Trò chuyện 1-1 (UC-13..21) -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.ChatController">
+
+    <!-- Conversation column -->
+    <VBox styleClass="column">
+        <VBox styleClass="column-head">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Trò chuyện" styleClass="h2"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Nhóm mới" styleClass="sm" onAction="#onNewGroup">
+                    <graphic><FontIcon iconLiteral="fth-plus"/></graphic>
+                </Button>
+            </HBox>
+            <Button text="Tìm tin nhắn trong mọi cuộc trò chuyện" styleClass="search-link" maxWidth="Infinity"
+                    onAction="#onSearchMessages">
+                <graphic><FontIcon iconLiteral="fth-search"/></graphic>
+            </Button>
+            <VBox spacing="8">
+                <Label text="BẠN BÈ ĐANG ONLINE · 4" styleClass="section-label"/>
+                <HBox fx:id="onlineStrip" spacing="12" alignment="CENTER_LEFT">
+                    <Hyperlink text="Xem tất cả" styleClass="small" onAction="#onAllFriends"/>
+                </HBox>
+            </VBox>
+        </VBox>
+        <ListView fx:id="conversationList" VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+    <!-- Chat area -->
+    <VBox HBox.hgrow="ALWAYS">
+        <HBox styleClass="chat-header">
+            <StackPane>
+                <Label text="TB" styleClass="avatar"/>
+                <Circle radius="4.5" styleClass="status-dot,online" StackPane.alignment="BOTTOM_RIGHT"/>
+            </StackPane>
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                <Label text="Trần Thị Bích" styleClass="strong"/>
+                <HBox spacing="4">
+                    <Label text="bich.tran" styleClass="small,muted,mono"/>
+                    <Label text="· Đang online" styleClass="small,muted"/>
+                </HBox>
+            </VBox>
+            <ToggleButton styleClass="ghost,icon" selected="true">
+                <graphic><FontIcon iconLiteral="fth-search"/></graphic>
+                <tooltip><Tooltip text="Tìm trong cuộc trò chuyện (Ctrl+F)"/></tooltip>
+            </ToggleButton>
+            <ToggleButton styleClass="ghost,icon" selected="true">
+                <graphic><FontIcon iconLiteral="fth-zap"/></graphic>
+                <tooltip><Tooltip text="Trợ lý AI"/></tooltip>
+            </ToggleButton>
+            <MenuButton styleClass="ghost,icon">
+                <graphic><FontIcon iconLiteral="fth-more-horizontal"/></graphic>
+                <items>
+                    <MenuItem text="Tìm trong cuộc trò chuyện"/>
+                    <MenuItem text="Chọn tin nhắn để xóa"/>
+                    <MenuItem text="Xóa toàn bộ lịch sử…" onAction="#onClearHistory"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Hủy kết bạn" onAction="#onUnfriend"/>
+                    <MenuItem text="Báo cáo spam…" styleClass="danger" onAction="#onReportSpam"/>
+                    <MenuItem text="Chặn người này…" styleClass="danger" onAction="#onBlock"/>
+                </items>
+            </MenuButton>
+        </HBox>
+
+        <!-- In-conversation search (UC-19) -->
+        <HBox styleClass="find-bar">
+            <StackPane styleClass="search" alignment="CENTER_LEFT" maxWidth="360" HBox.hgrow="ALWAYS">
+                <TextField text="giao diện" styleClass="sm"/>
+                <FontIcon iconLiteral="fth-search" translateX="10" mouseTransparent="true"/>
+            </StackPane>
+            <Label text="2/3 kết quả" styleClass="small,muted,mono"/>
+            <Button styleClass="ghost,sm,icon">
+                <graphic><FontIcon iconLiteral="fth-chevron-up"/></graphic>
+                <tooltip><Tooltip text="Kết quả trước"/></tooltip>
+            </Button>
+            <Button styleClass="ghost,sm,icon">
+                <graphic><FontIcon iconLiteral="fth-chevron-down"/></graphic>
+                <tooltip><Tooltip text="Kết quả sau"/></tooltip>
+            </Button>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Đóng" styleClass="ghost,sm"/>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+            <VBox fx:id="messageBox" styleClass="messages"/>
+        </ScrollPane>
+
+        <HBox styleClass="composer">
+            <Button styleClass="ghost,icon">
+                <graphic><FontIcon iconLiteral="fth-zap"/></graphic>
+                <tooltip><Tooltip text="Mở trợ lý AI"/></tooltip>
+            </Button>
+            <TextArea promptText="Soạn tin nhắn…" prefRowCount="1" wrapText="true" HBox.hgrow="ALWAYS"/>
+            <Button text="Gửi" styleClass="primary" defaultButton="true" minWidth="-Infinity">
+                <graphic><FontIcon iconLiteral="fth-send"/></graphic>
+            </Button>
+        </HBox>
+    </VBox>
+
+    <!-- AI assistant panel (UC-21) -->
+    <VBox styleClass="side-panel">
+        <HBox styleClass="side-head">
+            <FontIcon iconLiteral="fth-zap"/>
+            <Label text="Trợ lý AI" styleClass="h3"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button styleClass="ghost,sm,icon">
+                <graphic><FontIcon iconLiteral="fth-x"/></graphic>
+                <tooltip><Tooltip text="Đóng trợ lý AI"/></tooltip>
+            </Button>
+        </HBox>
+        <VBox styleClass="side-section">
+            <fx:define>
+                <ToggleGroup fx:id="aiModeGroup"/>
+            </fx:define>
+            <HBox styleClass="segmented">
+                <ToggleButton text="Gợi ý trả lời" styleClass="first" toggleGroup="$aiModeGroup" selected="true"
+                              maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                <ToggleButton text="Chỉnh câu" styleClass="last" toggleGroup="$aiModeGroup"
+                              maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+        <VBox styleClass="side-section,last" VBox.vgrow="ALWAYS">
+            <Label text="Dựa trên 10 tin gần nhất. Bấm một gợi ý để chèn vào ô soạn tin — tin không tự gửi."
+                   styleClass="small,muted" wrapText="true"/>
+            <VBox fx:id="suggestionBox" spacing="8"/>
+            <Button text="Tạo gợi ý khác" styleClass="sm"/>
+        </VBox>
+        <VBox styleClass="side-section,border-top">
+            <Label text="Nội dung được gửi tới dịch vụ AI bên ngoài qua máy chủ." styleClass="xs,muted" wrapText="true"/>
+        </VBox>
+    </VBox>
+</HBox>

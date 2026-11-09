@@ -1,0 +1,172 @@
+/* User-app styles, applied on top of /com/chatapp/common/theme.css */
+
+/* ---------- Auth windows ---------- */
+.auth-bg { -fx-background-color: #F5F5F5; }
+.auth-card {
+    -fx-background-color: white;
+    -fx-border-color: -c-line;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-padding: 32;
+    -fx-spacing: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 3, 0, 0, 1);
+}
+
+/* ---------- Left icon rail ---------- */
+.rail {
+    -fx-background-color: -c-subtle;
+    -fx-border-color: transparent -c-line transparent transparent;
+    -fx-padding: 14 12;
+    -fx-spacing: 6;
+    -fx-alignment: top-center;
+}
+.toggle-button.rail-button, .button.rail-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-padding: 0;
+    -fx-min-width: 44; -fx-pref-width: 44; -fx-max-width: 44;
+    -fx-min-height: 44; -fx-pref-height: 44; -fx-max-height: 44;
+}
+.toggle-button.rail-button:hover, .button.rail-button:hover { -fx-background-color: #EFEFEF; }
+.toggle-button.rail-button:selected { -fx-background-color: -c-ink; }
+.rail-button .ikonli-font-icon { -fx-icon-size: 20px; -fx-icon-color: -c-ink-3; }
+.toggle-button.rail-button:selected .ikonli-font-icon { -fx-icon-color: white; }
+.rail-count {
+    -fx-background-color: -c-accent;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-padding: 0 4;
+    -fx-min-width: 16; -fx-min-height: 16;
+    -fx-alignment: center;
+    -fx-translate-x: -3; -fx-translate-y: 3;
+}
+
+/* ---------- Conversation column ---------- */
+.column {
+    -fx-min-width: 310; -fx-pref-width: 310; -fx-max-width: 310;
+    -fx-border-color: transparent -c-line transparent transparent;
+}
+.column.wide { -fx-min-width: 360; -fx-pref-width: 360; -fx-max-width: 360; }
+.column-head { -fx-padding: 16 14 12 14; -fx-spacing: 10; -fx-border-color: transparent transparent -c-line transparent; }
+.search-link {
+    -fx-alignment: center-left;
+    -fx-text-fill: -c-muted;
+    -fx-pref-height: 32;
+    -fx-padding: 0 10;
+}
+.search-link .ikonli-font-icon { -fx-icon-size: 16px; -fx-icon-color: -c-muted; }
+.conv-cell { -fx-padding: 10 14; -fx-border-color: transparent transparent #F4F4F4 transparent; }
+.unread {
+    -fx-background-color: -c-accent;
+    -fx-background-radius: 9;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-padding: 0 6;
+    -fx-min-height: 18;
+}
+.inline-icon { -fx-icon-size: 13px; -fx-icon-color: -c-ink-3; }
+
+/* ---------- Chat area ---------- */
+.chat-header {
+    -fx-min-height: 62; -fx-pref-height: 62;
+    -fx-padding: 0 12 0 18;
+    -fx-spacing: 10;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent -c-line transparent;
+}
+.find-bar {
+    -fx-padding: 8 18;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+    -fx-background-color: -c-subtle;
+    -fx-border-color: transparent transparent -c-line transparent;
+}
+.messages { -fx-padding: 20 24; -fx-spacing: 10; -fx-background-color: white; }
+.bubble { -fx-background-color: -c-strong; -fx-background-radius: 12; -fx-padding: 8 12; }
+.bubble > .text { -fx-fill: -c-ink; -fx-font-size: 13px; }
+.bubble.me { -fx-background-color: -c-ink; }
+.bubble.me > .text { -fx-fill: white; }
+.bubble.focus { -fx-border-color: -c-accent; -fx-border-width: 2; -fx-border-radius: 12; }
+.hl { -fx-background-color: #FFE07A; -fx-text-fill: -c-ink; -fx-background-radius: 2; -fx-padding: 0 1; -fx-font-size: 13px; }
+.day-sep {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 11px;
+    -fx-text-fill: -c-muted;
+    -fx-background-color: -c-subtle;
+    -fx-border-color: -c-line;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2 10;
+}
+.sys { -fx-font-size: 12px; -fx-text-fill: -c-muted; -fx-text-alignment: center; }
+.meta { -fx-font-family: "Consolas"; -fx-font-size: 10.5px; -fx-text-fill: -c-muted; }
+.sender { -fx-font-family: "Segoe UI Semibold"; -fx-font-size: 11px; -fx-text-fill: -c-ink-2; }
+.composer {
+    -fx-padding: 12 16;
+    -fx-spacing: 8;
+    -fx-alignment: bottom-left;
+    -fx-border-color: -c-line transparent transparent transparent;
+}
+.composer .text-area { -fx-pref-height: 40; -fx-min-height: 40; }
+/* ---------- Right side panel (AI assistant, group info) ---------- */
+.side-panel {
+    -fx-min-width: 310; -fx-pref-width: 310; -fx-max-width: 310;
+    -fx-background-color: -c-subtle;
+    -fx-border-color: transparent transparent transparent -c-line;
+}
+.side-head {
+    -fx-min-height: 62; -fx-pref-height: 62;
+    -fx-padding: 0 12 0 16;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent -c-line transparent;
+}
+.side-section { -fx-padding: 14 16; -fx-spacing: 10; -fx-border-color: transparent transparent -c-line transparent; }
+.side-section.last { -fx-border-color: transparent; }
+.button.ai-card {
+    -fx-background-color: white;
+    -fx-border-color: #E6E6E6;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 10 12;
+    -fx-pref-height: -1;
+    -fx-alignment: center-left;
+    -fx-text-fill: -c-ink;
+    -fx-wrap-text: true;
+}
+.button.ai-card:hover { -fx-border-color: -c-ink; -fx-background-color: white; }
+
+/* ---------- Search results ---------- */
+.result { -fx-padding: 10 14; -fx-spacing: 3; -fx-border-color: transparent transparent #F4F4F4 transparent; }
+.result.selected { -fx-background-color: -c-strong; }
+.result:hover { -fx-background-color: -c-subtle; -fx-cursor: hand; }
+.result-text > .text { -fx-fill: -c-ink; -fx-font-size: 13px; }
+.result-text > .text.who { -fx-fill: -c-muted; }
+.result-group { -fx-padding: 12 14 4 14; -fx-spacing: 10; -fx-alignment: center-left; }
+
+/* ---------- Pages (friends, search users, profile) ---------- */
+.page-head { -fx-padding: 22 24 14 24; -fx-spacing: 12; -fx-alignment: bottom-left; }
+.toolbar { -fx-padding: 0 24 14 24; -fx-spacing: 8; -fx-alignment: center-left; }
+.row-list { -fx-padding: 0; }
+.person-row { -fx-padding: 12 16; -fx-spacing: 12; -fx-alignment: center-left; -fx-border-color: transparent transparent #F4F4F4 transparent; }
+.profile-page { -fx-background-color: -c-subtle; }
+
+/* ---------- Dialogs ---------- */
+.dialog-head { -fx-padding: 18 20 4 20; -fx-spacing: 12; -fx-alignment: top-left; }
+.dialog-body { -fx-padding: 12 20 16 20; -fx-spacing: 14; }
+.chip {
+    -fx-background-color: -c-strong;
+    -fx-background-radius: 999;
+    -fx-padding: 0 4 0 10;
+    -fx-spacing: 4;
+    -fx-alignment: center-left;
+    -fx-min-height: 28;
+}
+.suggestion { -fx-padding: 8 10; -fx-spacing: 10; -fx-alignment: center-left; -fx-background-radius: 8; }
+.suggestion:hover { -fx-background-color: #F2F2F2; }
+.radio-row { -fx-border-color: -c-line-strong; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12; }
+.radio-row:selected { -fx-border-color: -c-ink; -fx-background-color: -c-subtle; }
