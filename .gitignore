@@ -149,7 +149,7 @@ vite.config.ts.timestamp-*
 .turbo
 
 #folders
-.agent/
+#.agent/
 
 # Java / Maven / IDE
 target/
