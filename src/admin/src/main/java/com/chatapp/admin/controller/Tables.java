@@ -24,7 +24,7 @@ final class Tables {
         column.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(value.apply(c.getValue())));
     }
 
-    /** Text column; {@code mono} uses the monospace font (usernames, IPs). */
+    /** Text column; {@code mono} uses the monospace font (usernames). */
     static <S> void text(TableColumn<S, String> column, Function<S, String> value, boolean mono) {
         bind(column, value);
         if (mono) {

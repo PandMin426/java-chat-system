@@ -82,6 +82,6 @@ public class GroupChatController {
 
     @FXML
     private void onAddMember() {
-        Navigator.openDialog("CreateGroupDialog", "Thêm thành viên");
+        Navigator.openDialog("AddMemberDialog", "Thêm thành viên");
     }
 }

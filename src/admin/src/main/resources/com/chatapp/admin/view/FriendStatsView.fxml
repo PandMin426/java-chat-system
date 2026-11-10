@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S16 Số lượng bạn bè (UC-45: A7a–A7d) -->
+<!-- S16 Số lượng bạn bè (UC-44: A7a–A7d) -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.admin.controller.FriendStatsController">
     <fx:define>
@@ -40,7 +40,7 @@
         </HBox>
         <Spinner editable="true" min="0" max="9999" initialValue="5"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label text="5 người phù hợp" styleClass="small,muted"/>
+        <Label text="4 người phù hợp" styleClass="small,muted"/>
     </HBox>
     <StackPane styleClass="table-host" VBox.vgrow="ALWAYS">
         <TableView fx:id="table">

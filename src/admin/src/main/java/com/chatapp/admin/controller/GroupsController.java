@@ -27,8 +27,6 @@ public class GroupsController {
     @FXML
     private TableColumn<GroupRow, Integer> membersColumn;
     @FXML
-    private TableColumn<GroupRow, Boolean> encryptedColumn;
-    @FXML
     private TableColumn<GroupRow, LocalDate> createdColumn;
     @FXML
     private Label groupNameLabel;
@@ -48,8 +46,6 @@ public class GroupsController {
         Tables.text(nameColumn, GroupRow::name, false);
         nameColumn.setComparator(Collator.getInstance(AdminNavigator.LOCALE)::compare);
         Tables.number(membersColumn, GroupRow::members);
-        Tables.graphic(encryptedColumn, GroupRow::encrypted,
-                encrypted -> encrypted ? Tables.badge("Có", "ok") : Tables.badge("Không", null));
         Tables.date(createdColumn, GroupRow::created, Tables.DATE);
 
         table.getItems().setAll(SampleData.GROUPS);
@@ -72,7 +68,7 @@ public class GroupsController {
 
     private void showDetail(GroupRow g) {
         groupNameLabel.setText(g.name());
-        groupInfoLabel.setText("Tạo ngày " + Tables.DATE.format(g.created()) + " bởi " + g.creator());
+        groupInfoLabel.setText("Tạo ngày " + Tables.DATE.format(g.created()));
         membersTab.setText("Thành viên · " + g.members());
         adminsTab.setText("Admin · " + g.admins());
     }

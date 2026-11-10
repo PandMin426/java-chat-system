@@ -59,7 +59,7 @@ final class ChatViews {
         name.getStyleClass().add("strong");
         HBox top = new HBox(4, name);
         top.setAlignment(Pos.CENTER_LEFT);
-        if (c.encrypted()) {
+        if (c.group()) {
             FontIcon lock = new FontIcon("fth-lock");
             lock.getStyleClass().add("inline-icon");
             top.getChildren().add(lock);
@@ -77,16 +77,7 @@ final class ChatViews {
         preview.getStyleClass().addAll("small", "muted");
         preview.setMinWidth(0);
         preview.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(preview, Priority.ALWAYS);
-        HBox bottom = new HBox(6, preview);
-        bottom.setAlignment(Pos.CENTER_LEFT);
-        if (c.unread() > 0) {
-            Label unread = new Label(String.valueOf(c.unread()));
-            unread.getStyleClass().add("unread");
-            bottom.getChildren().add(unread);
-        }
-
-        VBox text = new VBox(2, top, bottom);
+        VBox text = new VBox(2, top, preview);
         text.setMinWidth(0);
         HBox.setHgrow(text, Priority.ALWAYS);
         StackPane avatar = c.group() ? avatar(c.initials(), null, "group") : avatar(c.initials(), c.online());
@@ -186,6 +177,12 @@ final class ChatViews {
                 "Không thể hoàn tác.", "Xóa lịch sử");
     }
 
+    static void confirmDeleteSelected(int count) {
+        Navigator.openConfirm("Xóa tin nhắn đã chọn?",
+                count + " tin nhắn đã chọn sẽ bị xóa ở phía bạn. Người kia vẫn xem được các tin này.",
+                "Không thể hoàn tác.", "Xóa");
+    }
+
     static void confirmUnfriend(String name) {
         Navigator.openConfirm("Hủy kết bạn?",
                 "Hủy kết bạn với " + name + "? Lịch sử chat vẫn được giữ.", "", "Hủy kết bạn");
@@ -193,8 +190,8 @@ final class ChatViews {
 
     static void confirmBlock(String name) {
         Navigator.openConfirm("Chặn " + name + "?",
-                "Người này sẽ bị xóa khỏi danh sách bạn bè và lời mời, không tìm thấy bạn, "
-                        + "không gửi lời mời kết bạn và không nhắn tin 1-1 được với bạn.",
+                "Người này sẽ bị xóa khỏi danh sách bạn bè và lời mời, không tìm thấy bạn và không gửi lời mời "
+                        + "kết bạn được. Hai bên cũng không nhắn tin 1-1 được với nhau.",
                 "Bạn có thể bỏ chặn trong Bạn bè › Đã chặn.", "Chặn");
     }
 }

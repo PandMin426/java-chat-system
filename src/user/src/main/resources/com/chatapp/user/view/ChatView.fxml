@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S04 Trò chuyện 1-1 (UC-13..21) -->
+<!-- S04 Trò chuyện 1-1 (UC-13, UC-15..21) -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.user.controller.ChatController">
 
@@ -74,7 +74,7 @@
                 <graphic><FontIcon iconLiteral="fth-more-horizontal"/></graphic>
                 <items>
                     <MenuItem text="Tìm trong cuộc trò chuyện"/>
-                    <MenuItem text="Chọn tin nhắn để xóa"/>
+                    <MenuItem text="Chọn tin nhắn để xóa" onAction="#onSelectMessages"/>
                     <MenuItem text="Xóa toàn bộ lịch sử…" onAction="#onClearHistory"/>
                     <SeparatorMenuItem/>
                     <MenuItem text="Hủy kết bạn" onAction="#onUnfriend"/>
@@ -85,7 +85,7 @@
         </HBox>
 
         <!-- In-conversation search (UC-19) -->
-        <HBox styleClass="find-bar">
+        <HBox fx:id="findBar" styleClass="find-bar">
             <StackPane styleClass="search" alignment="CENTER_LEFT" maxWidth="360" HBox.hgrow="ALWAYS">
                 <TextField text="giao diện" styleClass="sm"/>
                 <FontIcon iconLiteral="fth-search" translateX="10" mouseTransparent="true"/>
@@ -101,6 +101,14 @@
             </Button>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Đóng" styleClass="ghost,sm"/>
+        </HBox>
+
+        <!-- Select-and-delete mode (UC-18): each message gets a check box; hidden until chosen in the "⋯" menu -->
+        <HBox fx:id="selectBar" styleClass="find-bar" visible="false" managed="false">
+            <Label fx:id="selectedLabel" styleClass="small,strong"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="deleteSelectedButton" text="Xóa" styleClass="danger,primary,sm" onAction="#onDeleteSelected"/>
+            <Button text="Hủy" styleClass="ghost,sm" onAction="#onCancelSelect"/>
         </HBox>
 
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">

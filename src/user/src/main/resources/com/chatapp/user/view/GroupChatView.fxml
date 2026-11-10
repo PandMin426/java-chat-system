@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S05 Nhóm chat mã hóa (UC-23..28) -->
+<!-- S05 Nhóm chat mã hóa đầu cuối (UC-23..28) -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.user.controller.GroupChatController">
 
@@ -40,7 +40,7 @@
             <VBox HBox.hgrow="ALWAYS" spacing="2" alignment="CENTER_LEFT">
                 <Label text="Đồ án Java" styleClass="strong"/>
                 <HBox spacing="6" alignment="CENTER_LEFT">
-                    <Label text="Nhóm mã hóa" styleClass="badge,ok">
+                    <Label text="Mã hóa đầu cuối" styleClass="badge,ok">
                         <graphic><FontIcon iconLiteral="fth-lock" styleClass="inline-icon"/></graphic>
                     </Label>
                     <Label text="4 thành viên · 3 online" styleClass="small,muted"/>
@@ -84,12 +84,14 @@
                     <tooltip><Tooltip text="Đổi tên nhóm"/></tooltip>
                 </Button>
             </HBox>
-            <Label text="Tạo ngày 02/11/2026 bởi An" styleClass="xs,muted"/>
+            <Label text="Tạo ngày 02/11/2026" styleClass="xs,muted"/>
         </VBox>
         <VBox styleClass="side-section">
-            <Label text="NHÓM MÃ HÓA" styleClass="section-label"/>
-            <Label text="Tin nhắn của nhóm được mã hóa khi lưu trên máy chủ. Không thể tắt mã hóa."
+            <Label text="MÃ HÓA ĐẦU CUỐI" styleClass="section-label"/>
+            <Label text="Tin nhắn được mã hóa trên thiết bị của thành viên. Máy chủ chỉ lưu bản mã, không đọc được nội dung."
                    styleClass="small" wrapText="true"/>
+            <Label text="Bạn chỉ xem được tin nhắn gửi từ lúc mình tham gia nhóm."
+                   styleClass="small,muted" wrapText="true"/>
         </VBox>
         <VBox styleClass="side-section,last" VBox.vgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT">

@@ -25,8 +25,6 @@ public class LoginLogController {
     private TableColumn<LoginRow, String> usernameColumn;
     @FXML
     private TableColumn<LoginRow, String> nameColumn;
-    @FXML
-    private TableColumn<LoginRow, String> ipColumn;
 
     @FXML
     private void initialize() {
@@ -36,7 +34,6 @@ public class LoginLogController {
         Tables.date(timeColumn, LoginRow::time, Tables.DATE_TIME);
         Tables.text(usernameColumn, LoginRow::username, true);
         Tables.text(nameColumn, LoginRow::fullName, false);
-        Tables.text(ipColumn, LoginRow::ip, true);
         table.getItems().setAll(SampleData.LOGINS);
         timeColumn.setSortType(TableColumn.SortType.DESCENDING);
         table.getSortOrder().add(timeColumn);
