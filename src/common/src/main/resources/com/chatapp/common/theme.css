@@ -195,6 +195,19 @@
 .list-cell:filled:hover { -fx-background-color: -c-subtle; }
 .list-cell:filled:selected { -fx-background-color: -c-strong; }
 
+/* ComboBox dropdown is a ListView too: give it a white surface like .context-menu instead of the transparent lists above. */
+.combo-box-popup > .list-view {
+    -fx-background-color: white;
+    -fx-border-color: -c-line-strong;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 20, 0, 0, 6);
+}
+.combo-box-popup .list-cell { -fx-background-color: white; -fx-padding: 8 10; -fx-background-radius: 6; }
+.combo-box-popup .list-cell:filled:hover { -fx-background-color: #F2F2F2; }
+.combo-box-popup .list-cell:filled:selected { -fx-background-color: -c-strong; }
+
 /* ---------- Tables ---------- */
 .table-view {
     -fx-background-color: white;
