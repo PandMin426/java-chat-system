@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- S01 Đăng nhập (UC-02) -->
+<!-- S01 Đăng nhập (UC-02). The error label is hidden until V2 rejects a login (wrong password, locked account). -->
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.chatapp.user.controller.LoginController" styleClass="auth-bg">
     <VBox styleClass="auth-card" maxWidth="400" maxHeight="-Infinity">
@@ -31,6 +31,8 @@
             </HBox>
             <PasswordField fx:id="passwordField" text="matkhau123"/>
         </VBox>
+        <Label fx:id="errorLabel" text="Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên." styleClass="error-text"
+               wrapText="true" visible="false" managed="false"/>
         <Button text="Đăng nhập" styleClass="primary,lg" maxWidth="Infinity" defaultButton="true" onAction="#onLogin"/>
         <HBox alignment="CENTER" spacing="4">
             <Label text="Chưa có tài khoản?" styleClass="small,muted"/>

@@ -99,6 +99,15 @@ class NavigationTest {
     }
 
     @Test
+    void chatMenuOpensSelectMode() throws Exception {
+        click("Đăng nhập");
+        // The count label is empty until select mode starts.
+        menu("Chọn tin nhắn để xóa");
+        assertShows("Đã chọn 0 tin");
+        click("Hủy");
+    }
+
+    @Test
     void groupAdminMenuOpensConfirm() throws Exception {
         click("Đăng nhập");
         click("Tìm tin nhắn trong mọi cuộc trò chuyện");

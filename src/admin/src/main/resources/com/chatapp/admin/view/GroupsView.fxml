@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S13 Nhóm chat (UC-39..41: A3a–A3d) -->
+<!-- S13 Nhóm chat (UC-40: A3a–A3d) -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.admin.controller.GroupsController">
 
@@ -22,7 +22,7 @@
         <HBox styleClass="page-head">
             <VBox spacing="4">
                 <Label text="Nhóm chat" styleClass="h1"/>
-                <Label text="Chỉ xem thông tin nhóm và thành viên. Quản trị viên không xem được nội dung tin nhắn."
+                <Label text="Chỉ xem thông tin nhóm và thành viên. Mọi nhóm đều mã hóa đầu cuối nên quản trị viên không xem được nội dung tin nhắn."
                        styleClass="small,muted"/>
             </VBox>
         </HBox>
@@ -40,7 +40,6 @@
                 <columns>
                     <TableColumn fx:id="nameColumn" text="Tên nhóm" prefWidth="240"/>
                     <TableColumn fx:id="membersColumn" text="Thành viên" sortable="false" prefWidth="110"/>
-                    <TableColumn fx:id="encryptedColumn" text="Mã hóa" sortable="false" prefWidth="100"/>
                     <TableColumn fx:id="createdColumn" text="Ngày tạo"/>
                 </columns>
             </TableView>

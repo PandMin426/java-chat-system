@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-/** S07 Tìm người dùng. V1: sample results for the query "nguyen"; the relation button toggles locally. */
+/** S07 Tìm người dùng. V1: sample results for the query "nguyễn"; the relation button toggles locally. */
 public class SearchUsersController {
 
     @FXML
@@ -35,6 +35,12 @@ public class SearchUsersController {
         HBox.setHgrow(text, Priority.ALWAYS);
         HBox row = new HBox(12, ChatViews.avatar(u.initials(), null), text);
         row.getChildren().addAll(actions(u));
+        // Anyone found can be messaged or put in a new group, friend or not.
+        Button chat = button("Nhắn tin", "sm");
+        chat.setOnAction(e -> Navigator.showMain("ChatView"));
+        Button group = button("Tạo nhóm", "sm");
+        group.setOnAction(e -> Navigator.openDialog("CreateGroupDialog", "Tạo nhóm chat"));
+        row.getChildren().addAll(chat, group);
         row.getStyleClass().add("person-row");
         return row;
     }
@@ -47,14 +53,12 @@ public class SearchUsersController {
             case FRIEND -> {
                 Label friend = new Label("Bạn bè");
                 friend.getStyleClass().addAll("badge", "ok");
-                Button chat = button("Nhắn tin", "sm");
-                chat.setOnAction(e -> Navigator.showMain("ChatView"));
-                yield new Node[]{friend, chat};
+                yield new Node[]{friend};
             }
         };
     }
 
-    /** "Kết bạn" ↔ "Đã gửi lời mời · Hủy" (UC-08 send / cancel). */
+    /** "Kết bạn" ↔ "Đã gửi lời mời · Hủy" (UC-09 send / cancel). */
     private Button toggleRequest(boolean sent) {
         Button button = button("", "sm");
         setRequestState(button, sent);

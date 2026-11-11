@@ -32,9 +32,7 @@
             <ToggleButton fx:id="groupsButton" text="Nhóm chat" styleClass="nav-item" toggleGroup="$navGroup"
                           maxWidth="Infinity" onAction="#onGroups"/>
             <ToggleButton fx:id="spamButton" text="Báo cáo spam" styleClass="nav-item" toggleGroup="$navGroup"
-                          maxWidth="Infinity" onAction="#onSpam">
-                <graphic><Label text="4" styleClass="badge,bad"/></graphic>
-            </ToggleButton>
+                          maxWidth="Infinity" onAction="#onSpam"/>
             <Label text="THỐNG KÊ" styleClass="nav-group"/>
             <ToggleButton fx:id="newUsersButton" text="Đăng ký mới" styleClass="nav-item" toggleGroup="$navGroup"
                           maxWidth="Infinity" onAction="#onNewUsers"/>
