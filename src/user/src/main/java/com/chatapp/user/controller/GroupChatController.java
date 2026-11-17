@@ -84,4 +84,15 @@ public class GroupChatController {
     private void onAddMember() {
         Navigator.openDialog("AddMemberDialog", "Thêm thành viên");
     }
+
+    /** D33: the last admin must hand the admin role to another member before leaving. */
+    @FXML
+    private void onLeave() {
+        boolean lastAdmin = SampleData.GROUP_MEMBERS.stream().filter(Member::admin).allMatch(Member::me);
+        if (lastAdmin) {
+            Navigator.openDialog("TransferAdminDialog", "Chuyển quyền admin");
+        } else {
+            Navigator.openConfirm("Rời nhóm?", "Bạn sẽ không nhận tin nhắn của nhóm “Đồ án Java” nữa.", "", "Rời nhóm");
+        }
+    }
 }

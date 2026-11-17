@@ -145,7 +145,7 @@
             <HBox styleClass="segmented">
                 <ToggleButton text="Gợi ý trả lời" styleClass="first" toggleGroup="$aiModeGroup" selected="true"
                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-                <ToggleButton text="Chỉnh câu" styleClass="last" toggleGroup="$aiModeGroup"
+                <ToggleButton text="Sửa câu" styleClass="last" toggleGroup="$aiModeGroup"
                               maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             </HBox>
         </VBox>

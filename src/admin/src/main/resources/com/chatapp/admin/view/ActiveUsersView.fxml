@@ -30,7 +30,7 @@
     <HBox styleClass="page-head">
         <VBox spacing="4">
             <Label text="Người dùng hoạt động" styleClass="h1"/>
-            <Label text="Trong khoảng đã chọn: số lượt mở ứng dụng, số người khác nhau đã được gửi tin riêng và số nhóm đã gửi tin. Dữ liệu mẫu."
+            <Label text="Trong khoảng đã chọn: số lượt mở ứng dụng (= số lần đăng nhập thành công), số người khác nhau đã được gửi tin riêng và số nhóm đã gửi tin. Dữ liệu mẫu."
                    styleClass="small,muted" wrapText="true"/>
         </VBox>
     </HBox>

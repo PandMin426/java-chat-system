@@ -14,9 +14,10 @@ public final class SampleData {
     /**
      * One row of the conversation list. {@code online == null} hides the status dot (groups, and people who are
      * not friends). Every group is end-to-end encrypted, so groups always get the lock icon.
+     * {@code unread} counts messages after the member's last read message (D24); 0 hides the badge.
      */
     public record Conversation(String initials, String name, String preview, String time,
-                               Boolean online, boolean group, String tag) {
+                               Boolean online, boolean group, String tag, int unread) {
     }
 
     public enum Kind { DAY, SYSTEM, IN, OUT }
@@ -61,18 +62,19 @@ public final class SampleData {
     public record Member(String initials, String name, boolean online, boolean admin, boolean me) {
     }
 
-    public record SearchHit(String conversation, String initials, boolean group, String who,
+    /** Message search covers 1-1 chats only: every group is end-to-end encrypted (D26, D35). */
+    public record SearchHit(String conversation, String initials, String who,
                             String text, String hit, String after, String time) {
     }
 
     public static final List<Conversation> CONVERSATIONS = List.of(
-            new Conversation("TB", "Trần Thị Bích", "Mình đẩy code lên nhánh feature/socket-client rồi.", "14:25", true, false, null),
-            new Conversation("ĐA", "Đồ án Java", "Minh: Ok mai họp lúc 8h", "13:02", null, true, null),
-            new Conversation("CL", "Lê Cẩm Ly", "Bạn gửi giúp mình tài liệu đồ án với", "11:15", true, false, null),
-            new Conversation("PD", "Phạm Quốc Dũng", "Bạn: Mai gửi bạn bản báo cáo nhé", "Hôm qua", false, false, null),
-            new Conversation("NH", "Nguyễn Thị Hoa", "Chào bạn, cho mình hỏi lịch nộp đồ án Java với", "07/11", null, false, "Người lạ"),
-            new Conversation("KT", "Kevin Trần", "Nhận code hộ đồ án giá rẻ, inbox ngay", "06/11", null, false, "Đã chặn"),
-            new Conversation("CG", "CLB Guitar K22", "Hà: Thứ 7 tập ở phòng C.201", "04/11", null, true, null));
+            new Conversation("TB", "Trần Thị Bích", "Mình đẩy code lên nhánh feature/socket-client rồi.", "14:25", true, false, null, 0),
+            new Conversation("ĐA", "Đồ án Java", "Minh: Ok mai họp lúc 8h", "13:02", null, true, null, 3),
+            new Conversation("CL", "Lê Cẩm Ly", "Bạn gửi giúp mình tài liệu đồ án với", "11:15", true, false, null, 2),
+            new Conversation("PD", "Phạm Quốc Dũng", "Bạn: Mai gửi bạn bản báo cáo nhé", "Hôm qua", false, false, null, 0),
+            new Conversation("NH", "Nguyễn Thị Hoa", "Chào bạn, cho mình hỏi lịch nộp đồ án Java với", "07/11", null, false, "Người lạ", 1),
+            new Conversation("KT", "Kevin Trần", "Nhận code hộ đồ án giá rẻ, inbox ngay", "06/11", null, false, "Đã chặn", 0),
+            new Conversation("CG", "CLB Guitar K22", "Hà: Thứ 7 tập ở phòng C.201", "04/11", null, true, null, 5));
 
     public static final List<String> ONLINE_FRIENDS = List.of("TB", "CL", "VM", "ĐH");
 
@@ -100,18 +102,18 @@ public final class SampleData {
             Message.groupIn("Đỗ Hà", "ĐH", "Chào cả nhóm, mình phụ trách phần biểu đồ thống kê.", "12:58"),
             Message.groupIn("Võ Minh", "VM", "Ok mai họp lúc 8h", "13:02"));
 
+    /** The current user is the only admin, so "Rời nhóm" asks for a new admin first (D33). */
     public static final List<Member> GROUP_MEMBERS = List.of(
             new Member("AN", "Nguyễn Văn An (bạn)", true, true, true),
-            new Member("VM", "Võ Minh", true, true, false),
+            new Member("VM", "Võ Minh", true, false, false),
             new Member("TB", "Trần Thị Bích", true, false, false),
             new Member("ĐH", "Đỗ Hà", false, false, false));
 
     public static final List<SearchHit> SEARCH_HITS = List.of(
-            new SearchHit("Đồ án Java", "ĐA", true, "Minh: ", "Nhớ nộp ", "báo cáo", " V1 trước 19h30 nhé", "07/11 21:50"),
-            new SearchHit("Đồ án Java", "ĐA", true, "Bạn: ", "Mình viết phần ", "báo cáo", " thiết kế CSDL", "05/11 10:02"),
-            new SearchHit("Đồ án Java", "ĐA", true, "Hà: ", "Mẫu ", "báo cáo", " tự đánh giá ở đâu vậy?", "03/11 16:40"),
-            new SearchHit("Phạm Quốc Dũng", "PD", false, "Bạn: ", "Mai gửi bạn bản ", "báo cáo", " nhé", "07/11 20:15"),
-            new SearchHit("Kevin Trần", "KT", false, "", "Viết hộ ", "báo cáo", " đồ án giá rẻ", "06/11 23:01"));
+            new SearchHit("Trần Thị Bích", "TB", "", "Nhớ nộp ", "báo cáo", " V1 trước 19h30 nhé", "07/11 21:50"),
+            new SearchHit("Trần Thị Bích", "TB", "Bạn: ", "Mình viết phần ", "báo cáo", " thiết kế CSDL", "05/11 10:02"),
+            new SearchHit("Phạm Quốc Dũng", "PD", "Bạn: ", "Mai gửi bạn bản ", "báo cáo", " nhé", "07/11 20:15"),
+            new SearchHit("Kevin Trần", "KT", "", "Viết hộ ", "báo cáo", " đồ án giá rẻ", "06/11 23:01"));
 
     /** Only online/offline is known: no last-seen time is stored. */
     public static final List<Person> FRIENDS = List.of(
@@ -138,17 +140,18 @@ public final class SampleData {
             new SearchUser("NL", "Nguyễn Gia Linh", "linh.ng", " · đã gửi lời mời cho bạn", Relation.INCOMING),
             new SearchUser("NK", "Nguyễn Khang", "khang.nguyen", "", Relation.FRIEND));
 
-    /** Members already picked in the create-group dialog, then suggestions for the typed text "h". */
+    /** Members already picked in the create-group dialog (at least 3 besides the creator, D31), then suggestions for "h". */
     public static final List<Person> GROUP_PICKED = List.of(
             new Person("VM", "Võ Minh", "minh.vo", "", true),
-            new Person("TB", "Trần Thị Bích", "bich.tran", "", true));
+            new Person("TB", "Trần Thị Bích", "bich.tran", "", true),
+            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false));
 
     public static final List<Person> GROUP_SUGGESTIONS = List.of(
             new Person("ĐH", "Đỗ Hà", "ha.do", "Đang online", true),
             new Person("HT", "Huỳnh Thư", "thu.huynh", "", false),
             new Person("NH", "Nguyễn Thị Hoa", "hoa.nguyen", "Chưa là bạn", false));
 
-    /** D04: friends who are not in "Đồ án Java" yet; current members are never offered again. */
+    /** D04: anyone not in "Đồ án Java" yet and not blocked with you, friend or not (D20); members are never offered. */
     public static final List<Person> ADD_MEMBER_PICKED = List.of(
             new Person("CL", "Lê Cẩm Ly", "camly.le", "Đang online", true));
 
@@ -156,5 +159,6 @@ public final class SampleData {
             new Person("CL", "Lê Cẩm Ly", "camly.le", "Đang online", true),
             new Person("PD", "Phạm Quốc Dũng", "dung.pham", "", false),
             new Person("NK", "Nguyễn Khang", "khang.nguyen", "", false),
-            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false));
+            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false),
+            new Person("NH", "Nguyễn Thị Hoa", "hoa.nguyen", "Chưa là bạn", false));
 }

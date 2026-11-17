@@ -33,7 +33,7 @@
             <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Label text="Tên đăng nhập *" styleClass="small,strong"/>
                 <TextField fx:id="usernameField" text="an.nguyen"/>
-                <Label text="4–30 ký tự: chữ không dấu, số, dấu . và _. Phân biệt chữ hoa/thường, không đổi được về sau."
+                <Label text="3–30 ký tự: chữ không dấu, số, dấu . và _. Phân biệt chữ hoa/thường, không đổi được về sau."
                        styleClass="hint" wrapText="true"/>
                 <Label fx:id="usernameError" text="Tên đăng nhập đã được dùng." styleClass="error-text"
                        visible="false" managed="false"/>

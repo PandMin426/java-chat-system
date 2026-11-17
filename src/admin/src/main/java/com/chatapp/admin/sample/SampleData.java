@@ -28,17 +28,19 @@ public final class SampleData {
     public record GroupMember(String initials, String fullName, String username, boolean admin) {
     }
 
-    /**
-     * A report stores only reporter, reported user and time. {@code locked} is the reported account's
-     * current status in users, not a status of the report.
-     */
-    public record SpamRow(LocalDateTime time, String username, String fullName, String reporter, boolean locked) {
+    /** D38: locking the account resolves every report about it; "Bỏ qua" dismisses one report. */
+    public enum SpamStatus { PENDING, RESOLVED, DISMISSED }
+
+    /** One spam report with the reasons ticked by the reporter (D37), joined with "; ". */
+    public record SpamRow(LocalDateTime time, String username, String fullName, String reporter, String reasons,
+                          SpamStatus status) {
     }
 
     public record NewUserRow(String username, String fullName, String email, LocalDateTime created) {
     }
 
-    public record FriendStatRow(String username, String fullName, LocalDate created, int direct, int withFriendsOfFriends) {
+    /** {@code friendsOfFriends}: distinct friends of friends, not counting direct friends or the user (D22). */
+    public record FriendStatRow(String username, String fullName, LocalDate created, int direct, int friendsOfFriends) {
     }
 
     public record ActiveRow(String username, String fullName, LocalDate created, int appOpens, int peopleChatted, int groupsChatted) {
@@ -111,15 +113,15 @@ public final class SampleData {
             new GroupMember("TB", "Trần Thị Bích", "bich.tran", false),
             new GroupMember("ĐH", "Đỗ Hà", "ha.do", false));
 
-    /** {@code locked} matches USERS: kevin.tran and spam.bot99 are locked now. */
+    /** Matches USERS: kevin.tran and spam.bot99 are locked, so all their reports are RESOLVED. */
     public static final List<SpamRow> SPAM_REPORTS = List.of(
-            new SpamRow(t(8, 11, 10, 21), "kevin.tran", "Kevin Trần", "an.nguyen", true),
-            new SpamRow(t(8, 11, 9, 47), "hoa.nguyen", "Nguyễn Thị Hoa", "bich.tran", false),
-            new SpamRow(t(7, 11, 22, 40), "kevin.tran", "Kevin Trần", "camly.le", true),
-            new SpamRow(t(7, 11, 15, 5), "spam.bot99", "Khuyến Mãi 99", "minh.vo", true),
-            new SpamRow(t(6, 11, 19, 30), "spam.bot99", "Khuyến Mãi 99", "ha.do", true),
-            new SpamRow(t(5, 11, 8, 12), "dung.pham", "Phạm Quốc Dũng", "thu.huynh", false),
-            new SpamRow(t(2, 11, 11, 30), "kevin.tran", "Kevin Trần", "minh.vo", true));
+            new SpamRow(t(8, 11, 10, 21), "kevin.tran", "Kevin Trần", "an.nguyen", "Quảng cáo, bán hàng", SpamStatus.RESOLVED),
+            new SpamRow(t(8, 11, 9, 47), "hoa.nguyen", "Nguyễn Thị Hoa", "bich.tran", "Gửi tin nhắn hàng loạt", SpamStatus.PENDING),
+            new SpamRow(t(7, 11, 22, 40), "kevin.tran", "Kevin Trần", "camly.le", "Quảng cáo, bán hàng; Lừa đảo, giả mạo", SpamStatus.RESOLVED),
+            new SpamRow(t(7, 11, 15, 5), "spam.bot99", "Khuyến Mãi 99", "minh.vo", "Quảng cáo, bán hàng; Gửi tin nhắn hàng loạt", SpamStatus.RESOLVED),
+            new SpamRow(t(6, 11, 19, 30), "spam.bot99", "Khuyến Mãi 99", "ha.do", "Lừa đảo, giả mạo", SpamStatus.RESOLVED),
+            new SpamRow(t(5, 11, 8, 12), "dung.pham", "Phạm Quốc Dũng", "thu.huynh", "Khác", SpamStatus.DISMISSED),
+            new SpamRow(t(2, 11, 11, 30), "kevin.tran", "Kevin Trần", "minh.vo", "Quấy rối, xúc phạm", SpamStatus.RESOLVED));
 
     /** Self-registered accounts per month (index 0 = January); null = no data yet. Same years as ACTIVE_BY_MONTH. */
     public static final Map<Integer, Integer[]> NEW_USERS_BY_MONTH = Map.of(
@@ -136,16 +138,16 @@ public final class SampleData {
 
     /** bich.tran has the 4 friends of USER_FRIENDS; an.nguyen has the 7 friends shown in the user app. */
     public static final List<FriendStatRow> FRIEND_STATS = List.of(
-            new FriendStatRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), 4, 26),
-            new FriendStatRow("an.nguyen", "Nguyễn Văn An", d(12, 9, 2026), 7, 41),
-            new FriendStatRow("minh.vo", "Võ Minh", d(14, 9, 2026), 15, 71),
-            new FriendStatRow("ha.do", "Đỗ Hà", d(20, 9, 2026), 7, 39),
-            new FriendStatRow("camly.le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 33),
-            new FriendStatRow("dung.pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 21),
+            new FriendStatRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), 4, 22),
+            new FriendStatRow("an.nguyen", "Nguyễn Văn An", d(12, 9, 2026), 7, 34),
+            new FriendStatRow("minh.vo", "Võ Minh", d(14, 9, 2026), 15, 56),
+            new FriendStatRow("ha.do", "Đỗ Hà", d(20, 9, 2026), 7, 32),
+            new FriendStatRow("camly.le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 28),
+            new FriendStatRow("dung.pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 18),
             new FriendStatRow("kevin.tran", "Kevin Trần", d(28, 10, 2026), 0, 0),
-            new FriendStatRow("thu.huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 26),
-            new FriendStatRow("khang.nguyen", "Nguyễn Khang", d(18, 9, 2026), 8, 44),
-            new FriendStatRow("hoa.nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 1, 9));
+            new FriendStatRow("thu.huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 22),
+            new FriendStatRow("khang.nguyen", "Nguyễn Khang", d(18, 9, 2026), 8, 36),
+            new FriendStatRow("hoa.nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 1, 8));
 
     public static final List<ActiveRow> ACTIVE_USERS = List.of(
             new ActiveRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), 14, 6, 3),

@@ -58,7 +58,9 @@ class ScreenshotTool {
         save(() -> Navigator.buildConfirm("Chặn Kevin Trần?",
                 "Người này sẽ bị xóa khỏi danh sách bạn bè và lời mời, không tìm thấy bạn và không gửi lời mời "
                         + "kết bạn được. Hai bên cũng không nhắn tin 1-1 được với nhau.",
-                "Bạn có thể bỏ chặn trong Bạn bè › Đã chặn.", "Chặn"), -1, -1, out.resolve("D05-chan.png"));
+                "Trong nhóm chung hai bên vẫn chat bình thường. Bạn có thể bỏ chặn trong Bạn bè › Đã chặn.", "Chặn"),
+                -1, -1, out.resolve("D05-chan.png"));
+        save(() -> Navigator.load("TransferAdminDialog"), -1, -1, out.resolve("D06-chuyen-quyen-admin.png"));
         System.out.println("Screenshots saved to " + out.toAbsolutePath().normalize());
     }
 

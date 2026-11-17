@@ -22,7 +22,7 @@ public class AddMemberController {
 
     @FXML
     private void initialize() {
-        new MemberPicker(memberLabel, "Thành viên mới", chipPane, suggestionBox, addButton,
+        new MemberPicker(1, memberLabel, "Thành viên mới", chipPane, suggestionBox, addButton,
                 SampleData.ADD_MEMBER_PICKED, SampleData.ADD_MEMBER_SUGGESTIONS);
     }
 

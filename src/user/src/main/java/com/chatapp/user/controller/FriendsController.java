@@ -49,13 +49,11 @@ public class FriendsController {
         group.setOnAction(e -> Navigator.openDialog("CreateGroupDialog", "Tạo nhóm chat"));
         MenuItem unfriend = new MenuItem("Hủy kết bạn");
         unfriend.setOnAction(e -> ChatViews.confirmUnfriend(p.name()));
-        MenuItem report = new MenuItem("Báo cáo spam…");
-        report.getStyleClass().add("danger");
-        report.setOnAction(e -> Navigator.openDialog("ReportSpamDialog", "Báo cáo spam"));
+        // No "Báo cáo spam" here: only someone who sent you messages can be reported, from that chat (D37).
         MenuItem block = new MenuItem("Chặn…");
         block.getStyleClass().add("danger");
         block.setOnAction(e -> ChatViews.confirmBlock(p.name()));
-        MenuButton more = new MenuButton(null, new FontIcon("fth-more-horizontal"), unfriend, report, block);
+        MenuButton more = new MenuButton(null, new FontIcon("fth-more-horizontal"), unfriend, block);
         more.getStyleClass().addAll("ghost", "sm", "icon");
         return row(p, true, chat, group, more);
     }

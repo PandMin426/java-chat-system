@@ -77,7 +77,14 @@ final class ChatViews {
         preview.getStyleClass().addAll("small", "muted");
         preview.setMinWidth(0);
         preview.setMaxWidth(Double.MAX_VALUE);
-        VBox text = new VBox(2, top, preview);
+        Node bottom = preview;
+        if (c.unread() > 0) {
+            Label unread = new Label(String.valueOf(c.unread()));
+            unread.getStyleClass().addAll("badge", "count");
+            HBox.setHgrow(preview, Priority.ALWAYS);
+            bottom = new HBox(6, preview, unread);
+        }
+        VBox text = new VBox(2, top, bottom);
         text.setMinWidth(0);
         HBox.setHgrow(text, Priority.ALWAYS);
         StackPane avatar = c.group() ? avatar(c.initials(), null, "group") : avatar(c.initials(), c.online());
@@ -192,6 +199,6 @@ final class ChatViews {
         Navigator.openConfirm("Chặn " + name + "?",
                 "Người này sẽ bị xóa khỏi danh sách bạn bè và lời mời, không tìm thấy bạn và không gửi lời mời "
                         + "kết bạn được. Hai bên cũng không nhắn tin 1-1 được với nhau.",
-                "Bạn có thể bỏ chặn trong Bạn bè › Đã chặn.", "Chặn");
+                "Trong nhóm chung hai bên vẫn chat bình thường. Bạn có thể bỏ chặn trong Bạn bè › Đã chặn.", "Chặn");
     }
 }

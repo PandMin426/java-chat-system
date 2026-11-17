@@ -22,7 +22,8 @@ public class CreateGroupController {
 
     @FXML
     private void initialize() {
-        new MemberPicker(memberLabel, "Thành viên", chipPane, suggestionBox, createButton,
+        // D31: the creator plus at least 3 other people.
+        new MemberPicker(3, memberLabel, "Thành viên", chipPane, suggestionBox, createButton,
                 SampleData.GROUP_PICKED, SampleData.GROUP_SUGGESTIONS);
     }
 

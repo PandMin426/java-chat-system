@@ -10,8 +10,6 @@ import javafx.scene.layout.VBox;
 public class ForgotPasswordController {
 
     @FXML
-    private TextField usernameField;
-    @FXML
     private TextField emailField;
     @FXML
     private Label errorLabel;

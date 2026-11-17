@@ -15,10 +15,12 @@ import java.util.List;
 
 /**
  * Picked people as chips above a suggestion list, shared by D01 (create group) and D04 (add members).
- * Clicking a suggestion picks it, the chip's x puts it back; the confirm button is off while nobody is picked.
+ * Clicking a suggestion picks it, the chip's x puts it back; the confirm button is off while fewer than
+ * {@code minPicked} people are picked.
  */
 final class MemberPicker {
 
+    private final int minPicked;
     private final Label countLabel;
     private final String countPrefix;
     private final FlowPane chipPane;
@@ -27,8 +29,9 @@ final class MemberPicker {
     private final List<Person> suggestions;
     private final List<Person> picked;
 
-    MemberPicker(Label countLabel, String countPrefix, FlowPane chipPane, VBox suggestionBox, Button confirmButton,
-                 List<Person> picked, List<Person> suggestions) {
+    MemberPicker(int minPicked, Label countLabel, String countPrefix, FlowPane chipPane, VBox suggestionBox,
+                 Button confirmButton, List<Person> picked, List<Person> suggestions) {
+        this.minPicked = minPicked;
         this.countLabel = countLabel;
         this.countPrefix = countPrefix;
         this.chipPane = chipPane;
@@ -46,7 +49,7 @@ final class MemberPicker {
                 .filter(p -> !picked.contains(p))
                 .map(this::suggestion)
                 .toList());
-        confirmButton.setDisable(picked.isEmpty());
+        confirmButton.setDisable(picked.size() < minPicked);
     }
 
     private Node chip(Person p) {

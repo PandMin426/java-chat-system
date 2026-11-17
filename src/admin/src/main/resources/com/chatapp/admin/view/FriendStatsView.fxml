@@ -22,7 +22,7 @@
     <HBox styleClass="page-head">
         <VBox spacing="4">
             <Label text="Số lượng bạn bè" styleClass="h1"/>
-            <Label text="“Tính cả bạn của bạn” = số người khác nhau cách tối đa 2 bước, không tính chính người đó. Dữ liệu mẫu."
+            <Label text="“Bạn của bạn” = số người khác nhau là bạn của bạn bè, không tính bạn trực tiếp và chính người đó. Dữ liệu mẫu."
                    styleClass="small,muted"/>
         </VBox>
     </HBox>
@@ -50,11 +50,11 @@
                 <TableColumn fx:id="nameColumn" text="Họ tên" prefWidth="220"/>
                 <TableColumn fx:id="createdColumn" text="Ngày tạo" prefWidth="130"/>
                 <TableColumn fx:id="directColumn" text="Bạn trực tiếp" sortable="false" prefWidth="140"/>
-                <TableColumn fx:id="twoHopColumn" text="Tính cả bạn của bạn" sortable="false"/>
+                <TableColumn fx:id="twoHopColumn" text="Bạn của bạn (cấp 2)" sortable="false"/>
             </columns>
         </TableView>
     </StackPane>
     <HBox styleClass="pager">
-        <Label text="Ví dụ: A–B, A–C, B–D, C–D → A có 2 bạn trực tiếp, 3 khi tính cả bạn của bạn (B, C, D)."/>
+        <Label text="Ví dụ: A–B, A–C, B–D, C–D → A có 2 bạn trực tiếp (B, C) và 1 bạn của bạn (D)."/>
     </HBox>
 </VBox>

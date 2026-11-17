@@ -6,7 +6,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- D02 Báo cáo spam (UC-14). A report stores only who reported whom and when: no reason or note. -->
+<!-- D02 Báo cáo spam (UC-14). Opened only from a chat with someone who sent you messages; at least one reason (D37).
+     The first reason is ticked as a sample choice for the screenshot. -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.user.controller.ReportSpamController" styleClass="dialog-root" prefWidth="460">
     <VBox styleClass="dialog-head">
@@ -15,12 +16,22 @@
                styleClass="small,muted" wrapText="true"/>
     </VBox>
     <VBox styleClass="dialog-body">
-        <Label text="Quản trị viên sẽ thấy ai bị báo cáo và thời điểm báo cáo, rồi quyết định có khóa tài khoản này hay không."
+        <VBox spacing="8">
+            <Label text="Lý do (chọn một hoặc nhiều)" styleClass="small,strong"/>
+            <VBox fx:id="reasonBox" spacing="8">
+                <CheckBox text="Quảng cáo, bán hàng" selected="true"/>
+                <CheckBox text="Lừa đảo, giả mạo"/>
+                <CheckBox text="Quấy rối, xúc phạm"/>
+                <CheckBox text="Gửi tin nhắn hàng loạt"/>
+                <CheckBox text="Khác"/>
+            </VBox>
+        </VBox>
+        <Label text="Quản trị viên sẽ thấy lý do và thời điểm báo cáo, rồi quyết định khóa tài khoản này hoặc bỏ qua báo cáo."
                styleClass="small" wrapText="true"/>
         <CheckBox text="Chặn luôn người này" selected="true"/>
     </VBox>
     <HBox styleClass="dialog-footer">
         <Button fx:id="cancelButton" text="Hủy" cancelButton="true" onAction="#onClose"/>
-        <Button text="Gửi báo cáo" styleClass="danger,primary" defaultButton="true" onAction="#onClose"/>
+        <Button fx:id="sendButton" text="Gửi báo cáo" styleClass="danger,primary" defaultButton="true" onAction="#onClose"/>
     </HBox>
 </VBox>
