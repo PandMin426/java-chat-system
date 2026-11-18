@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
@@ -63,7 +64,7 @@ public class UsersController {
     @FXML
     private TableColumn<LoginRow, LocalDateTime> loginTimeColumn;
     @FXML
-    private TableColumn<LoginRow, String> loginIpColumn;
+    private Tab friendsTab;
     @FXML
     private VBox friendBox;
 
@@ -88,8 +89,8 @@ public class UsersController {
         table.getSelectionModel().select(SampleData.USERS.get(0));
 
         Tables.date(loginTimeColumn, LoginRow::time, Tables.DATE_TIME);
-        Tables.text(loginIpColumn, LoginRow::ip, true);
         loginTable.getItems().setAll(SampleData.USER_LOGINS);
+        friendsTab.setText("Bạn bè · " + SampleData.USER_FRIENDS.size());
         for (GroupMember friend : SampleData.USER_FRIENDS) {
             friendBox.getChildren().add(friendRow(friend));
         }

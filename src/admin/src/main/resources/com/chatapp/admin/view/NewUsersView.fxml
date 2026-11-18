@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S15 Người dùng đăng ký mới (UC-44: A5a–A5c list, A6 chart) -->
+<!-- S15 Người dùng đăng ký mới (UC-42: A5a–A5c list, UC-43: A6 chart) -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.admin.controller.NewUsersController">
     <fx:define>
@@ -28,7 +28,7 @@
     <HBox styleClass="page-head">
         <VBox spacing="4">
             <Label text="Người dùng đăng ký mới" styleClass="h1"/>
-            <Label text="Dữ liệu mẫu." styleClass="small,muted"/>
+            <Label text="Chỉ tính tài khoản tự đăng ký; tài khoản do quản trị viên tạo không được tính. Dữ liệu mẫu." styleClass="small,muted"/>
         </VBox>
     </HBox>
     <TabPane styleClass="page-tabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
@@ -37,8 +37,7 @@
                 <HBox styleClass="toolbar">
                     <Label text="Năm" styleClass="small,muted"/>
                     <HBox styleClass="segmented">
-                        <ToggleButton fx:id="year2024" text="2024" styleClass="first" toggleGroup="$yearGroup" onAction="#onYear"/>
-                        <ToggleButton fx:id="year2025" text="2025" toggleGroup="$yearGroup" onAction="#onYear"/>
+                        <ToggleButton text="2025" styleClass="first" toggleGroup="$yearGroup" onAction="#onYear"/>
                         <ToggleButton fx:id="year2026" text="2026" styleClass="last" toggleGroup="$yearGroup" onAction="#onYear"/>
                     </HBox>
                     <Region HBox.hgrow="ALWAYS"/>
@@ -51,7 +50,7 @@
                                styleClass="xs,muted"/>
                         <BarChart fx:id="chart" legendVisible="false" animated="false" categoryGap="14" VBox.vgrow="ALWAYS">
                             <xAxis><CategoryAxis label="Tháng"/></xAxis>
-                            <yAxis><NumberAxis label="Số người đăng ký mới"/></yAxis>
+                            <yAxis><NumberAxis label="Số tài khoản tự đăng ký"/></yAxis>
                         </BarChart>
                     </VBox>
                 </VBox>

@@ -12,13 +12,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S12 Nhật ký đăng nhập (UC-38: A2) -->
+<!-- S12 Nhật ký đăng nhập (UC-39: A2) -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.admin.controller.LoginLogController">
     <HBox styleClass="page-head">
         <VBox spacing="4">
             <Label text="Nhật ký đăng nhập" styleClass="h1"/>
-            <Label text="Các lần đăng nhập thành công, mới nhất trước. Mỗi dòng được tính là 1 lần mở ứng dụng."
+            <Label text="Mỗi dòng là một lần đăng nhập thành công, mới nhất trước."
                    styleClass="small,muted"/>
         </VBox>
     </HBox>
@@ -40,8 +40,7 @@
             <columns>
                 <TableColumn fx:id="timeColumn" text="Thời gian" prefWidth="180"/>
                 <TableColumn fx:id="usernameColumn" text="Tên đăng nhập" sortable="false" prefWidth="180"/>
-                <TableColumn fx:id="nameColumn" text="Họ tên" sortable="false" prefWidth="240"/>
-                <TableColumn fx:id="ipColumn" text="Địa chỉ IP" sortable="false"/>
+                <TableColumn fx:id="nameColumn" text="Họ tên" sortable="false"/>
             </columns>
         </TableView>
     </StackPane>

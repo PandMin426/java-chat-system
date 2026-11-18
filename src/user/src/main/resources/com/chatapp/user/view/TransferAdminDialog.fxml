@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- D06 Chuyển quyền admin (D33): the last admin picks the new admin before leaving the group -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.chatapp.user.controller.TransferAdminController" styleClass="dialog-root" prefWidth="460">
+    <VBox styleClass="dialog-head">
+        <Label text="Chuyển quyền admin" styleClass="h2"/>
+        <Label text="Bạn là admin cuối cùng của nhóm “Đồ án Java”. Chọn người làm admin mới trước khi rời nhóm."
+               styleClass="small,muted" wrapText="true"/>
+    </VBox>
+    <VBox fx:id="memberBox" styleClass="dialog-body" spacing="8"/>
+    <HBox styleClass="dialog-footer">
+        <Button fx:id="cancelButton" text="Hủy" cancelButton="true" onAction="#onClose"/>
+        <Button fx:id="confirmButton" text="Chuyển quyền và rời nhóm" styleClass="danger,primary" defaultButton="true"
+                onAction="#onConfirm"/>
+    </HBox>
+</VBox>

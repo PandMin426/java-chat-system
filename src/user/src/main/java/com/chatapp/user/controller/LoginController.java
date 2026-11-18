@@ -2,6 +2,7 @@ package com.chatapp.user.controller;
 
 import com.chatapp.user.Navigator;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -12,6 +13,8 @@ public class LoginController {
     private TextField usernameField;
     @FXML
     private PasswordField passwordField;
+    @FXML
+    private Label errorLabel;
 
     @FXML
     private void onLogin() {

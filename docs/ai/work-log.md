@@ -248,6 +248,26 @@ Trang
 [08/11/2026 21:04] | COMMIT_REMINDER | ui-admin-screens | Reminded user: feat(ui-admin-screens): add JavaFX screens for the admin subsystem
 [08/11/2026 21:04] | SESSION_END | ui-admin-screens | V1 screens for both subsystems DONE
 
+### [17/11/2026]
+[17/11/2026 18:05] | SESSION_START | ui-align-decisions | Review V1 screens against business decisions D1-D43 (analysis doc section 3, column "De xuat mac dinh")
+[17/11/2026 18:05] | PLAN_CREATED | ui-align-decisions | Created docs/ai/ui-align-decisions/plan.md - 14 decisions need screen changes (D8, D9, D10, D18, D20, D24, D26, D29, D31, D33, D35, D37, D38, D39), the rest already match
+[17/11/2026 18:05] | QUESTION | ui-align-decisions | Asked user: meaning of D22 "chi tinh ban cap 2" (up to 2 hops vs only level-2); confirm assumptions 2-6 in plan section 4
+[17/11/2026 18:05] | NOTE | ui-align-decisions | schema.sql differs from decisions D31 (min members), D37/D38 (spam reason/status), D39 (app_open_events), D9 (no must-change-password flag); not changed, reported to user
+[17/11/2026 18:10] | PLAN_APPROVED | ui-align-decisions | User approved: keep D10 as is; D22 = option (b) level-2 friends only (S16 added to scope); assumptions 2-6 confirmed
+[17/11/2026 18:10] | PLAN_UPDATED | ui-align-decisions | Before coding: removed D10 rows, added D22/S16 rows, Status IN_PROGRESS
+[17/11/2026 18:10] | CODE_START | ui-align-decisions | Start Step 1 (auth screens)
+[17/11/2026 18:17] | FILE_MODIFIED | ui-align-decisions | User: RegisterView/ForgotPasswordView/MainView/ChatView/SearchMessagesView/GroupChatView/CreateGroupDialog/ReportSpamDialog.fxml; ForgotPassword/ChatViews/SearchMessages/GroupChat/MemberPicker/CreateGroup/AddMember/ReportSpam/Friends controllers; SampleData
+[17/11/2026 18:17] | FILE_CREATED | ui-align-decisions | src/user/.../view/TransferAdminDialog.fxml, src/user/.../controller/TransferAdminController.java (D33)
+[17/11/2026 18:17] | FILE_MODIFIED | ui-align-decisions | Admin: SpamView/FriendStatsView/ActiveUsersView.fxml; SpamController, FriendStatsController, SampleData (SpamStatus, reasons, level-2 friend counts)
+[17/11/2026 18:17] | BUG_FOUND | ui-align-decisions | admin NavigationTest.navigationReachesEveryScreen failed: asserted the old SpamView subtitle
+[17/11/2026 18:17] | BUG_FIXED | ui-align-decisions | Test now asserts the new subtitle text
+[17/11/2026 18:17] | PLAN_UPDATED | ui-align-decisions | Iteration 1: MainController unchanged (banner reuses onProfile); admin NavigationTest added to the file list
+[17/11/2026 18:17] | CODE_DONE | ui-align-decisions | All planned screen changes implemented
+[17/11/2026 18:17] | VERIFIED | ui-align-decisions | ./mvnw -B test: user 29/29, admin 23/23 PASS (3 new user tests for D31/D33/D37); screenshots regenerated and reviewed (S03, S05, S08, S09, D01, D02, D06, S14, S16): criteria 1-9 PASS
+[17/11/2026 18:17] | DOC_CREATED | ui-align-decisions | Created docs/ai/ui-align-decisions/ui-align-decisions.md
+[17/11/2026 18:17] | COMMIT_REMINDER | ui-align-decisions | Reminded user: feat(ui-align-decisions): align V1 screens with business decisions D1-D43
+[17/11/2026 18:17] | SESSION_END | ui-align-decisions | Screens aligned with D1-D43 (D10 kept, D22 = level-2 only); DB conflicts reported
+
 ```
 
 
@@ -287,3 +307,4 @@ Trang
 | core-database | ⬜ | ✅ | 🔄 | ⬜ | ⬜ |
 | social-private-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
+| ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
