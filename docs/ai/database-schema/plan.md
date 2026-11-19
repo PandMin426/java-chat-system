@@ -10,13 +10,13 @@
 | Design decisions | Q1=B, Q2=A, Q3=B (`membership_periods`), Q4=A; confirmed by Minh on 19/11/2026 |
 | Detailed decisions | R1=B, R2=A; explicitly confirmed by Minh on 19/11/2026 |
 | Detailed design approved by user | YES (19/11/2026), explicit approval received before schema implementation |
-| Session scope | Implement seed.sql, queries.sql, verify.sql and negative-cases.md; synchronize docs/log; execute only in a newly created, identified test DB; no application changes, DB/schema deletion or Git commit/push/merge/reset |
+| Session scope | Final review of approved decisions, actual SQL/tests, Git changes and recorded evidence; edit only this plan, database-schema.md, design-baseline.md and work-log.md/tracker; SQL/application/README/use-case/UI read-only; no unnecessary rerun or commit/push/merge |
 | Current review gate | No unanswered named design choice; major DDL changes still require review. A DB constraints / B query results / C SQL contract simulations / D real integration are reported separately |
 | Time zone | `Asia/Ho_Chi_Minh`; date obtained from the live clock, UTC+07:00 |
 
 ## 1. SUMMARY
 
-Redesign PostgreSQL DDL for the confirmed requirements with declarative constraints and a shared conversation model. Minh approved the plan and detailed design, including Q1–Q4=B/A/B/A and R1=B/R2=A. Iteration 5 implements matching fixtures, nine parameterized queries and isolated tests. Schema→seed→queries→verification ran on the explicitly identified new test database only: A=48 PASS, B=40 PASS, C=11 SQL simulations PASS; real application/E2EE integration remains NOT RUN. No DDL design change or application edit was needed.
+Redesign PostgreSQL DDL for the confirmed requirements with declarative constraints and a shared conversation model. Minh approved the plan and detailed design, including Q1–Q4=B/A/B/A and R1=B/R2=A. Iteration 5 delivered matching fixtures, nine parameterized queries and isolated tests. Schema→seed→queries→verification ran on the explicitly identified new test database only: A=48 PASS, B=40 PASS, C=11 SQL simulations PASS. Iteration 6 reviews that unchanged implementation and its evidence, completes decision traceability/handoff and retains IN_PROGRESS because required database acceptance cases remain NOT RUN. Real application/E2EE integration is downstream work; no new design answer is inferred.
 
 ### Repository and source review
 
@@ -59,7 +59,7 @@ The table below preserves the initial source review of the old files. schema.sql
 
 ### Output / Expected result
 
-- This session: approved schema with factual comment updates only, matching seed/queries/verification/negative-case documentation and synchronized baseline/feature/plan/log; record real A/B/C evidence separately from NOT RUN integration/concurrency.
+- This session: four reviewed documents with decision-to-implementation traceability, exact prior A/B/C evidence, open database acceptance gates and a README/use-case/UI handoff list. SQL/test source stays unchanged and passing tests are not repeated without a relevant change.
 - Result: coherent fresh-database SQL sources and truthful IN_PROGRESS documentation. No seed password/envelope is a real credential or cryptographic artifact.
 - An explicit allocation of every rule to declarative DB enforcement, application transaction, or server/client integration, with reproducible evidence and remaining integration checks reported truthfully.
 
@@ -75,7 +75,7 @@ The table below preserves the initial source review of the old files. schema.sql
 
 ### Out of scope
 
-- This session: business-database execution, deleting/resetting databases or schemas, installing/configuring tools, unapproved major DDL changes, application edits and files outside section 6. A new isolated test database is explicitly authorized.
+- This final review: SQL/test changes, database execution, business data, deleting/resetting databases or schemas, installing/configuring tools, application/README/use-case/UI edits and paths outside the four editable documents in section 6. Any discovered important design issue must be proposed before dependent changes.
 - Later implementation: migration/backfill of old data, compatibility views for old table names, Java/FXML/CSS changes, JDBC or socket implementation, SMTP/LLM integration, E2EE algorithms or key generation/distribution implementation.
 - Normal unencrypted groups, attachments, server plaintext search of group ciphertext, key transfer, backup or recovery secrets. Client group search remains an unimplemented integration item.
 - Persistent online status, a speculative session database, business triggers, stored procedures, custom functions, fixed preservation of the old 16-table count, and changes to other owners' work.
@@ -99,7 +99,7 @@ The table below preserves the initial source review of the old files. schema.sql
 | C10 | REQUIREMENT | New members receive no pre-join keys. Each account has at most one currently authorized E2EE device; switching devices ends the old session, revokes future key receipt by the old device, and gives the new device no earlier keys (O4). Re-login on the same device preserves locally retained keys. No transfer, backup or recovery secrets (Q8=A). | CONFIRMED BY MINH |
 | C11 | REQUIREMENT | Text only. PRIVATE plaintext can be searched case-insensitively after visibility filtering; group ciphertext cannot be searched for plaintext in SQL. Group search at the client is deferred. D27 returns message/conversation IDs for jumping; D28 pages 50 messages by message ID. | CONFIRMED BY MINH / WORD |
 | C12 | REQUIREMENT | Spam requires an earlier PRIVATE message from the reported user to the reporter. Optional reason; at most one PENDING report per directed pair. D38 says locking moves all reports about that user to RESOLVED; ignoring sets DISMISSED. Do not silently narrow the Word's “all reports” to pending reports only; administration audit preserves the processing trail. | CONFIRMED BY MINH / WORD |
-| C13 | REQUIREMENT | D9 password reset generates a random 10-character password, stores its application hash, sends SMTP and reminds the user after login; DB stores the hash and a proposed `must_change_password` reminder flag, not plaintext. D10 admin enters a replacement password. No mail or Java implementation here. | RETAINED WORD RULE; COLUMN DESIGN PROPOSED |
+| C13 | REQUIREMENT | D9 password reset generates a random 10-character password, stores its application hash, sends SMTP and reminds the user after login; DB stores the hash and implemented `must_change_password` reminder flag, not plaintext. D10 admin enters a replacement password. No mail or Java implementation here. | RETAINED WORD RULE; APPROVED STORAGE IMPLEMENTED |
 | C14 | SCOPE | Use a fresh test database, retain no business triggers/custom functions, and postpone all implementation until this plan is approved. | CONFIRMED BY MINH |
 
 Q1–Q4 below are RESOLVED by Minh's explicit answers on 19/11/2026; original options/recommendations remain as history. Minh subsequently approved the plan and explicitly selected R1=B/R2=A on the same date. Their resolutions derive from those actual answers, not an automatic consequence of plan approval.
@@ -166,6 +166,8 @@ Original recommendation: **A**, keeping intervals in the member table. **Minh se
 Original recommendation: **A** for exact “all existing messages” behavior. **Minh selected A on 19/11/2026. Status: RESOLVED.** Store `cleared_at` and `cleared_through_message_id` on the stable `conversation_members` row. Scope the watermark by conversation with a composite FK; NULL means no prior messages. It complements `cleared_at` and does not replace it. Serialize sends/clear under the same conversation lock before message-ID allocation; read pointers never move backwards, and clear/hide never modifies another member's cursor or visibility.
 
 ## 5. APPROACH
+
+Steps 1–6 describe the approved overall implementation workflow and iteration 5 delivery. The active iteration 6 is documentation-only; its final-review checks and remaining completion gate are in section 11. It does not authorize a new database run or SQL edit.
 
 ### Detailed design questions for this review
 
@@ -252,19 +254,19 @@ DB constraints alone cannot enforce current membership, exact member count, bloc
 
 ## 6. FILES TO CREATE / MODIFY
 
-This table is the change boundary. Iteration 5 activates fixture/query/test work and adds the two explicitly requested paths before editing them. Schema DDL remains unchanged unless a fix within the approved model is necessary; a major design change must be proposed and approved first. No database/schema deletion or application edits.
+This table describes delivered files and the current change boundary. Iteration 5 added the requested query/negative-case paths before implementation. Iteration 6 edits only the four documentation paths marked MODIFY; all SQL/tests and external handoff sources are read-only. No DDL, database, application or Git mutation is required for this review.
 
 | Action | File path | Timing and purpose |
 |---|---|---|
-| MODIFY | `docs/ai/database-schema/plan.md` | THIS SESSION: preserve approvals/iterations 1–4; iteration 5, exact test target and truthful A/B/C/D results |
+| MODIFY | `docs/ai/database-schema/plan.md` | THIS SESSION: preserve approvals/iterations 1–5; iteration 6 final review, current scope/evidence/gates and exact requested commit message |
 | MODIFY | `docs/ai/work-log.md` | THIS SESSION AND LATER: append action/session entries; add/update only the matching progress row |
-| MODIFY | `script/schema.sql` | THIS SESSION: factual header comments only; preserve approved DDL and run once on the new empty test DB |
-| MODIFY | `script/seed.sql` | THIS SESSION: deterministic, DB-only fixtures matching all approved decisions and aligned identity sequences |
-| CREATE | `script/queries.sql` | THIS SESSION: parameterized session PREPARE statements, one canonical visibility path for history/search/pagination/around, documented expected fixture results |
-| MODIFY | `script/tests/verify.sql` | THIS SESSION: A constraint cases isolated by anonymous-block subtransactions, B executable prepared-query assertions, C rolled-back SQL contract simulations; no helper function/trigger |
-| CREATE | `script/tests/negative-cases.md` | THIS SESSION: A/B/C/D classification, case IDs/expected SQLSTATE/constraints or results, transaction boundaries, test-target identity and real outcomes |
-| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: preserve approved model/dictionary, synchronize fixture/query/catalog evidence and application-only limitations |
-| MODIFY | `docs/ai/database-schema/database-schema.md` | THIS SESSION: update existing seven-section feature document with actual files, test results, reproducible commands and remaining NOT RUN work |
+| READ ONLY | `script/schema.sql` | Approved 15-table DDL, previously executed in the identified fresh test DB |
+| READ ONLY | `script/seed.sql` | Deterministic DB-only fixtures and aligned identity sequences, delivered in iteration 5 |
+| READ ONLY | `script/queries.sql` | Nine parameterized session PREPAREs; canonical history/search/page/around visibility, delivered in iteration 5 |
+| READ ONLY | `script/tests/verify.sql` | A/B/C isolated SQL checks and D NOT RUN reporting, delivered/executed in iteration 5 |
+| READ ONLY | `script/tests/negative-cases.md` | Exact case expectations, target and prior results, delivered in iteration 5 |
+| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: preserve model/dictionary, add final decision coverage and evidence/gate distinctions |
+| MODIFY | `docs/ai/database-schema/database-schema.md` | THIS SESSION: factual delivered files/schema/run/test/limits plus read-only README/use-case/UI handoff |
 
 Read-only sources, including the Word document, templates, UI plans/docs, requirements specification and project brief, remain unchanged.
 
@@ -415,13 +417,38 @@ Actual JDBC writes, UserApp session replacement, immediate kick acknowledgement/
 
 **Impact:** Docker/psql 17.11 are available in existing chat-postgres (published host 127.0.0.1, port 5432). Role chat_user has create-DB permission, confirmed through maintenance postgres only. Create a fresh uniquely named jcs_schema_test_* database and record exact name/owner/server/version before schema→seed→queries/verification. Do not use chat_system, install tools, delete a DB/schema or change an important DDL decision without approval. Update baseline/plan/feature/log from actual results. schema.sql may receive truthful header comments; preserve approved DDL unless a necessary scoped fix is found.
 
+## [ITERATION 6 - 19/11]
+
+**Reason for change:** Minh requests a final evidence-based review and completion of four documents, with no unnecessary repetition of unchanged passing SQL tests and no edits to external README/use-case/UI handoff files.
+
+**Old approach:** Iteration 5 implemented/executed fixtures/queries/tests; documents described that delivery session and recorded partial V criteria, without a consolidated final decision/handoff review.
+
+**New approach:** Review the actual Word body, explicit overriding answers, source/constraints/FKs, fixture/query/assertion code and Git diff of the implementation. Map every confirmed choice to DB storage or an application obligation. Trace A48/B40/C11 to the new-schema session rather than old-schema/UI results. Preserve IN_PROGRESS because V2/V4–V9 have unexecuted in-scope cases; classify real D integration as downstream NOT RUN. Update current documentation and provide a concrete external handoff list, preserving iterations 1–5 and all approvals/history.
+
+**Impact:** Only plan.md, database-schema.md, design-baseline.md and work-log.md/tracker are editable. Current fix/db HEAD is 2971bb46f93ba7fbc51b9cedd8cf56f0ab2b7254; tracked files were clean and the existing untracked Word file remains protected. No SQL/test/application changes, DB connection or test rerun. No new DDL-affecting decision was found. The requested future commit message is feat(database-schema): redesign PostgreSQL schema for approved decisions; no automatic commit/push/merge.
+
 ## 11. FINAL RESULT
 
 | Field | Value |
 |---|---|
-| Completion date | Not completed; SQL sources/fixtures/queries and executable suite delivered, broader acceptance in progress |
-| Commit message to use after implementation | `feat(database-schema): align PostgreSQL schema with confirmed chat requirements` |
+| Completion date | Not completed; final documentation review recorded 19/11/2026, required database acceptance remains incomplete |
+| Commit message requested by Minh | `feat(database-schema): redesign PostgreSQL schema for approved decisions` |
 | Current result | Fresh test DB executed schema/seed/queries/verify: A48/B40/C11 SQL simulations PASS; D integration NOT RUN. Catalog15/109/15/6/33/46/57 total indexes; DDL unchanged except factual comments; rollback preserves all rows/sequences |
-| Feature description | Existing database-schema.md synchronized with actual target/results; IN_PROGRESS, concurrency/application/E2EE limitations explicit |
+| Feature description | Existing database-schema.md describes delivered SQL, target/results, DB guarantees versus writer obligations, incomplete acceptance and external README/use-case/UI handoff |
 
 Implementation checkpoint: decisions/approval remain unchanged; iteration 5's four requested artifacts and isolated A/B/C SQL execution are delivered. Remaining V cases, two-session committed races and D integration require further verification; no full feature completion, real login or working E2EE claim. No commit/push/merge/reset performed.
+
+### Final review outcome and completion gate (iteration 6)
+
+| Review | Evidence and outcome |
+|---|---|
+| Scope/other work | git diff aaaffba..2971bb4 covers exactly the nine approved implementation/doc paths; current tracked worktree initially clean. This review changes only four docs. Word/SQL/test/application/README/use-case/UI sources remain unchanged |
+| Decision coverage | Baseline section 13 maps C1–C14, Q1–Q4, R1–R2, O1–O4, Q8-A and S1 to actual objects/consumer contracts; no unresolved named DDL choice or unapproved important redesign found |
+| Declarative boundary | 15 tables/109 columns; source has no CREATE FUNCTION/PROCEDURE/TRIGGER/EXTENSION or cross-table CHECK. Scoped FKs prove correspondence, not current permission or cryptographic validity |
+| Evidence freshness | New-model execution logged 19/11/2026 12:25 and 12:36, exact target and A/B/C case IDs preserved; no 08/11 old-model result or UI PASS reused. No SQL changed during this review, so no runtime rerun |
+| Documentation | Factual seven-section feature doc; no unfilled placeholder/template directions; concrete handoff and remaining checks documented |
+| Status | IN_PROGRESS; Plan/Code/Doc complete, Verified in progress, Committed unconfirmed by user. Visible Git commits do not substitute for the tracker rule requiring user confirmation |
+
+**Required in-scope work before DONE:** finish V2/V4 input/pair boundary cases; V5–V8 committed two-session lock/recheck races; V6 empty-clear/monotonic/tied-time writer cases; V7 full group add/remove/closure contracts; V8 complete eligible activation batch/no-back-grant/send contracts; V9 group-only spam rejection/ignore transition contracts. Exercise these only in an explicitly identified isolated test environment, retain exact outcomes, and rerun affected checks after fixes. Do not convert PARTIAL/NOT RUN to PASS through this documentation review or weaken criteria to claim completion.
+
+**Downstream handoff:** real BCrypt/JDBC/TCP sessions/control acknowledgements/device proof/client crypto remain D NOT RUN and outside the SQL implementation. Their future completion is separate from finishing the in-scope database acceptance above. Client group search is expressly deferred. See feature section 7 for exact README/use-case/UI locations and server/AdminApp/UserApp ownership. No additional design selection is requested by this review.
