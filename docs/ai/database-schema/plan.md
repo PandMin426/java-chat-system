@@ -8,13 +8,14 @@
 | Status | `IN_PROGRESS` |
 | Plan approved by user | YES (19/11/2026) |
 | Design decisions | Q1=B, Q2=A, Q3=B (`membership_periods`), Q4=A; confirmed by Minh on 19/11/2026 |
+| Detailed decisions | R1=B, R2=A; explicitly confirmed by Minh on 19/11/2026 |
 | Session scope | Detailed design review: baseline, plan and work-log only; SQL/tests/application changes are not authorized in this session |
-| Current review gate | Detailed design R1/R2 remain OPEN; obtain Minh's selection and baseline approval before SQL |
+| Current review gate | Q1–Q4 and R1/R2 are RESOLVED; this turn records choices only and does not start the SQL phase |
 | Time zone | `Asia/Ho_Chi_Minh`; date obtained from the live clock, UTC+07:00 |
 
 ## 1. SUMMARY
 
-Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, replacing the existing trigger-based, separate private/group model with declarative constraints and a shared conversation model. Preserve account identities and history, support UserApp-only activity statistics, and store E2EE metadata without implementing cryptography. Minh approved this plan on 19/11/2026 after resolving Q1–Q4 as B/A/B/A. The current authorized phase is detailed design in `docs/database/design-baseline.md`; its new R1/R2 questions and baseline review must be settled before SQL is written.
+Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, replacing the existing trigger-based, separate private/group model with declarative constraints and a shared conversation model. Preserve account identities and history, support UserApp-only activity statistics, and store E2EE metadata without implementing cryptography. Minh approved this plan on 19/11/2026, confirmed Q1–Q4 as B/A/B/A, and subsequently selected R1=B and R2=A. This turn records those choices in the detailed design, with SQL/tests/application unchanged.
 
 ### Repository and source review
 
@@ -51,7 +52,7 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 
 - Confirmed decisions listed in section 4, the Word D1–D43 decisions where not overridden, and the reviewed repository sources.
 - A fresh, explicitly named disposable PostgreSQL test database; no existing application data is to be migrated.
-- Minh's plan approval, explicitly received on 19/11/2026, and confirmed Q1–Q4 answers B/A/B/A. Detailed E2EE design selections R1/R2 remain OPEN; approval of the plan does not authorize this session to write SQL.
+- Minh's plan approval and Q1–Q4 answers B/A/B/A, plus explicit R1=B/R2=A selections on 19/11/2026. Those decisions are resolved; this decision-recording session does not write SQL.
 
 ### Output / Expected result
 
@@ -98,7 +99,7 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 | C13 | REQUIREMENT | D9 password reset generates a random 10-character password, stores its application hash, sends SMTP and reminds the user after login; DB stores the hash and a proposed `must_change_password` reminder flag, not plaintext. D10 admin enters a replacement password. No mail or Java implementation here. | RETAINED WORD RULE; COLUMN DESIGN PROPOSED |
 | C14 | SCOPE | Use a fresh test database, retain no business triggers/custom functions, and postpone all implementation until this plan is approved. | CONFIRMED BY MINH |
 
-Q1–Q4 below are RESOLVED by Minh's explicit answers on 19/11/2026; original options/recommendations remain as history. Minh subsequently explicitly approved the plan on the same date. Detailed design questions R1/R2 below are separate, newly identified items; neither has been answered, and neither is auto-resolved by the earlier approval.
+Q1–Q4 below are RESOLVED by Minh's explicit answers on 19/11/2026; original options/recommendations remain as history. Minh subsequently approved the plan and explicitly selected R1=B/R2=A on the same date. Their resolutions derive from those actual answers, not an automatic consequence of plan approval.
 
 ### Q1 — Last admin removal when no successor is eligible
 
@@ -150,19 +151,19 @@ Original recommendation: **A** for exact “all existing messages” behavior. *
 
 | ID | Question and options | Recommendation | Status |
 |---|---|---|---|
-| R1 | Epoch key readiness: A prepares client-generated wrapped keys before atomically committing the membership/device cutover (fewer states, but can delay the action when no client is ready); B commits the cutover with a PENDING epoch and blocks new group sends until a complete eligible-device grant batch activates it (extra status/activation fields, separates action from client availability). | B; dictionary shows this working proposal explicitly, not an approved choice | OPEN |
-| R2 | E2EE storage format: A versioned opaque bytea envelopes for public keys, ciphertext and wrapped keys (algorithm-independent DB, clients validate codec); B separate algorithm/nonce/tag/ciphertext columns (more SQL-visible structure, must first settle the crypto format and lengths). | A; no cryptographic algorithm is implemented or approved by this storage proposal | OPEN |
+| R1 | Epoch key readiness: A prepares client-generated wrapped keys before atomically committing the membership/device cutover; B commits the cutover with a PENDING epoch and blocks new sends until a complete eligible-device grant batch activates it. Original options retained for history. | B recommended and explicitly selected by Minh on 19/11/2026; retain epoch_status/activated_at and PENDING default | RESOLVED |
+| R2 | E2EE storage format: A versioned opaque bytea envelopes for public keys/ciphertext/wrapped keys; B separate algorithm/nonce/tag/ciphertext columns. Original options retained for history. | A recommended and explicitly selected by Minh on 19/11/2026; codec algorithms/interoperability remain integration work | RESOLVED |
 
-Full options, impacts and the provisional dictionary are in baseline section 11. Resolve R1/R2 and obtain detailed-baseline approval before Step 4; do not ask Q1–Q4 again.
+Full options, confirmed choices and the dictionary are in baseline section 11. No Q1–Q4 or R1/R2 question remains unanswered; do not ask those decisions again. SQL implementation remains a later phase outside this decision-recording turn.
 
 ### Step 1: Review and obtain approval
 
-- **Action:** Preserve the original review, Q1–Q4 resolutions and iteration 1; record Minh's actual plan approval as YES (19/11/2026), set IN_PROGRESS and append PLAN_APPROVED. Prepare detailed baseline review as iteration 2; leave new R1/R2 OPEN.
+- **Action:** Preserve the original review and iterations 1–2; keep actual plan approval YES (19/11/2026) / IN_PROGRESS. Iteration 3 records Minh's explicit R1=B/R2=A responses as RESOLVED without changing the dictionary or starting SQL.
 - **Verify:** This session changes only baseline/plan/work-log; prior log entries, Word source, SQL and tests remain intact. Approval history reflects the explicit user message; the SQL phase stays gated on the detailed review.
 
 ### Step 2: Finalize declarative model and responsibility matrix
 
-- **Action:** Document the following 15-table working model and FK creation order in the baseline, with ERD, every column/type/null/default, keys/checks/indexes, FK actions and DB/application matrix. The stable member identity is the composite PK `(conversation_id,user_id)`, avoiding an unnecessary surrogate; the `membership_periods.period_id` identity distinguishes join intervals. The 15-table count is a consequence of this proposal, not a legacy constraint. E2EE state/envelope fields depend on R1/R2.
+- **Action:** Document the following 15-table model and FK creation order in the baseline, with ERD, every column/type/null/default, keys/checks/indexes, FK actions and DB/application matrix. Stable member PK is `(conversation_id,user_id)`; `membership_periods.period_id` distinguishes join intervals. The count follows this model, not a legacy constraint. R1=B/R2=A now confirm the documented epoch state and opaque-envelope choices.
 
 | Candidate table | Purpose and principal declarative guarantees |
 |---|---|
@@ -175,11 +176,11 @@ Full options, impacts and the provisional dictionary are in baseline section 11.
 | `conversations` | Identity and PRIVATE/GROUP discriminator, creation/closure metadata, group name/creator where appropriate; S1's `user_low_id/user_high_id` required and ordered only for PRIVATE, NULL for GROUP; PRIVATE pair uniqueness; local shape CHECKs |
 | `conversation_members` | One stable member identity per conversation/user, enforced by UNIQUE; personal `last_read_message_id`, `cleared_at` and `cleared_through_message_id`; same-conversation cursor/watermark FKs; retained across departures/rejoins |
 | `membership_periods` | Identity for each participation interval, linked to stable member and its conversation/user; joined/left times and period group role; one open period per member via partial unique index; PRIVATE role MEMBER; group role independent of system role |
-| `messages` | Retained ID, sender/user/period, time and discriminator; exclusive PRIVATE text or GROUP ciphertext with epoch/device/version; same-conversation/owner/period FKs plus exact sender grant-period FK; R2 envelope format remains OPEN |
+| `messages` | Retained ID, sender/user/period, time and discriminator; exclusive PRIVATE text or GROUP ciphertext with epoch/device/version; same-conversation/owner/period FKs plus exact sender grant-period FK; confirmed R2=A versioned opaque envelope |
 | `message_hidden` | Per-user hide identity linked to a message and stable member/owner in the same conversation; unique message/user; persists across rejoining without deleting shared messages |
 | `spam_reports` | Reporter/target FKs, optional reason, status, report time and handler/resolution metadata; no self-report; partial unique directed pair WHERE status=PENDING; local status/time consistency |
 | `e2ee_devices` | User/device identity, public key and authorization/revocation times; composite owner key; partial unique user WHERE revoked_at IS NULL |
-| `group_key_epochs` | GROUP-scoped epoch, start/end times; partial unique conversation WHERE ends_at IS NULL; proposed R1=B adds PENDING/ACTIVE/CLOSED and activated_at, still OPEN |
+| `group_key_epochs` | GROUP-scoped epoch, start/end times; partial unique conversation WHERE ends_at IS NULL; confirmed R1=B uses PENDING/ACTIVE/CLOSED and activated_at |
 | `group_key_grants` | Epoch/device grant with conversation, membership period, stable member and shared user ID; composite FKs enforce the same GROUP, participation period and device owner; nonempty wrapped key; one grant per epoch/device |
 
 Use a discriminator in composite keys/FKs where needed to bind GROUP-only metadata or PRIVATE/GROUP message shape without querying another table in a CHECK. Create stable members, then `membership_periods`, then dependent messages/grants; add cyclic member read-pointer and clear-watermark FKs after `messages` with `ALTER TABLE`. Creation ordering must not weaken same-conversation validation. A historical period FK proves identity/scope, not current authorization. Q2=A excludes `admin_control_requests` from the implementation inventory; the rejected option remains documented in Q2 only.
@@ -209,7 +210,7 @@ DB constraints alone cannot enforce current membership, exact member count, bloc
 
 ### Step 4: Replace schema and fixtures on a fresh test database
 
-- **Action:** Replace the three SQL files only after Minh selects R1/R2 and approves the detailed baseline in a later session. Remove old triggers/helpers, split-table objects and app-open events from fresh DDL. Use declarative objects, then seed coherent fixtures for roles, snapshots, retained deletion, social retries, two PRIVATE participants, three-person E2EE groups, membership transitions, device changes and all report states. Reuse no real credentials or keys; crypto fixture bytes are opaque test values.
+- **Action:** In the later SQL implementation phase, use confirmed R1=B/R2=A and the detailed baseline; this decision-recording turn changes no SQL. Remove old triggers/helpers, split-table objects and app-open events from fresh DDL. Use declarative objects, then seed coherent fixtures for roles, snapshots, retained deletion, social retries, two PRIVATE participants, three-person E2EE groups, membership transitions, device changes and all report states. Reuse no real credentials or keys; crypto fixture bytes are opaque test values.
 - **Verify:** `schema.sql`, `seed.sql` and revised `verify.sql` execute in order with `ON_ERROR_STOP=1` on an empty disposable DB. Inspect catalogs for the approved inventory, constraints/indexes, zero non-internal triggers and zero custom schema functions/procedures. Tests must not call removed functions or assert old semantics.
 
 ### Step 5: Verify reports and visibility
@@ -240,7 +241,7 @@ This table is the change boundary. This session authorizes only baseline, plan a
 | MODIFY | `script/schema.sql` | AFTER DETAILED DESIGN APPROVAL: fresh declarative shared schema; not this session |
 | MODIFY | `script/seed.sql` | AFTER DETAILED DESIGN APPROVAL: fixtures matching the model; not this session |
 | MODIFY | `script/tests/verify.sql` | AFTER DETAILED DESIGN APPROVAL: declarative tests, transaction demonstrations and query assertions; anonymous DO assertions only for tests, no custom assertion function; not this session |
-| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: replace obsolete design descriptions with IN_REVIEW detailed ERD/dictionary/constraints/FK actions/creation order/responsibility matrix and OPEN R1/R2; later append real implementation evidence |
+| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: record explicit R1=B/R2=A resolutions, retain options/history and existing dictionary/ERD; later append real implementation evidence |
 | CREATE | `docs/ai/database-schema/database-schema.md` | AFTER IMPLEMENTATION: factual feature documentation using the feature template; not created this session |
 
 Read-only sources, including the Word document, templates, UI plans/docs, requirements specification and project brief, remain unchanged.
@@ -300,7 +301,7 @@ P1–P4 below retain the earlier planning-session results. The approval-NO/two-f
 
 | ID | Current detailed-design criterion | How to verify | Result |
 |---|---|---|---|
-| D1 | Actual approval recorded and unresolved choices remain unresolved | IN_PROGRESS / YES (19/11/2026), Q1–Q4 RESOLVED, R1/R2 OPEN; approval log corresponds to the real user message | PASS |
+| D1 | Actual approval and choices recorded without inferred answers | IN_PROGRESS / YES (19/11/2026); Q1–Q4 and R1=B/R2=A RESOLVED by explicit user messages; no further named decision auto-resolved | PASS |
 | D2 | Detailed baseline is internally consistent and explicitly IN_REVIEW | Static review: 15 dictionaries/109 columns, 33 type-matched FKs and ERD edges, six UNIQUE targets, 36 index definitions, local null rules/actions/creation order; Mermaid visual rendering NOT RUN | PASS |
 | D3 | Changes remain within the three authorized documents | Git diff/status and unchanged SQL/tests/Word hashes; no application changes or implementation feature document | PASS |
 | D4 | Prior logs and iteration history survive; progress is truthful | Pre-session log/tracker preserved except session append and added phase note; iteration 1 intact, truthful tracker and session boundaries | PASS |
@@ -358,13 +359,23 @@ Actual JDBC writes, UserApp session replacement, immediate kick acknowledgement/
 
 **Impact:** Same file boundary: baseline, plan and work-log now; SQL/seed/tests/application untouched. Added design checks D1–D4; implementation checks V1–V11 remain NOT RUN. No new approval is inferred for R1/R2, no existing Q1–Q4 answer is reopened, and iteration 1 remains intact. No implementation feature document is created before implementation.
 
+## [ITERATION 3 - 19/11]
+
+**Reason for change:** Minh explicitly replied “oke R1 B, R2 A” on 19/11/2026. These actual answers resolve the two detailed-design questions.
+
+**Old approach:** Iteration 2 left R1/R2 OPEN and labeled PENDING epochs/versioned opaque envelopes as recommendations only.
+
+**New approach:** Record R1=B and R2=A as RESOLVED. Keep PENDING/ACTIVE/CLOSED epoch status, activated_at and send blocking until batch activation; use versioned opaque bytea public-key/ciphertext/wrapped-key envelopes. Preserve original alternatives and prior iteration history. Actual crypto codec/algorithms remain an integration dependency, not an unanswered storage-choice question.
+
+**Impact:** Plan/baseline/work-log updates only; no change to the 15-table dictionary, keys or indexes and no SQL/test/application edits. All named Q1–Q4/R1–R2 decisions are answered; V1–V11 remain NOT RUN. Plan stays IN_PROGRESS / YES (19/11/2026); no additional approval question is introduced by this record.
+
 ## 11. FINAL RESULT
 
 | Field | Value |
 |---|---|
-| Completion date | Not completed; plan approved, detailed baseline IN_REVIEW and R1/R2 OPEN |
+| Completion date | Not completed; plan approved and all named design choices resolved; SQL phase not started |
 | Commit message to use after implementation | `feat(database-schema): align PostgreSQL schema with confirmed chat requirements` |
-| Current result | Plan approved YES (19/11/2026), IN_PROGRESS; detailed design prepared for review; SQL unchanged and implementation checks NOT RUN |
+| Current result | IN_PROGRESS / YES (19/11/2026); R1=B/R2=A recorded explicitly; SQL unchanged and implementation checks NOT RUN |
 | Feature description | Deferred until implementation; `database-schema.md` has not been created |
 
-Review checkpoint: the plan approval and Q1=B/Q2=A/Q3=B/Q4=A are confirmed. Minh must now select detailed-design R1/R2 and approve the baseline before SQL is written. Plan stays IN_PROGRESS / YES; this narrower review gate does not revoke the actual plan approval.
+Decision checkpoint: the approved plan, Q1=B/Q2=A/Q3=B/Q4=A and R1=B/R2=A are confirmed. There are no unanswered named design questions. This turn records decisions only; subsequent SQL work follows the agreed design and existing implementation constraints.

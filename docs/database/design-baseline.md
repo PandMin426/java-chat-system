@@ -3,12 +3,12 @@
 | Field | Value |
 |---|---|
 | Feature / owner | database-schema / Minh |
-| Design status | IN_REVIEW — proposed model, not implemented DDL |
+| Design status | IN_REVIEW — all named design choices resolved; SQL not implemented |
 | Design date | 19/11/2026, live Asia/Ho_Chi_Minh date |
 | Plan approval | YES (19/11/2026); [plan](../ai/database-schema/plan.md) |
 | Current session | Baseline, plan and work-log only; no SQL/tests/application changes |
 | Target | PostgreSQL 17.11 from the existing project target; runtime/version NOT RUN |
-| Detailed choices | R1 epoch readiness and R2 envelope representation remain OPEN |
+| Detailed choices | R1=B and R2=A explicitly confirmed by Minh on 19/11/2026; both RESOLVED |
 
 ## 1. Basis and scope
 
@@ -18,7 +18,7 @@ Minh's explicit decisions override conflicting Word and older documents. The Wor
 
 Confirmed choices are not reopened: S1 stores the ordered PRIVATE pair in conversations; Q1=B allows exceptional group closure when no eligible successor exists, preserving data/history; Q2=A uses administration audit/manual control retry, without an outbox; Q3=B uses a stable conversation_members row and membership_periods; Q4=A keeps clear time plus an ID watermark. Q8-A/O4 allow at most one currently authorized E2EE device per account, no historical key grants for newly authorized devices, no transfer/backup/recovery secrets. Same still-authorized installation re-login preserves local keys. Every group is E2EE at creation with at least three people, including the creator.
 
-The concrete working proposal below assumes **R1=B** (PENDING/ACTIVE/CLOSED epochs) and **R2=A** (versioned opaque envelopes) for reviewability. These are recommendations only. Section 11 identifies alternatives and affected columns; neither question is answered by plan approval. All other concrete dictionary/index choices are also proposed for baseline review, not implemented claims.
+Minh explicitly selected **R1=B** (PENDING/ACTIVE/CLOSED epochs) and **R2=A** (versioned opaque envelopes) on 19/11/2026. These are confirmed storage/lifecycle decisions; section 11 retains the original alternatives and records their resolution. The dictionary remains a design specification, not a claim of implemented DDL or working cryptography.
 
 Use only tables, identity, PK, FK, NOT NULL, UNIQUE, CHECK, DEFAULT and justified indexes. No business trigger, procedure, custom function, cross-table CHECK, exclusion constraint or extension. Built-in expressions such as lower, btrim, LEAST and GREATEST are allowed.
 
@@ -240,7 +240,7 @@ erDiagram
 
 ## 5. Data dictionary and local constraints
 
-Every proposed column appears below. R1/R2 annotations identify provisional design choices; all types/defaults remain proposals until baseline approval.
+Every design column appears below. R1/R2 annotations identify the explicitly confirmed choices, not open alternatives. Column types/defaults describe the design; SQL execution remains NOT RUN.
 
 ### 5.1 users
 
@@ -628,13 +628,13 @@ Normally show eligible remaining members and require explicit successor selectio
 
 ### 9.5 E2EE cutover and device boundaries
 
-Under working R1=B, membership/device change closes the old epoch and creates one PENDING epoch at the cutover before another send. Commit promptly; no old authorization is kept active while waiting for a client. PENDING accepts no messages. A currently eligible authorized client prepares a fresh key and complete opaque wrapped-key batch; server holds no plaintext group key. Re-lock/recheck group, epoch, periods and device generations, then store a consistent batch and activate in one transaction; competing batches cannot mix material. Authorized recipients may be offline if their public keys are already available. A member without an authorized device receives no grant; later device authorization rotates the current open group's epoch rather than providing earlier keys. If no client can coordinate, the group remains visibly unable to send; no plaintext fallback.
+Under confirmed R1=B, membership/device change closes the old epoch and creates one PENDING epoch at the cutover before another send. Commit promptly; no old authorization is kept active while waiting for a client. PENDING accepts no messages. A currently eligible authorized client prepares a fresh key and complete opaque wrapped-key batch; server holds no plaintext group key. Re-lock/recheck group, epoch, periods and device generations, then store a consistent batch and activate in one transaction; competing batches cannot mix material. Authorized recipients may be offline if their public keys are already available. A member without an authorized device receives no grant; later device authorization rotates the current open group's epoch rather than providing earlier keys. If no client can coordinate, the group remains visibly unable to send; no plaintext fallback.
 
 Initial issuance occurs in the PENDING batch. Later eligibility changes create a new epoch; fetching an existing grant is a read, not permission to issue a new historic key. Require open group, current recipient period and unrevoked device; epoch.starts_at >= period.joined_at and >= device.authorized_at; granted_at must not precede these boundaries. ACTIVE sends require current sender period/device, exact grant, current ACTIVE epoch and sent_at >= activated_at. Revoke/send, close/send and join/grant share group locking. Closed epochs/grants remain historical references.
 
 O4 switching ends the old session, revokes its future key delivery and rotates every affected **open** group. A new device generation receives only epochs beginning at/after its authorization; matching user_id alone cannot retrieve another generation's old grants. Same active installation re-login reuses authorization and retains keys; it is not a new device event. A formerly revoked installation returns as a fresh generation without new history grants. DB cannot erase old local keys/ciphertext. Never reopen closed groups to create history keys for a new device. No key transfer, backup or recovery secret is added.
 
-Under working R2=A, a versioned GROUP ciphertext envelope contains nonce/tag, encrypted UTF-8 text and authenticated headers binding conversation, epoch, sender device/period as defined by the later crypto codec. Wrapped-key envelope contains wrapping metadata and recipient binding; public keys are versioned bytes. Actual algorithms/codec/verification are client integration dependencies, not implemented or approved here. DB checks nonempty bytes/version and relational IDs, not valid tags, key equivalence or plaintext type. Private/plain group keys never enter tables. Client group plaintext search remains unimplemented; SQL does not search plaintext inside ciphertext. Any LLM disclosure must be an explicit client/application integration decision, not automatic server decryption.
+Under confirmed R2=A, a versioned GROUP ciphertext envelope contains nonce/tag, encrypted UTF-8 text and authenticated headers binding conversation, epoch, sender device/period as defined by the later crypto codec. Wrapped-key envelope contains wrapping metadata and recipient binding; public keys are versioned bytes. Actual algorithms/codec/verification remain client integration dependencies; selecting opaque storage does not implement them. DB checks nonempty bytes/version and relational IDs, not valid tags, key equivalence or plaintext type. Private/plain group keys never enter tables. Client group plaintext search remains unimplemented; SQL does not search plaintext inside ciphertext. Any LLM disclosure must be an explicit client/application integration decision, not automatic server decryption.
 
 ### 9.6 Administration, spam and activity
 
@@ -671,7 +671,7 @@ Spam creation/processing serializes on affected user/target locks. Retained inco
 | Transfer/closure | Local closure time and restrictive retained references | Successor list/selection or confirmed exceptional closure, cross-group atomic deletion, reject post-close writes |
 | E2EE | Correct group/period/device owner, sender grant, nonempty bytes/version | Valid codec/keys/tags, complete consistent grant batch, eligibility times/rotation/private-key possession |
 | Current device | At most one unrevoked device generation | Correct installation, old-session termination, no new old-device grants or cross-generation historical retrieval |
-| Epoch | At most one unended epoch; proposed state/date checks | R1 choice, legal transitions/batch activation, PENDING blocks sends |
+| Epoch | At most one unended epoch; R1=B state/date checks | Confirmed R1=B, legal transitions/batch activation, PENDING blocks sends |
 | Social/block | Ordered friendships, directed blocks, unordered PENDING request uniqueness | Reciprocal accept, reject/retry, D18 restrictions, atomic block cleanup; shared groups unaffected |
 | Spam | Directed pending uniqueness, identities and processing-field shape | Incoming PRIVATE evidence, system-admin handler, D38 transitions/audit |
 | Audit/control | Event fields, IDs, correlation access | Append-only events, truthful ACK/error, idempotent manual retry, JDBC/TCP coordination |
@@ -679,9 +679,9 @@ Spam creation/processing serializes on affected user/target locks. Retained inco
 
 No DB-only guarantee is claimed for child counts, current authorization, immutable historical rows, full interval non-overlap, group-admin authority or cryptographic validity. No custom function is hidden inside a CHECK. Direct ad hoc SQL can violate application invariants despite valid FKs.
 
-## 11. Detailed choices to approve
+## 11. Confirmed detailed choices and retained alternatives
 
-Q1–Q4, O1–O4, Q8-A and S1 remain confirmed. Plan approval is recorded. These **new** questions are OPEN; provisional columns above do not constitute answers.
+Q1–Q4, O1–O4, Q8-A and S1 remain confirmed. Minh explicitly answered R1=B/R2=A on 19/11/2026; both questions are now RESOLVED. The options below remain as design history; no answer is inferred merely from plan approval.
 
 ### R1 Epoch readiness
 
@@ -690,7 +690,7 @@ Q1–Q4, O1–O4, Q8-A and S1 remain confirmed. Plan approval is recorded. These
 | A | Client prepares complete key batch before atomically committing group/member/device cutover. Fewer readiness states; action may fail/delay when a client is unavailable; revalidate after preparation, never wait on client inside DB locks. |
 | B | Commit cutover with PENDING epoch, close old epoch and block sends until a complete eligible batch activates it. Adds epoch_status/activated_at and later waiting/error UI; revocation/removal need not await a key-producing client. |
 
-Recommendation **B**. Status **OPEN**. Controls epoch_status/activated_at, PENDING default, related CHECKs and activation protocol. If A is chosen, revise these rows before SQL; never silently retain pending-specific design as approved. Neither choice changes mandatory E2EE/no historical keys.
+Original recommendation **B**. Minh selected **B** on 19/11/2026. Status **RESOLVED**. Keep epoch_status/activated_at, default PENDING, related CHECKs and batch activation. No send is accepted until the epoch becomes ACTIVE; mandatory E2EE/no historical keys remains unchanged.
 
 ### R2 E2EE representation
 
@@ -699,9 +699,9 @@ Recommendation **B**. Status **OPEN**. Controls epoch_status/activated_at, PENDI
 | A | Opaque versioned bytea public keys/ciphertext/wrapped-key envelopes; nonce/tag/authenticated metadata inside codec. Less coupling to an unchosen algorithm; DB cannot inspect envelope components. |
 | B | Separate algorithm/version, nonce, tag and ciphertext columns. More SQL-visible shape validation, but exact formats/lengths must first be agreed with crypto implementers; changes can require schema revision. |
 
-Recommendation **A**. Status **OPEN**. Controls key_format_version/payload_version/envelope_version and bytea meaning, not the encryption/wrapping algorithms. A version-1 codec specification and interoperability tests remain integration dependencies even if storage option A is approved.
+Original recommendation **A**. Minh selected **A** on 19/11/2026. Status **RESOLVED**. Keep versioned opaque bytea envelopes and key_format_version/payload_version/envelope_version. This resolves storage representation, not cryptographic algorithms; an actual version-1 codec specification and interoperability tests remain integration dependencies.
 
-Minh also reviews the full concrete dictionary, composite FK targets, uniform RESTRICT actions/index rationale and the already approved application boundary for exactly two PRIVATE member rows. There is no third new business-choice question in this proposal.
+No named design question remains unanswered. The concrete dictionary, composite FK targets, uniform RESTRICT actions/index rationale and application boundary for exactly two PRIVATE members are unchanged by these selections. SQL/test/application files are not changed in this decision-recording session.
 
 ## 12. Verification state and next gate
 
@@ -715,4 +715,4 @@ Minh also reviews the full concrete dictionary, composite FK targets, uniform RE
 | E2EE codec/decryption/device proof/interoperability | NOT RUN; integration not implemented here |
 | Mermaid visual rendering | NOT RUN unless a renderer is available; source/FK structure checked separately |
 
-After R1/R2 selection and detailed-baseline approval, implement on a fresh disposable DB and run plan V1–V11. Negative tests must cover wrong-conversation read/clear/hide, wrong sender period/user, wrong GROUP epoch, wrong device owner, missing sender grant and mismatched sender-grant period. Verify rejoin without personal-state reset, new-device denial of old grants, retained closed-group history and post-close send rejection. Do not turn any of these into PASS from static document review alone.
+R1=B/R2=A are now confirmed. During the subsequent implementation phase, use a fresh disposable DB and run plan V1–V11. Negative tests must cover wrong-conversation read/clear/hide, wrong sender period/user, wrong GROUP epoch, wrong device owner, missing sender grant and mismatched sender-grant period. Verify rejoin without personal-state reset, new-device denial of old grants, retained closed-group history and post-close send rejection. Do not turn any of these into PASS from static document review alone.

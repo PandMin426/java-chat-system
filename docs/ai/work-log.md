@@ -315,6 +315,15 @@ Trang
 [19/11/2026 11:04] | COMMIT_REMINDER | database-schema | For the eventual completed feature use a separate commit: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; no commit/push performed.
 [19/11/2026 11:04] | SESSION_END | database-schema | Approved plan IN_PROGRESS with baseline IN_REVIEW, concrete design ready for Minh review; R1=B/R2=A are recommendations only and remain OPEN. SQL/tests/application unchanged; tracker Plan complete only and current-phase note updated.
 
+[19/11/2026 11:17] | SESSION_START | database-schema | Record Minh explicit R1=B and R2=A decisions in baseline/plan/work-log only; repository tracked files initially clean, existing untracked Word preserved; SQL/tests/application remain unchanged.
+
+[19/11/2026 11:20] | DECISION | database-schema | Minh explicitly selected R1=B and R2=A: commit cutover with PENDING epoch and block sends until activation; use versioned opaque bytea public-key/ciphertext/wrapped-key envelopes. Both decisions are RESOLVED.
+[19/11/2026 11:20] | PLAN_UPDATED | database-schema | Iteration 3 records actual R1=B/R2=A answers while preserving iterations 1-2 and prior plan approval IN_PROGRESS/YES (19/11/2026); no new unanswered design choice or approval question introduced.
+[19/11/2026 11:20] | FILE_MODIFIED | database-schema | docs/database/design-baseline.md: recorded confirmed selections and retained original alternatives; removed current provisional/OPEN claims; all 15 table dictionaries and relational model unchanged.
+[19/11/2026 11:20] | FILE_MODIFIED | database-schema | docs/ai/work-log.md: append-only action/session records and updated current-phase tracker note; completion columns remain Plan complete only because SQL is not started.
+[19/11/2026 11:20] | VERIFIED | database-schema | PASS: exact selected resolutions, original iterations 1-2 and full dictionary preserved; historical log unchanged except current-session append/permitted tracker note; SQL/test/Word SHA256 unchanged; exactly three docs modified; git diff --check clean. All V1-V11 and runtime/integration tests NOT RUN.
+[19/11/2026 11:20] | SESSION_END | database-schema | R1=B/R2=A recorded with no unanswered named design questions; documentation-only update, SQL/tests/application unchanged, no implementation feature document and no commit/push/merge/reset.
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -355,4 +364,4 @@ Trang
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | database-schema | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
 
-**database-schema current phase:** IN_PROGRESS; detailed baseline IN_REVIEW; plan approved 19/11/2026. The tracker row remains Plan complete and Code/Verified/Doc/Committed not started because no SQL implementation has begun.
+**database-schema current phase:** IN_PROGRESS; plan approved 19/11/2026; R1=B/R2=A explicitly confirmed 19/11/2026, all named design choices resolved. The tracker row remains Plan complete and Code/Verified/Doc/Committed not started because SQL implementation has not begun.
