@@ -1,602 +1,537 @@
--- Java Chat System - Database V1 (PostgreSQL 17.11).
--- Run on a fresh database. Application timestamps are stored as instants;
--- use Asia/Ho_Chi_Minh for report boundaries and display.
+-- JAVA CHAT SYSTEM / database-schema / PostgreSQL target 17.11.
+-- Approved fresh-database DDL. This is not a migration or a repeatable upgrade.
+-- Source review only in this session: database execution has NOT RUN.
+-- See docs/database/design-baseline.md for F01-F33, U01-U06 and I01-I36.
+-- Instants use timestamptz; application report boundaries use Asia/Ho_Chi_Minh.
+-- Application transactions own current authorization, lock ordering, immutable
+-- history, exactly two PRIVATE member rows, group cardinality/admin transfer,
+-- block cleanup, epoch activation and no historical key grants to new devices.
+-- Existing seed.sql / tests/verify.sql still target the old schema: do not use
+-- them to validate this DDL until they are rewritten for this model.
 BEGIN;
 
+-- Stage 1: retained account identity. BCrypt is computed by the application.
 CREATE TABLE users (
-    user_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username text COLLATE "C",
-    email text,
-    password_hash text,
-    full_name text,
-    address text,
-    birth_date date,
-    gender text,
+    user_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    username text COLLATE "C" NOT NULL,
+    email text NOT NULL,
+    password_hash text NOT NULL,
+    full_name text NOT NULL,
+    address text DEFAULT NULL,
+    birth_date date DEFAULT NULL,
+    gender text DEFAULT NULL,
     system_role text NOT NULL DEFAULT 'USER',
     account_status text NOT NULL DEFAULT 'ACTIVE',
     registration_source text NOT NULL,
+    must_change_password boolean NOT NULL DEFAULT false,
     created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT users_system_role_check CHECK (system_role IN ('ADMIN', 'USER')),
-    CONSTRAINT users_account_status_check CHECK (account_status IN ('ACTIVE', 'LOCKED', 'DELETED')),
-    CONSTRAINT users_registration_source_check CHECK (registration_source IN ('SELF_REGISTERED', 'INTERNAL')),
-    CONSTRAINT users_admin_source_check CHECK (system_role <> 'ADMIN' OR registration_source = 'INTERNAL'),
-    CONSTRAINT users_profile_state_check CHECK (
-        (
-            account_status <> 'DELETED'
-            AND username IS NOT NULL AND btrim(username) <> ''
-            AND email IS NOT NULL AND btrim(email) <> ''
-            AND password_hash IS NOT NULL AND btrim(password_hash) <> ''
-            AND full_name IS NOT NULL AND btrim(full_name) <> ''
-        ) OR (
-            account_status = 'DELETED'
-            AND username IS NULL AND email IS NULL AND password_hash IS NULL
-            AND full_name IS NULL AND address IS NULL AND birth_date IS NULL AND gender IS NULL
-        )
-    )
+    deleted_at timestamptz DEFAULT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (user_id),
+    CONSTRAINT users_username_format_check
+        CHECK (username ~ '^[A-Za-z0-9_]{3,30}$'),
+    CONSTRAINT users_email_nonblank_check CHECK (btrim(email) <> ''),
+    CONSTRAINT users_email_trimmed_check CHECK (email = btrim(email)),
+    CONSTRAINT users_password_hash_nonblank_check CHECK (btrim(password_hash) <> ''),
+    CONSTRAINT users_full_name_nonblank_check CHECK (btrim(full_name) <> ''),
+    CONSTRAINT users_system_role_check CHECK (system_role IN ('USER', 'ADMIN')),
+    CONSTRAINT users_account_status_check CHECK (account_status IN ('ACTIVE', 'LOCKED')),
+    CONSTRAINT users_registration_source_check
+        CHECK (registration_source IN ('SELF_REGISTERED', 'INTERNAL')),
+    CONSTRAINT users_admin_source_check
+        CHECK (system_role <> 'ADMIN' OR registration_source = 'INTERNAL'),
+    CONSTRAINT users_deleted_at_check CHECK (deleted_at IS NULL OR deleted_at >= created_at)
 );
 
-CREATE UNIQUE INDEX users_live_username_uidx
-    ON users (username) WHERE account_status <> 'DELETED';
-
-CREATE UNIQUE INDEX users_live_email_uidx
-    ON users (lower(email)) WHERE account_status <> 'DELETED';
-
--- Soft-delete with one UPDATE: set account_status to DELETED and clear all
--- seven profile/credential fields checked by users_profile_state_check.
--- Keep the same user_id, created_at and registration_source for history.
-CREATE FUNCTION guard_user_lifecycle() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF TG_OP = 'DELETE' THEN
-        RAISE EXCEPTION 'Use soft delete to preserve the user identity and history'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    IF TG_OP = 'UPDATE' THEN
-        IF NEW.user_id IS DISTINCT FROM OLD.user_id THEN
-            RAISE EXCEPTION 'The user identity cannot be changed'
-                USING ERRCODE = 'check_violation';
-        END IF;
-
-        IF NEW.created_at IS DISTINCT FROM OLD.created_at
-            OR NEW.registration_source IS DISTINCT FROM OLD.registration_source THEN
-            RAISE EXCEPTION 'The account creation timestamp and registration source cannot be changed'
-                USING ERRCODE = 'check_violation';
-        END IF;
-
-        IF OLD.account_status = 'DELETED' AND NEW.account_status IS DISTINCT FROM 'DELETED' THEN
-            RAISE EXCEPTION 'A deleted account cannot be reactivated'
-                USING ERRCODE = 'check_violation';
-        END IF;
-
-        IF NEW.account_status <> 'DELETED' AND NEW.username IS DISTINCT FROM OLD.username THEN
-            RAISE EXCEPTION 'The username cannot be changed'
-                USING ERRCODE = 'check_violation';
-        END IF;
-    END IF;
-
-    -- Strip surrounding whitespace before profile checks and the unique index.
-    NEW.email := regexp_replace(NEW.email, '^[[:space:]]+|[[:space:]]+$', '', 'g');
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER users_lifecycle_guard
-    BEFORE INSERT OR UPDATE OR DELETE ON users
-    FOR EACH ROW EXECUTE FUNCTION guard_user_lifecycle();
-
--- Write only successful authentications. Join users for the current profile.
-CREATE TABLE login_events (
-    login_event_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    logged_in_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
+-- Stage 2: objects depending only on users.
+-- UserApp successes only. Snapshot authenticity and exactly-once recording are
+-- application responsibilities; AdminApp login events belong in admin_audit_log.
+CREATE TABLE login_history (
+    login_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    user_id bigint NOT NULL,
+    logged_in_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    username_snapshot text NOT NULL,
+    full_name_snapshot text NOT NULL,
+    remote_ip inet DEFAULT NULL,
+    CONSTRAINT login_history_pkey PRIMARY KEY (login_id),
+    CONSTRAINT login_history_username_snapshot_check CHECK (btrim(username_snapshot) <> ''),
+    CONSTRAINT login_history_full_name_snapshot_check CHECK (btrim(full_name_snapshot) <> ''),
+    -- F01
+    CONSTRAINT login_history_user_fk FOREIGN KEY (user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE INDEX login_events_user_time_idx
-    ON login_events (user_id, logged_in_at, login_event_id);
-
-CREATE INDEX login_events_time_idx
-    ON login_events (logged_in_at DESC, login_event_id DESC);
-
--- Write one event per app launch once its user is known, including reused sessions.
-CREATE TABLE app_open_events (
-    app_open_event_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    opened_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX app_open_events_time_user_idx
-    ON app_open_events (opened_at, user_id);
-
--- Prompt 06: Social relationships, private messaging and spam reports.
 CREATE TABLE friend_requests (
-    friend_request_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    sender_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    recipient_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    request_status text NOT NULL DEFAULT 'PENDING',
+    request_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    sender_id bigint NOT NULL,
+    recipient_id bigint NOT NULL,
+    status text NOT NULL DEFAULT 'PENDING',
     requested_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    resolved_at timestamptz,
+    resolved_at timestamptz DEFAULT NULL,
+    CONSTRAINT friend_requests_pkey PRIMARY KEY (request_id),
     CONSTRAINT friend_requests_distinct_users_check CHECK (sender_id <> recipient_id),
-    CONSTRAINT friend_requests_status_check CHECK (request_status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED')),
+    CONSTRAINT friend_requests_status_check
+        CHECK (status IN ('PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED')),
     CONSTRAINT friend_requests_resolution_check CHECK (
-        (request_status = 'PENDING' AND resolved_at IS NULL)
-        OR (request_status <> 'PENDING' AND resolved_at IS NOT NULL AND resolved_at >= requested_at)
-    )
+        (status = 'PENDING' AND resolved_at IS NULL)
+        OR (status <> 'PENDING' AND resolved_at IS NOT NULL AND resolved_at >= requested_at)
+    ),
+    -- F02
+    CONSTRAINT friend_requests_sender_fk FOREIGN KEY (sender_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F03
+    CONSTRAINT friend_requests_recipient_fk FOREIGN KEY (recipient_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
-
-CREATE INDEX friend_requests_inbox_idx
-    ON friend_requests (recipient_id, request_status, requested_at DESC, friend_request_id DESC);
-
-CREATE UNIQUE INDEX friend_requests_pending_pair_uidx
-    ON friend_requests ((LEAST(sender_id, recipient_id)), (GREATEST(sender_id, recipient_id)))
-    WHERE request_status = 'PENDING';
 
 CREATE TABLE friendships (
-    user_low_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    user_high_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    PRIMARY KEY (user_low_id, user_high_id),
-    CONSTRAINT friendships_ordered_pair_check CHECK (user_low_id < user_high_id)
+    user_low_id bigint NOT NULL,
+    user_high_id bigint NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT friendships_pkey PRIMARY KEY (user_low_id, user_high_id),
+    CONSTRAINT friendships_ordered_pair_check CHECK (user_low_id < user_high_id),
+    -- F04
+    CONSTRAINT friendships_low_user_fk FOREIGN KEY (user_low_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F05
+    CONSTRAINT friendships_high_user_fk FOREIGN KEY (user_high_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
-
-CREATE INDEX friendships_high_user_idx ON friendships (user_high_id, user_low_id);
 
 CREATE TABLE user_blocks (
-    blocker_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    blocked_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    PRIMARY KEY (blocker_id, blocked_id),
-    CONSTRAINT user_blocks_distinct_users_check CHECK (blocker_id <> blocked_id)
-);
-
-CREATE INDEX user_blocks_blocked_user_idx ON user_blocks (blocked_id, blocker_id);
-
-CREATE TABLE private_conversations (
-    conversation_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_low_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    user_high_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    CONSTRAINT private_conversations_unique_pair UNIQUE (user_low_id, user_high_id),
-    CONSTRAINT private_conversations_ordered_pair_check CHECK (user_low_id < user_high_id)
-);
-
-CREATE INDEX private_conversations_high_user_idx ON private_conversations (user_high_id, user_low_id);
-
-CREATE TABLE private_messages (
-    private_message_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    conversation_id bigint NOT NULL REFERENCES private_conversations (conversation_id) ON DELETE RESTRICT,
-    sender_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    content text NOT NULL,
-    sent_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX private_messages_history_idx
-    ON private_messages (conversation_id, sent_at DESC, private_message_id DESC);
-
-CREATE INDEX private_messages_sender_time_idx ON private_messages (sender_id, sent_at);
-
-CREATE TABLE private_message_hides (
-    private_message_id bigint NOT NULL REFERENCES private_messages (private_message_id) ON DELETE RESTRICT,
-    user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    PRIMARY KEY (private_message_id, user_id)
-);
-
-CREATE TABLE spam_reports (
-    spam_report_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    reporter_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    reported_user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    reported_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT spam_reports_distinct_users_check CHECK (reporter_id <> reported_user_id)
-);
-
-CREATE INDEX spam_reports_time_idx ON spam_reports (reported_at DESC, spam_report_id DESC);
-
-CREATE INDEX spam_reports_reported_user_time_idx
-    ON spam_reports (reported_user_id, reported_at DESC, spam_report_id DESC);
-
--- Serialize block, invitation, friendship and send operations for the same pair.
--- The check after acquiring the lock needs a fresh READ COMMITTED snapshot.
-CREATE FUNCTION lock_social_pair(first_user_id bigint, second_user_id bigint) RETURNS void
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF current_setting('transaction_isolation') <> 'read committed' THEN
-        RAISE EXCEPTION 'Social pair writes require READ COMMITTED isolation'
-            USING ERRCODE = 'feature_not_supported';
-    END IF;
-
-    PERFORM pg_advisory_xact_lock(hashtextextended(
-        'java-chat:social-pair:' || LEAST(first_user_id, second_user_id)::text
-        || ':' || GREATEST(first_user_id, second_user_id)::text, 0
-    ));
-END;
-$$;
-
-CREATE FUNCTION social_pair_is_blocked(first_user_id bigint, second_user_id bigint) RETURNS boolean
-LANGUAGE sql VOLATILE
-AS $$
-    SELECT EXISTS (
-        SELECT 1 FROM user_blocks
-        WHERE (blocker_id = first_user_id AND blocked_id = second_user_id)
-           OR (blocker_id = second_user_id AND blocked_id = first_user_id)
-    );
-$$;
-
--- Acceptance is a backend transaction: use READ COMMITTED, lock the pair
--- before writing, then update the recipient's PENDING request to ACCEPTED
--- with resolved_at set. Only if exactly one row changed, insert the ordered
--- friendship in the same transaction. Roll back if the friendship write fails.
-CREATE FUNCTION guard_friend_request() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF TG_OP = 'INSERT' THEN
-        IF NEW.request_status IS DISTINCT FROM 'PENDING' THEN
-            RAISE EXCEPTION 'A new friend request must start as PENDING'
-                USING ERRCODE = 'check_violation';
-        END IF;
-    ELSE
-        IF (NEW.sender_id, NEW.recipient_id) IS DISTINCT FROM (OLD.sender_id, OLD.recipient_id) THEN
-            RAISE EXCEPTION 'A friend request cannot change its participants'
-                USING ERRCODE = 'check_violation';
-        END IF;
-
-        IF OLD.request_status <> 'PENDING' AND NEW.request_status IS DISTINCT FROM OLD.request_status THEN
-            RAISE EXCEPTION 'A resolved friend request cannot change status'
-                USING ERRCODE = 'check_violation';
-        END IF;
-    END IF;
-
-    IF NEW.request_status IN ('PENDING', 'ACCEPTED') THEN
-        PERFORM lock_social_pair(NEW.sender_id, NEW.recipient_id);
-
-        IF NEW.request_status = 'PENDING' AND EXISTS (
-            SELECT 1 FROM user_blocks
-            WHERE blocker_id = NEW.recipient_id AND blocked_id = NEW.sender_id
-        ) THEN
-            RAISE EXCEPTION 'The recipient has blocked this friend request sender'
-                USING ERRCODE = 'check_violation';
-        END IF;
-
-        IF NEW.request_status = 'ACCEPTED' AND social_pair_is_blocked(NEW.sender_id, NEW.recipient_id) THEN
-            RAISE EXCEPTION 'A friend request cannot be accepted while either user blocks the other'
-                USING ERRCODE = 'check_violation';
-        END IF;
-    END IF;
-
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER friend_requests_guard
-    BEFORE INSERT OR UPDATE ON friend_requests
-    FOR EACH ROW EXECUTE FUNCTION guard_friend_request();
-
-CREATE FUNCTION guard_friendship() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    PERFORM lock_social_pair(NEW.user_low_id, NEW.user_high_id);
-    IF social_pair_is_blocked(NEW.user_low_id, NEW.user_high_id) THEN
-        RAISE EXCEPTION 'A friendship cannot be created while either user blocks the other'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER friendships_guard
-    BEFORE INSERT OR UPDATE OF user_low_id, user_high_id ON friendships
-    FOR EACH ROW EXECUTE FUNCTION guard_friendship();
-
-CREATE FUNCTION apply_user_block() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF TG_OP = 'UPDATE' THEN
-        IF (NEW.blocker_id, NEW.blocked_id) IS DISTINCT FROM (OLD.blocker_id, OLD.blocked_id) THEN
-            RAISE EXCEPTION 'A block cannot change its participants'
-                USING ERRCODE = 'check_violation';
-        END IF;
-        RETURN NEW;
-    END IF;
-
-    PERFORM lock_social_pair(NEW.blocker_id, NEW.blocked_id);
-
-    DELETE FROM friendships
-    WHERE user_low_id = LEAST(NEW.blocker_id, NEW.blocked_id)
-      AND user_high_id = GREATEST(NEW.blocker_id, NEW.blocked_id);
-
-    UPDATE friend_requests
-    SET request_status = 'CANCELLED', resolved_at = GREATEST(clock_timestamp(), requested_at)
-    WHERE request_status = 'PENDING'
-      AND LEAST(sender_id, recipient_id) = LEAST(NEW.blocker_id, NEW.blocked_id)
-      AND GREATEST(sender_id, recipient_id) = GREATEST(NEW.blocker_id, NEW.blocked_id);
-
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER user_blocks_apply
-    AFTER INSERT OR UPDATE ON user_blocks
-    FOR EACH ROW EXECUTE FUNCTION apply_user_block();
-
-CREATE FUNCTION guard_private_conversation_pair() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF (NEW.user_low_id, NEW.user_high_id) IS DISTINCT FROM (OLD.user_low_id, OLD.user_high_id) THEN
-        RAISE EXCEPTION 'A private conversation cannot change its participants'
-            USING ERRCODE = 'check_violation';
-    END IF;
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER private_conversations_pair_guard
-    BEFORE UPDATE OF user_low_id, user_high_id ON private_conversations
-    FOR EACH ROW EXECUTE FUNCTION guard_private_conversation_pair();
-
-CREATE FUNCTION guard_private_message() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    low_user_id bigint;
-    high_user_id bigint;
-BEGIN
-    IF TG_OP <> 'INSERT' THEN
-        RAISE EXCEPTION 'Private messages are retained; use a per-user hide for history deletion'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    SELECT user_low_id, user_high_id INTO low_user_id, high_user_id
-    FROM private_conversations
-    WHERE conversation_id = NEW.conversation_id;
-
-    IF NOT FOUND THEN
-        -- The conversation FK rejects missing references.
-        RETURN NEW;
-    END IF;
-
-    IF NEW.sender_id NOT IN (low_user_id, high_user_id) THEN
-        RAISE EXCEPTION 'The sender must belong to the private conversation'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    PERFORM lock_social_pair(low_user_id, high_user_id);
-    IF social_pair_is_blocked(low_user_id, high_user_id) THEN
-        RAISE EXCEPTION 'Private messages are blocked between these users'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER private_messages_guard
-    BEFORE INSERT OR UPDATE OR DELETE ON private_messages
-    FOR EACH ROW EXECUTE FUNCTION guard_private_message();
-
-CREATE FUNCTION guard_private_message_hide() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    low_user_id bigint;
-    high_user_id bigint;
-BEGIN
-    SELECT c.user_low_id, c.user_high_id INTO low_user_id, high_user_id
-    FROM private_messages m
-    JOIN private_conversations c ON c.conversation_id = m.conversation_id
-    WHERE m.private_message_id = NEW.private_message_id;
-
-    IF FOUND AND NEW.user_id NOT IN (low_user_id, high_user_id) THEN
-        RAISE EXCEPTION 'Only a conversation participant can hide its messages'
-            USING ERRCODE = 'check_violation';
-    END IF;
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER private_message_hides_guard
-    BEFORE INSERT OR UPDATE OF private_message_id, user_id ON private_message_hides
-    FOR EACH ROW EXECUTE FUNCTION guard_private_message_hide();
-
-CREATE FUNCTION guard_spam_report() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM private_conversations c
-        JOIN private_messages m ON m.conversation_id = c.conversation_id
-        WHERE c.user_low_id = LEAST(NEW.reporter_id, NEW.reported_user_id)
-          AND c.user_high_id = GREATEST(NEW.reporter_id, NEW.reported_user_id)
-    ) THEN
-        RAISE EXCEPTION 'A spam report requires at least one private message between the users'
-            USING ERRCODE = 'check_violation';
-    END IF;
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER spam_reports_guard
-    BEFORE INSERT OR UPDATE OF reporter_id, reported_user_id ON spam_reports
-    FOR EACH ROW EXECUTE FUNCTION guard_spam_report();
-
--- Prompt 07: Group chat and storage metadata for end-to-end encryption.
-CREATE TABLE chat_groups (
-    group_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    group_name text NOT NULL,
+    blocker_id bigint NOT NULL,
+    blocked_id bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    closed_at timestamptz,
-    CONSTRAINT chat_groups_name_check CHECK (btrim(group_name) <> ''),
-    CONSTRAINT chat_groups_closed_at_check CHECK (closed_at >= created_at)
+    CONSTRAINT user_blocks_pkey PRIMARY KEY (blocker_id, blocked_id),
+    CONSTRAINT user_blocks_distinct_users_check CHECK (blocker_id <> blocked_id),
+    -- F06
+    CONSTRAINT user_blocks_blocker_fk FOREIGN KEY (blocker_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F07
+    CONSTRAINT user_blocks_blocked_fk FOREIGN KEY (blocked_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE INDEX chat_groups_name_idx ON chat_groups (lower(group_name), group_id);
-CREATE INDEX chat_groups_created_at_idx ON chat_groups (created_at, group_id);
+-- The canonical PRIVATE pair is stored here (S1). Child membership cardinality
+-- and endpoint immutability must be checked by the authenticated application.
+CREATE TABLE conversations (
+    conversation_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    conversation_type text NOT NULL,
+    created_by_user_id bigint NOT NULL,
+    private_user_low_id bigint DEFAULT NULL,
+    private_user_high_id bigint DEFAULT NULL,
+    group_name text DEFAULT NULL,
+    created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    closed_at timestamptz DEFAULT NULL,
+    CONSTRAINT conversations_pkey PRIMARY KEY (conversation_id),
+    -- U01: discriminator-scoped FK target, not a duplicate plain index.
+    CONSTRAINT conversations_id_type_key UNIQUE (conversation_id, conversation_type),
+    CONSTRAINT conversations_type_check CHECK (conversation_type IN ('PRIVATE', 'GROUP')),
+    CONSTRAINT conversations_shape_check CHECK (
+        (
+            conversation_type = 'PRIVATE'
+            AND private_user_low_id IS NOT NULL AND private_user_high_id IS NOT NULL
+            AND private_user_low_id < private_user_high_id
+            AND group_name IS NULL AND closed_at IS NULL
+            AND created_by_user_id IN (private_user_low_id, private_user_high_id)
+        ) OR (
+            conversation_type = 'GROUP'
+            AND private_user_low_id IS NULL AND private_user_high_id IS NULL
+            AND group_name IS NOT NULL AND btrim(group_name) <> ''
+            AND (closed_at IS NULL OR closed_at >= created_at)
+        )
+    ),
+    -- F08
+    CONSTRAINT conversations_creator_fk FOREIGN KEY (created_by_user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F09: NULL only for GROUP under the shape CHECK.
+    CONSTRAINT conversations_private_low_user_fk FOREIGN KEY (private_user_low_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F10
+    CONSTRAINT conversations_private_high_user_fk FOREIGN KEY (private_user_high_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
 
--- Create the group, creator ADMIN membership, and at least one other MEMBER
--- in one backend transaction. End memberships with left_at; keep closed rows.
-CREATE TABLE group_memberships (
-    membership_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    group_id bigint NOT NULL REFERENCES chat_groups (group_id) ON DELETE RESTRICT,
-    user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
+-- Each row is one authorization generation, not a persistent online session.
+-- A revoked installation can later receive a new generation; same still-current
+-- installation login reuses its generation and preserves locally held keys.
+CREATE TABLE e2ee_devices (
+    device_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    user_id bigint NOT NULL,
+    device_uid uuid NOT NULL,
+    public_key bytea NOT NULL,
+    key_format_version smallint NOT NULL DEFAULT 1,
+    authorized_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    revoked_at timestamptz DEFAULT NULL,
+    CONSTRAINT e2ee_devices_pkey PRIMARY KEY (device_id),
+    -- U03
+    CONSTRAINT e2ee_devices_id_user_key UNIQUE (device_id, user_id),
+    CONSTRAINT e2ee_devices_public_key_check CHECK (octet_length(public_key) > 0),
+    CONSTRAINT e2ee_devices_key_format_version_check CHECK (key_format_version > 0),
+    CONSTRAINT e2ee_devices_revoked_at_check
+        CHECK (revoked_at IS NULL OR revoked_at >= authorized_at),
+    -- F15
+    CONSTRAINT e2ee_devices_user_fk FOREIGN KEY (user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
+
+-- Stage 3: one stable row per user/conversation, retained after departure.
+-- F24/F25 are added after messages exists; pointers start NULL on first join.
+CREATE TABLE conversation_members (
+    conversation_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    member_created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_read_message_id bigint DEFAULT NULL,
+    cleared_at timestamptz DEFAULT NULL,
+    cleared_through_message_id bigint DEFAULT NULL,
+    CONSTRAINT conversation_members_pkey PRIMARY KEY (conversation_id, user_id),
+    CONSTRAINT conversation_members_clear_state_check
+        CHECK (cleared_at IS NOT NULL OR cleared_through_message_id IS NULL),
+    -- F11
+    CONSTRAINT conversation_members_conversation_fk FOREIGN KEY (conversation_id)
+        REFERENCES conversations (conversation_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F12
+    CONSTRAINT conversation_members_user_fk FOREIGN KEY (user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
+
+-- Stage 4: role/participation history and GROUP-only key cutovers.
+CREATE TABLE membership_periods (
+    period_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    conversation_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    conversation_type text NOT NULL,
     group_role text NOT NULL DEFAULT 'MEMBER',
     joined_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    left_at timestamptz,
-    CONSTRAINT group_memberships_group_membership_key UNIQUE (group_id, membership_id),
-    CONSTRAINT group_memberships_grant_owner_key UNIQUE (group_id, membership_id, user_id),
-    CONSTRAINT group_memberships_role_check CHECK (group_role IN ('ADMIN', 'MEMBER')),
-    CONSTRAINT group_memberships_left_at_check CHECK (left_at >= joined_at)
+    left_at timestamptz DEFAULT NULL,
+    CONSTRAINT membership_periods_pkey PRIMARY KEY (period_id),
+    -- U02: one target binds conversation, user and exact join interval.
+    CONSTRAINT membership_periods_conversation_user_period_key
+        UNIQUE (conversation_id, user_id, period_id),
+    CONSTRAINT membership_periods_type_check CHECK (conversation_type IN ('PRIVATE', 'GROUP')),
+    CONSTRAINT membership_periods_role_check CHECK (group_role IN ('MEMBER', 'ADMIN')),
+    CONSTRAINT membership_periods_private_role_check
+        CHECK (conversation_type <> 'PRIVATE' OR group_role = 'MEMBER'),
+    CONSTRAINT membership_periods_left_at_check CHECK (left_at IS NULL OR left_at >= joined_at),
+    -- F13
+    CONSTRAINT membership_periods_member_fk FOREIGN KEY (conversation_id, user_id)
+        REFERENCES conversation_members (conversation_id, user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F14
+    CONSTRAINT membership_periods_conversation_type_fk
+        FOREIGN KEY (conversation_id, conversation_type)
+        REFERENCES conversations (conversation_id, conversation_type) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE UNIQUE INDEX group_memberships_active_pair_uidx
-    ON group_memberships (group_id, user_id) WHERE left_at IS NULL;
-
-CREATE INDEX group_memberships_active_user_idx
-    ON group_memberships (user_id, group_id) WHERE left_at IS NULL;
-
-CREATE TABLE e2ee_devices (
-    device_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id bigint NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    public_key bytea NOT NULL,
-    authorized_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    revoked_at timestamptz,
-    CONSTRAINT e2ee_devices_owner_key UNIQUE (device_id, user_id),
-    CONSTRAINT e2ee_devices_public_key_check CHECK (octet_length(public_key) > 0),
-    CONSTRAINT e2ee_devices_revoked_at_check CHECK (revoked_at >= authorized_at)
-);
-
-CREATE UNIQUE INDEX e2ee_devices_active_user_uidx
-    ON e2ee_devices (user_id) WHERE revoked_at IS NULL;
-
+-- R1=B: row-local state consistency only. The application blocks sends while
+-- PENDING and atomically activates a complete client-generated grant batch.
 CREATE TABLE group_key_epochs (
-    key_epoch_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    group_id bigint NOT NULL REFERENCES chat_groups (group_id) ON DELETE RESTRICT,
+    key_epoch_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    conversation_id bigint NOT NULL,
+    conversation_type text NOT NULL DEFAULT 'GROUP',
+    epoch_status text NOT NULL DEFAULT 'PENDING',
     starts_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    ends_at timestamptz,
-    CONSTRAINT group_key_epochs_group_epoch_key UNIQUE (group_id, key_epoch_id),
-    CONSTRAINT group_key_epochs_ends_at_check CHECK (ends_at >= starts_at)
+    activated_at timestamptz DEFAULT NULL,
+    ends_at timestamptz DEFAULT NULL,
+    CONSTRAINT group_key_epochs_pkey PRIMARY KEY (key_epoch_id),
+    -- U04
+    CONSTRAINT group_key_epochs_conversation_epoch_key UNIQUE (conversation_id, key_epoch_id),
+    CONSTRAINT group_key_epochs_group_type_check CHECK (conversation_type = 'GROUP'),
+    CONSTRAINT group_key_epochs_status_check CHECK (epoch_status IN ('PENDING', 'ACTIVE', 'CLOSED')),
+    CONSTRAINT group_key_epochs_activated_at_check
+        CHECK (activated_at IS NULL OR activated_at >= starts_at),
+    CONSTRAINT group_key_epochs_ends_at_check CHECK (ends_at IS NULL OR ends_at >= starts_at),
+    CONSTRAINT group_key_epochs_activation_end_check
+        CHECK (activated_at IS NULL OR ends_at IS NULL OR ends_at >= activated_at),
+    CONSTRAINT group_key_epochs_state_check CHECK (
+        (epoch_status = 'PENDING' AND activated_at IS NULL AND ends_at IS NULL)
+        OR (epoch_status = 'ACTIVE' AND activated_at IS NOT NULL AND ends_at IS NULL)
+        OR (epoch_status = 'CLOSED' AND ends_at IS NOT NULL)
+    ),
+    -- F16: a PRIVATE conversation cannot acquire a GROUP epoch.
+    CONSTRAINT group_key_epochs_conversation_type_fk
+        FOREIGN KEY (conversation_id, conversation_type)
+        REFERENCES conversations (conversation_id, conversation_type) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE UNIQUE INDEX group_key_epochs_open_group_uidx
-    ON group_key_epochs (group_id) WHERE ends_at IS NULL;
-
--- The shared user_id binds the membership to a device owned by that user.
--- Only the wrapped key is stored here.
+-- Stage 5: opaque wrapped keys only (R2=A). These FKs prove group/period/owner
+-- correspondence, not open-state eligibility or cryptographic correctness.
 CREATE TABLE group_key_grants (
     key_epoch_id bigint NOT NULL,
     device_id bigint NOT NULL,
-    group_id bigint NOT NULL,
-    membership_id bigint NOT NULL,
+    conversation_id bigint NOT NULL,
     user_id bigint NOT NULL,
+    period_id bigint NOT NULL,
     wrapped_key bytea NOT NULL,
-    PRIMARY KEY (key_epoch_id, device_id),
-    CONSTRAINT group_key_grants_epoch_fk FOREIGN KEY (group_id, key_epoch_id)
-        REFERENCES group_key_epochs (group_id, key_epoch_id) ON DELETE RESTRICT,
-    CONSTRAINT group_key_grants_membership_fk FOREIGN KEY (group_id, membership_id, user_id)
-        REFERENCES group_memberships (group_id, membership_id, user_id) ON DELETE RESTRICT,
-    CONSTRAINT group_key_grants_device_fk FOREIGN KEY (device_id, user_id)
-        REFERENCES e2ee_devices (device_id, user_id) ON DELETE RESTRICT,
-    CONSTRAINT group_key_grants_wrapped_key_check CHECK (octet_length(wrapped_key) > 0)
+    envelope_version smallint NOT NULL DEFAULT 1,
+    granted_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT group_key_grants_pkey PRIMARY KEY (key_epoch_id, device_id),
+    -- U05: messages must use the grant belonging to the exact sending period.
+    CONSTRAINT group_key_grants_epoch_device_period_key
+        UNIQUE (key_epoch_id, device_id, period_id),
+    CONSTRAINT group_key_grants_wrapped_key_check CHECK (octet_length(wrapped_key) > 0),
+    CONSTRAINT group_key_grants_envelope_version_check CHECK (envelope_version > 0),
+    -- F17
+    CONSTRAINT group_key_grants_epoch_fk FOREIGN KEY (conversation_id, key_epoch_id)
+        REFERENCES group_key_epochs (conversation_id, key_epoch_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F18: shared conversation_id and user_id bind the recipient interval.
+    CONSTRAINT group_key_grants_period_fk FOREIGN KEY (conversation_id, user_id, period_id)
+        REFERENCES membership_periods (conversation_id, user_id, period_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F19: the same user must own that device.
+    CONSTRAINT group_key_grants_device_owner_fk FOREIGN KEY (device_id, user_id)
+        REFERENCES e2ee_devices (device_id, user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE INDEX group_key_grants_device_idx ON group_key_grants (device_id, key_epoch_id);
-
--- New grants must start with an open epoch, membership and device. An epoch
--- cannot expose messages from before the member joined or device was authorized.
-CREATE FUNCTION guard_group_key_grant() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    PERFORM 1 FROM chat_groups
-    WHERE group_id = NEW.group_id AND closed_at IS NULL
-    FOR SHARE;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'A new key grant requires an open group'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    PERFORM 1
-    FROM group_key_epochs e
-    JOIN group_memberships m ON m.group_id = e.group_id
-    JOIN e2ee_devices d ON d.device_id = NEW.device_id
-    WHERE e.group_id = NEW.group_id AND e.key_epoch_id = NEW.key_epoch_id
-      AND m.membership_id = NEW.membership_id
-      AND e.ends_at IS NULL AND m.left_at IS NULL AND d.revoked_at IS NULL
-      AND e.starts_at >= GREATEST(m.joined_at, d.authorized_at)
-    FOR SHARE OF e, m, d;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'A key grant requires an open epoch within the membership and device authorization'
-            USING ERRCODE = 'check_violation';
-    END IF;
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER group_key_grants_guard
-    BEFORE INSERT OR UPDATE ON group_key_grants
-    FOR EACH ROW EXECUTE FUNCTION guard_group_key_grant();
-
-CREATE TABLE group_messages (
-    group_message_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    group_id bigint NOT NULL,
-    key_epoch_id bigint NOT NULL,
-    sender_membership_id bigint NOT NULL,
-    encrypted_payload bytea NOT NULL,
+-- Stage 6: shared retained text events. The application checks live state and
+-- acquires the conversation lock before allocating/inserting a message ID.
+CREATE TABLE messages (
+    message_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    conversation_id bigint NOT NULL,
+    conversation_type text NOT NULL,
+    sender_user_id bigint NOT NULL,
+    sender_period_id bigint NOT NULL,
     sent_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT group_messages_epoch_fk FOREIGN KEY (group_id, key_epoch_id)
-        REFERENCES group_key_epochs (group_id, key_epoch_id) ON DELETE RESTRICT,
-    CONSTRAINT group_messages_sender_fk FOREIGN KEY (group_id, sender_membership_id)
-        REFERENCES group_memberships (group_id, membership_id) ON DELETE RESTRICT,
-    CONSTRAINT group_messages_payload_check CHECK (octet_length(encrypted_payload) > 0)
+    text_content text DEFAULT NULL,
+    ciphertext bytea DEFAULT NULL,
+    payload_version smallint DEFAULT NULL,
+    key_epoch_id bigint DEFAULT NULL,
+    sender_device_id bigint DEFAULT NULL,
+    CONSTRAINT messages_pkey PRIMARY KEY (message_id),
+    -- U06: also serves reverse message-ID history scans; no duplicate index.
+    CONSTRAINT messages_conversation_message_key UNIQUE (conversation_id, message_id),
+    CONSTRAINT messages_type_check CHECK (conversation_type IN ('PRIVATE', 'GROUP')),
+    CONSTRAINT messages_payload_shape_check CHECK (
+        (
+            conversation_type = 'PRIVATE'
+            AND text_content IS NOT NULL AND length(text_content) > 0
+            AND ciphertext IS NULL AND payload_version IS NULL
+            AND key_epoch_id IS NULL AND sender_device_id IS NULL
+        ) OR (
+            conversation_type = 'GROUP'
+            AND text_content IS NULL
+            AND ciphertext IS NOT NULL AND octet_length(ciphertext) > 0
+            AND payload_version IS NOT NULL AND payload_version > 0
+            AND key_epoch_id IS NOT NULL AND sender_device_id IS NOT NULL
+        )
+    ),
+    -- F20
+    CONSTRAINT messages_conversation_type_fk FOREIGN KEY (conversation_id, conversation_type)
+        REFERENCES conversations (conversation_id, conversation_type) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F21: current membership is an application check; this proves exact scope.
+    CONSTRAINT messages_sender_period_fk
+        FOREIGN KEY (conversation_id, sender_user_id, sender_period_id)
+        REFERENCES membership_periods (conversation_id, user_id, period_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F22: NULL bypass is intentional only for PRIVATE, enforced by payload CHECK.
+    CONSTRAINT messages_epoch_fk FOREIGN KEY (conversation_id, key_epoch_id)
+        REFERENCES group_key_epochs (conversation_id, key_epoch_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F23: GROUP requires all three components; the grant owner is bound by F18/F19.
+    CONSTRAINT messages_sender_grant_period_fk
+        FOREIGN KEY (key_epoch_id, sender_device_id, sender_period_id)
+        REFERENCES group_key_grants (key_epoch_id, device_id, period_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
 );
 
-CREATE INDEX group_messages_history_idx
-    ON group_messages (group_id, sent_at DESC, group_message_id DESC);
+-- Stage 7: solve the member -> message -> period -> member cycle in DDL order.
+-- F24/F25: NULL pointers intentionally skip MATCH SIMPLE; non-NULL IDs cannot
+-- point into another conversation. Monotonicity/history eligibility is in app.
+ALTER TABLE conversation_members
+    ADD CONSTRAINT conversation_members_read_message_fk
+        FOREIGN KEY (conversation_id, last_read_message_id)
+        REFERENCES messages (conversation_id, message_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    ADD CONSTRAINT conversation_members_clear_message_fk
+        FOREIGN KEY (conversation_id, cleared_through_message_id)
+        REFERENCES messages (conversation_id, message_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE;
 
-CREATE INDEX group_messages_sender_time_idx ON group_messages (sender_membership_id, sent_at);
+CREATE TABLE message_hidden (
+    message_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    conversation_id bigint NOT NULL,
+    hidden_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT message_hidden_pkey PRIMARY KEY (message_id, user_id),
+    -- F26
+    CONSTRAINT message_hidden_message_fk FOREIGN KEY (conversation_id, message_id)
+        REFERENCES messages (conversation_id, message_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F27: the hide owner and hidden message share this conversation_id.
+    CONSTRAINT message_hidden_member_fk FOREIGN KEY (conversation_id, user_id)
+        REFERENCES conversation_members (conversation_id, user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
 
--- Membership/epoch transitions in the backend lock the group row first.
--- Shared locks keep the checked state stable until the send commits.
-CREATE FUNCTION guard_group_message() RETURNS trigger
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    sender_joined_at timestamptz;
-BEGIN
-    PERFORM 1 FROM chat_groups
-    WHERE group_id = NEW.group_id AND closed_at IS NULL
-    FOR SHARE;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'A group message requires an open group'
-            USING ERRCODE = 'check_violation';
-    END IF;
+-- Incoming PRIVATE evidence, D38 transitions and handler ADMIN role are checked
+-- by the application transaction, not by a cross-table CHECK or trigger.
+CREATE TABLE spam_reports (
+    report_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    reporter_id bigint NOT NULL,
+    reported_user_id bigint NOT NULL,
+    reason text DEFAULT NULL,
+    status text NOT NULL DEFAULT 'PENDING',
+    reported_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolved_at timestamptz DEFAULT NULL,
+    resolved_by_user_id bigint DEFAULT NULL,
+    CONSTRAINT spam_reports_pkey PRIMARY KEY (report_id),
+    CONSTRAINT spam_reports_distinct_users_check CHECK (reporter_id <> reported_user_id),
+    CONSTRAINT spam_reports_reason_check CHECK (reason IS NULL OR btrim(reason) <> ''),
+    CONSTRAINT spam_reports_status_check CHECK (status IN ('PENDING', 'RESOLVED', 'DISMISSED')),
+    CONSTRAINT spam_reports_resolution_check CHECK (
+        (status = 'PENDING' AND resolved_at IS NULL AND resolved_by_user_id IS NULL)
+        OR (
+            status <> 'PENDING'
+            AND resolved_at IS NOT NULL AND resolved_by_user_id IS NOT NULL
+            AND resolved_at >= reported_at
+        )
+    ),
+    -- F28
+    CONSTRAINT spam_reports_reporter_fk FOREIGN KEY (reporter_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F29
+    CONSTRAINT spam_reports_reported_user_fk FOREIGN KEY (reported_user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F30
+    CONSTRAINT spam_reports_handler_fk FOREIGN KEY (resolved_by_user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
 
-    SELECT joined_at INTO sender_joined_at FROM group_memberships
-    WHERE group_id = NEW.group_id AND membership_id = NEW.sender_membership_id
-      AND left_at IS NULL AND joined_at <= NEW.sent_at
-    FOR SHARE;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'The sender must be an active member of this group'
-            USING ERRCODE = 'check_violation';
-    END IF;
+-- Stage 8: administration events. Multiple rows share operation_id to preserve
+-- request/failure/manual-retry/ACK history. No outbox or automatic worker (Q2=A).
+CREATE TABLE admin_audit_log (
+    audit_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+    actor_user_id bigint NOT NULL,
+    actor_username_snapshot text NOT NULL,
+    actor_full_name_snapshot text NOT NULL,
+    operation_id uuid NOT NULL,
+    event_type text NOT NULL,
+    outcome text NOT NULL,
+    target_user_id bigint DEFAULT NULL,
+    target_report_id bigint DEFAULT NULL,
+    event_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    detail text DEFAULT NULL,
+    CONSTRAINT admin_audit_log_pkey PRIMARY KEY (audit_id),
+    CONSTRAINT admin_audit_log_actor_username_check CHECK (btrim(actor_username_snapshot) <> ''),
+    CONSTRAINT admin_audit_log_actor_full_name_check CHECK (btrim(actor_full_name_snapshot) <> ''),
+    CONSTRAINT admin_audit_log_event_type_check CHECK (event_type IN (
+        'LOGIN_SUCCESS', 'USER_CREATED', 'USER_UPDATED', 'PASSWORD_RESET',
+        'USER_LOCKED', 'USER_UNLOCKED', 'USER_SOFT_DELETED',
+        'SPAM_DISMISSED', 'SPAM_RESOLVED', 'CONTROL_REQUESTED',
+        'CONTROL_ACKNOWLEDGED', 'CONTROL_FAILED', 'CONTROL_UNKNOWN'
+    )),
+    CONSTRAINT admin_audit_log_outcome_check CHECK (outcome IN ('PENDING', 'SUCCESS', 'FAILED', 'UNKNOWN')),
+    CONSTRAINT admin_audit_log_control_target_check CHECK (
+        event_type NOT IN ('CONTROL_REQUESTED', 'CONTROL_ACKNOWLEDGED', 'CONTROL_FAILED', 'CONTROL_UNKNOWN')
+        OR target_user_id IS NOT NULL
+    ),
+    -- F31
+    CONSTRAINT admin_audit_log_actor_fk FOREIGN KEY (actor_user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F32
+    CONSTRAINT admin_audit_log_target_user_fk FOREIGN KEY (target_user_id)
+        REFERENCES users (user_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE,
+    -- F33
+    CONSTRAINT admin_audit_log_target_report_fk FOREIGN KEY (target_report_id)
+        REFERENCES spam_reports (report_id) MATCH SIMPLE
+        ON DELETE RESTRICT ON UPDATE RESTRICT NOT DEFERRABLE
+);
 
-    PERFORM 1 FROM group_key_epochs
-    WHERE group_id = NEW.group_id AND key_epoch_id = NEW.key_epoch_id
-      AND ends_at IS NULL AND starts_at BETWEEN sender_joined_at AND NEW.sent_at
-    FOR SHARE;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'A group message requires the current key epoch of this group'
-            USING ERRCODE = 'check_violation';
-    END IF;
-
-    RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER group_messages_guard
-    BEFORE INSERT OR UPDATE OF group_id, sender_membership_id, key_epoch_id, sent_at ON group_messages
-    FOR EACH ROW EXECUTE FUNCTION guard_group_message();
+-- Explicit indexes I01-I36. Wider U01-U06 keys exist for composite FKs;
+-- do not create additional plain indexes for their existing access prefixes.
+-- I01/I02: deleted_at is deliberately absent from the uniqueness predicates.
+CREATE UNIQUE INDEX users_username_ci_uidx ON users (lower(username COLLATE "C"));
+CREATE UNIQUE INDEX users_email_ci_uidx ON users (lower(email));
+-- I03/I04
+CREATE INDEX users_created_idx ON users (created_at, user_id);
+CREATE INDEX users_full_name_idx ON users (lower(full_name), user_id);
+-- I05/I06
+CREATE INDEX login_history_user_time_idx
+    ON login_history (user_id, logged_in_at DESC, login_id DESC);
+CREATE INDEX login_history_time_idx
+    ON login_history (logged_in_at DESC, login_id DESC) INCLUDE (user_id);
+-- I07: reciprocal invitation acceptance is still an application transaction.
+CREATE UNIQUE INDEX friend_requests_pending_pair_uidx
+    ON friend_requests ((LEAST(sender_id, recipient_id)), (GREATEST(sender_id, recipient_id)))
+    WHERE status = 'PENDING';
+-- I08/I09
+CREATE INDEX friend_requests_inbox_idx
+    ON friend_requests (recipient_id, status, requested_at DESC, request_id DESC);
+CREATE INDEX friend_requests_outbox_idx
+    ON friend_requests (sender_id, status, requested_at DESC, request_id DESC);
+-- I10/I11
+CREATE INDEX friendships_high_user_idx ON friendships (user_high_id, user_low_id);
+CREATE INDEX user_blocks_blocked_user_idx ON user_blocks (blocked_id, blocker_id);
+-- I12/I13
+CREATE UNIQUE INDEX conversations_private_pair_uidx
+    ON conversations (private_user_low_id, private_user_high_id) WHERE conversation_type = 'PRIVATE';
+CREATE INDEX conversations_private_high_user_idx
+    ON conversations (private_user_high_id, private_user_low_id) WHERE conversation_type = 'PRIVATE';
+-- I14/I15/I16
+CREATE INDEX conversations_group_name_idx
+    ON conversations (lower(group_name), conversation_id) WHERE conversation_type = 'GROUP';
+CREATE INDEX conversations_group_created_idx
+    ON conversations (created_at, conversation_id) WHERE conversation_type = 'GROUP';
+CREATE INDEX conversations_creator_idx ON conversations (created_by_user_id, conversation_id);
+-- I17/I18/I19
+CREATE INDEX conversation_members_user_idx ON conversation_members (user_id, conversation_id);
+CREATE UNIQUE INDEX membership_periods_open_member_uidx
+    ON membership_periods (conversation_id, user_id) WHERE left_at IS NULL;
+CREATE INDEX membership_periods_open_role_idx
+    ON membership_periods (conversation_id, group_role, user_id) WHERE left_at IS NULL;
+-- I20/I21
+CREATE UNIQUE INDEX e2ee_devices_current_user_uidx ON e2ee_devices (user_id) WHERE revoked_at IS NULL;
+CREATE INDEX e2ee_devices_installation_idx
+    ON e2ee_devices (user_id, device_uid, authorized_at DESC, device_id);
+-- I22/I23
+CREATE UNIQUE INDEX group_key_epochs_unended_uidx ON group_key_epochs (conversation_id) WHERE ends_at IS NULL;
+CREATE INDEX group_key_epochs_timeline_idx ON group_key_epochs (conversation_id, starts_at, key_epoch_id);
+-- I24/I25
+CREATE INDEX group_key_grants_device_idx ON group_key_grants (device_id, key_epoch_id);
+CREATE INDEX group_key_grants_period_idx
+    ON group_key_grants (conversation_id, user_id, period_id, key_epoch_id);
+-- I26/I27: U06 already supports conversation history ordered by message_id.
+CREATE INDEX messages_sender_time_idx
+    ON messages (sender_user_id, sent_at, conversation_type, conversation_id);
+CREATE INDEX messages_sender_period_idx ON messages (sender_period_id, message_id);
+-- I28/I29/I30/I31
+CREATE UNIQUE INDEX spam_reports_pending_pair_uidx
+    ON spam_reports (reporter_id, reported_user_id) WHERE status = 'PENDING';
+CREATE INDEX spam_reports_target_status_time_idx
+    ON spam_reports (reported_user_id, status, reported_at DESC, report_id DESC);
+CREATE INDEX spam_reports_time_idx ON spam_reports (reported_at DESC, report_id DESC);
+CREATE INDEX spam_reports_reporter_time_idx
+    ON spam_reports (reporter_id, reported_at DESC, report_id DESC);
+-- I32
+CREATE INDEX message_hidden_member_idx ON message_hidden (conversation_id, user_id, message_id);
+-- I33/I34/I35/I36
+CREATE INDEX admin_audit_log_time_idx ON admin_audit_log (event_at DESC, audit_id DESC);
+CREATE INDEX admin_audit_log_operation_idx ON admin_audit_log (operation_id, audit_id);
+CREATE INDEX admin_audit_log_actor_time_idx
+    ON admin_audit_log (actor_user_id, event_at DESC, audit_id DESC);
+CREATE INDEX admin_audit_log_target_time_idx
+    ON admin_audit_log (target_user_id, event_at DESC, audit_id DESC) WHERE target_user_id IS NOT NULL;
 
 COMMIT;

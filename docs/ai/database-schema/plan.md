@@ -9,13 +9,14 @@
 | Plan approved by user | YES (19/11/2026) |
 | Design decisions | Q1=B, Q2=A, Q3=B (`membership_periods`), Q4=A; confirmed by Minh on 19/11/2026 |
 | Detailed decisions | R1=B, R2=A; explicitly confirmed by Minh on 19/11/2026 |
-| Session scope | Detailed design review: baseline, plan and work-log only; SQL/tests/application changes are not authorized in this session |
-| Current review gate | Q1–Q4 and R1/R2 are RESOLVED; this turn records choices only and does not start the SQL phase |
+| Detailed design approved by user | YES (19/11/2026), explicit approval received before schema implementation |
+| Session scope | Implement script/schema.sql and synchronize baseline/plan/work-log plus in-progress feature document; no DB execution, seed/test/application edits or Git commits/push/merge/reset |
+| Current review gate | All named DDL choices audited against actual answers; none unresolved. Static source review only this turn; runtime acceptance remains NOT RUN |
 | Time zone | `Asia/Ho_Chi_Minh`; date obtained from the live clock, UTC+07:00 |
 
 ## 1. SUMMARY
 
-Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, replacing the existing trigger-based, separate private/group model with declarative constraints and a shared conversation model. Preserve account identities and history, support UserApp-only activity statistics, and store E2EE metadata without implementing cryptography. Minh approved this plan on 19/11/2026, confirmed Q1–Q4 as B/A/B/A, and subsequently selected R1=B and R2=A. This turn records those choices in the detailed design, with SQL/tests/application unchanged.
+Redesign PostgreSQL DDL for the confirmed requirements with declarative constraints and a shared conversation model. Minh approved the plan and detailed design, including Q1–Q4=B/A/B/A and R1=B/R2=A. This session implements the fresh-database schema source and factual in-progress documentation only; no SQL is executed against a database and no application, seed or verification script is changed.
 
 ### Repository and source review
 
@@ -27,7 +28,9 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 - Successfully read `docs/Phuong_an_da_chot_JAVA_CHAT_SYSTEM.docx` through its OOXML document body, including table-cell text (152 paragraphs). The Word source is available; no missing-source assumption is needed. This was a content review, not a Word layout audit. Its decision numbering omits D40; do not invent a D40 decision.
 - Source priority: Minh's explicit decisions in this request, including O1–O4, Q8=A and S1, override conflicting Word and older documents. Use the Word decisions for other business rules. Older SQL, baseline and use cases describe the current implementation or historical choices, not approval for this redesign. UI documents describe sample screens, not implemented JDBC/server behavior.
 
-### Differences from the current database
+### Original-schema gap analysis (before this implementation)
+
+The table below preserves the initial source review. schema.sql now declares the approved 15-table model; no live database state has been inspected or changed. Current source evidence is in section 9 and baseline section 12.
 
 | Area | Current files | Required change and responsibility |
 |---|---|---|
@@ -52,11 +55,11 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 
 - Confirmed decisions listed in section 4, the Word D1–D43 decisions where not overridden, and the reviewed repository sources.
 - A fresh, explicitly named disposable PostgreSQL test database; no existing application data is to be migrated.
-- Minh's plan approval and Q1–Q4 answers B/A/B/A, plus explicit R1=B/R2=A selections on 19/11/2026. Those decisions are resolved; this decision-recording session does not write SQL.
+- Minh's plan/detailed-design approvals and Q1–Q4=B/A/B/A, R1=B/R2=A, explicitly checked against this conversation. No unresolved DDL choice remains in the approved scope.
 
 ### Output / Expected result
 
-- This session: approved-plan metadata, a detailed baseline marked IN_REVIEW, preserved iteration history and append-only log entries; review the existing progress row without claiming code or implementation verification complete.
+- This session: schema source, synchronized approved baseline, in-progress feature document and preserved plan/log history; mark implementation in progress and distinguish static checks from all NOT RUN database/integration acceptance checks.
 - After approval: coherent schema, seed, verification script, updated baseline/ERD and implementation feature document, all matching the approved decisions.
 - An explicit allocation of every rule to declarative DB enforcement, application transaction, or server/client integration, with reproducible evidence and remaining integration checks reported truthfully.
 
@@ -72,7 +75,7 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 
 ### Out of scope
 
-- This session: changing SQL, executing schema/seed/tests, creating `database-schema.md`, or revising documents outside the baseline, this plan and work-log.
+- This session: executing any SQL against a database; modifying seed.sql, verify.sql or applications; modifying files outside schema.sql, baseline, this plan, work-log and the requested feature document.
 - Later implementation: migration/backfill of old data, compatibility views for old table names, Java/FXML/CSS changes, JDBC or socket implementation, SMTP/LLM integration, E2EE algorithms or key generation/distribution implementation.
 - Normal unencrypted groups, attachments, server plaintext search of group ciphertext, key transfer, backup or recovery secrets. Client group search remains an unimplemented integration item.
 - Persistent online status, a speculative session database, business triggers, stored procedures, custom functions, fixed preservation of the old 16-table count, and changes to other owners' work.
@@ -100,6 +103,23 @@ Redesign the PostgreSQL schema for the confirmed JAVA CHAT SYSTEM requirements, 
 | C14 | SCOPE | Use a fresh test database, retain no business triggers/custom functions, and postpone all implementation until this plan is approved. | CONFIRMED BY MINH |
 
 Q1–Q4 below are RESOLVED by Minh's explicit answers on 19/11/2026; original options/recommendations remain as history. Minh subsequently approved the plan and explicitly selected R1=B/R2=A on the same date. Their resolutions derive from those actual answers, not an automatic consequence of plan approval.
+
+### Pre-implementation answer audit (19/11/2026)
+
+| Question | Actual user answer in this conversation | DDL consequence | Audit result |
+|---|---|---|---|
+| Q1 | Explicit B: exceptional closure stops new messages, preserves authorized history, then permits departure/account soft deletion | Retained records and conversations.closed_at; post-close authorization is application-owned | RESOLVED |
+| Q2 | Explicit A | Administration audit/correlation; no outbox table | RESOLVED |
+| Q3 | Explicit B; user names membership_periods | Stable member composite PK plus separate period identity/history | RESOLVED |
+| Q4 | Explicit A | cleared_at plus scoped cleared_through_message_id | RESOLVED |
+| R1 | Explicit reply selecting B | PENDING/ACTIVE/CLOSED epoch shape and activated_at | RESOLVED |
+| R2 | Explicit reply selecting A | Versioned opaque bytea public-key/ciphertext/wrapped-key fields | RESOLVED |
+
+O1–O4, Q8-A and S1 were explicit requirements, not unanswered alternatives. Old OPEN wording in iterations 1–2 and prior work-log entries records past state; retain it as history. The cryptographic codec/algorithm is an unimplemented integration dependency, not a missing DDL answer for opaque storage.
+
+### Repository / branch preflight for implementation
+
+Tracked files were clean; only the existing untracked Word source was present. Continue the user's existing `fix/db` work branch (valid fix/ naming family); do not switch to main or disturb other branches. README section 4 asks for pulling/merging main, but Minh's explicit prohibition on automatic merge takes precedence. Read-only local comparison `git rev-list --left-right --count main...HEAD` returned `0 3`, so local main is already an ancestor; no remote-freshness claim is made. No pull/merge/stash/reset/commit/push is authorized or performed.
 
 ### Q1 — Last admin removal when no successor is eligible
 
@@ -154,18 +174,18 @@ Original recommendation: **A** for exact “all existing messages” behavior. *
 | R1 | Epoch key readiness: A prepares client-generated wrapped keys before atomically committing the membership/device cutover; B commits the cutover with a PENDING epoch and blocks new sends until a complete eligible-device grant batch activates it. Original options retained for history. | B recommended and explicitly selected by Minh on 19/11/2026; retain epoch_status/activated_at and PENDING default | RESOLVED |
 | R2 | E2EE storage format: A versioned opaque bytea envelopes for public keys/ciphertext/wrapped keys; B separate algorithm/nonce/tag/ciphertext columns. Original options retained for history. | A recommended and explicitly selected by Minh on 19/11/2026; codec algorithms/interoperability remain integration work | RESOLVED |
 
-Full options, confirmed choices and the dictionary are in baseline section 11. No Q1–Q4 or R1/R2 question remains unanswered; do not ask those decisions again. SQL implementation remains a later phase outside this decision-recording turn.
+Full options/confirmed choices and dictionary are in baseline section 11. All six decisions are answered and the detailed design is now explicitly approved. This session may implement schema.sql source only; seed/tests/runtime work remains a later phase.
 
 ### Step 1: Review and obtain approval
 
-- **Action:** Preserve the original review and iterations 1–2; keep actual plan approval YES (19/11/2026) / IN_PROGRESS. Iteration 3 records Minh's explicit R1=B/R2=A responses as RESOLVED without changing the dictionary or starting SQL.
-- **Verify:** This session changes only baseline/plan/work-log; prior log entries, Word source, SQL and tests remain intact. Approval history reflects the explicit user message; the SQL phase stays gated on the detailed review.
+- **Action:** Preserve iterations 1–3 and existing approval; record actual detailed-design approval, audit actual answers and begin schema-file implementation under iteration 4.
+- **Verify:** Only the five authorized paths change; old logs/history and Word/seed/tests/application remain intact; Git branch/HEAD unchanged; no DB execution claimed.
 
 ### Step 2: Finalize declarative model and responsibility matrix
 
 - **Action:** Document the following 15-table model and FK creation order in the baseline, with ERD, every column/type/null/default, keys/checks/indexes, FK actions and DB/application matrix. Stable member PK is `(conversation_id,user_id)`; `membership_periods.period_id` distinguishes join intervals. The count follows this model, not a legacy constraint. R1=B/R2=A now confirm the documented epoch state and opaque-envelope choices.
 
-| Candidate table | Purpose and principal declarative guarantees |
+| Implemented source table | Purpose and declared constraints; runtime NOT RUN |
 |---|---|
 | `users` | Identity, retained required username/email/name/hash, optional profile, system role, registration source, created time, ACTIVE/LOCKED status and independent `deleted_at`; global unique `lower(username)` and `lower(email)`, username format CHECK; proposed reset reminder flag |
 | `login_history` | FK to retained user; required successful-login instant and nonblank full-name/username snapshots; contains UserApp successes only by writer contract; optional IP supports existing admin screen without becoming the activity source |
@@ -173,8 +193,8 @@ Full options, confirmed choices and the dictionary are in baseline section 11. N
 | `friend_requests` | Directed users, status and request/resolution times; no self-request; one unordered PENDING pair through a partial unique index; resolved rows retained |
 | `friendships` | Ordered user pair PK plus friendship creation time for the existing detail screen; `user_low_id < user_high_id` |
 | `user_blocks` | Directed pair PK and no-self CHECK; block removal does not restore old friendship |
-| `conversations` | Identity and PRIVATE/GROUP discriminator, creation/closure metadata, group name/creator where appropriate; S1's `user_low_id/user_high_id` required and ordered only for PRIVATE, NULL for GROUP; PRIVATE pair uniqueness; local shape CHECKs |
-| `conversation_members` | One stable member identity per conversation/user, enforced by UNIQUE; personal `last_read_message_id`, `cleared_at` and `cleared_through_message_id`; same-conversation cursor/watermark FKs; retained across departures/rejoins |
+| `conversations` | Identity/type/creator/creation and closure metadata; `private_user_low_id/private_user_high_id` required and ordered only for PRIVATE, NULL for GROUP; partial unique pair and local shape CHECKs |
+| `conversation_members` | Stable `(conversation_id,user_id)` composite PK; personal read/clear pointers and same-conversation FKs; retained across departures/rejoins by application contract |
 | `membership_periods` | Identity for each participation interval, linked to stable member and its conversation/user; joined/left times and period group role; one open period per member via partial unique index; PRIVATE role MEMBER; group role independent of system role |
 | `messages` | Retained ID, sender/user/period, time and discriminator; exclusive PRIVATE text or GROUP ciphertext with epoch/device/version; same-conversation/owner/period FKs plus exact sender grant-period FK; confirmed R2=A versioned opaque envelope |
 | `message_hidden` | Per-user hide identity linked to a message and stable member/owner in the same conversation; unique message/user; persists across rejoining without deleting shared messages |
@@ -210,8 +230,8 @@ DB constraints alone cannot enforce current membership, exact member count, bloc
 
 ### Step 4: Replace schema and fixtures on a fresh test database
 
-- **Action:** In the later SQL implementation phase, use confirmed R1=B/R2=A and the detailed baseline; this decision-recording turn changes no SQL. Remove old triggers/helpers, split-table objects and app-open events from fresh DDL. Use declarative objects, then seed coherent fixtures for roles, snapshots, retained deletion, social retries, two PRIVATE participants, three-person E2EE groups, membership transitions, device changes and all report states. Reuse no real credentials or keys; crypto fixture bytes are opaque test values.
-- **Verify:** `schema.sql`, `seed.sql` and revised `verify.sql` execute in order with `ON_ERROR_STOP=1` on an empty disposable DB. Inspect catalogs for the approved inventory, constraints/indexes, zero non-internal triggers and zero custom schema functions/procedures. Tests must not call removed functions or assert old semantics.
+- **Action:** THIS SESSION: replace schema.sql with the approved 15-table fresh-database DDL, removing all custom helpers/triggers and old split/app-open objects from source; add the cyclic F24/F25 after messages. LATER: replace stale fixtures/assertions for this model, without real secrets.
+- **Verify:** THIS SESSION: static source/dictionary/key/FK/index/NULL-order review only. LATER: execute schema, revised seed and revised verify on an empty disposable DB and inspect catalogs. Runtime checks stay NOT RUN; existing seed.sql/verify.sql still target the old schema and must not be run as new-model validation.
 
 ### Step 5: Verify reports and visibility
 
@@ -220,7 +240,7 @@ DB constraints alone cannot enforce current membership, exact member count, bloc
 
 ### Step 6: Document actual delivery and report limitations
 
-- **Action:** Update baseline ERD, inventory, query examples, responsibility matrix and commands to match real files. Preserve historical work-log entries; append results with live Vietnam timestamps. Create `database-schema.md` from the feature template only after implementation, describing actual changes and evidence. Record any changed approach as a numbered iteration; never reuse older approvals as this feature's approval.
+- **Action:** Synchronize baseline and create database-schema.md during implementation from actual SQL source using the feature-template structure. Mark IN_PROGRESS, distinguish written declarations/static checks from all NOT RUN runtime work, and identify unchanged stale seed/tests. Preserve work-log history and iterations; finalize only after remaining implementation/verification really completes.
 - **Verify:** Compare every table/FK in the ERD to catalog output, report each criterion below truthfully, and leave server/JDBC/client/crypto checks NOT RUN until separately exercised. Do not declare the full system implemented from database tests alone.
 
 ### Alternatives considered
@@ -232,17 +252,17 @@ DB constraints alone cannot enforce current membership, exact member count, bloc
 
 ## 6. FILES TO CREATE / MODIFY
 
-This table is the change boundary. This session authorizes only baseline, plan and work-log. SQL, tests and the implementation feature document are later-phase deliverables. No file-list expansion is needed; iteration 2 changes phase/order and details only.
+This table is the change boundary. THIS SESSION authorizes schema.sql, baseline, plan, work-log and the in-progress feature document only. Seed/test files remain future deliverables. All five authorized files were already in the approved file list; iteration 4 changes timing/verification scope, not the boundary.
 
 | Action | File path | Timing and purpose |
 |---|---|---|
-| MODIFY | `docs/ai/database-schema/plan.md` | THIS SESSION: record actual approval, iteration 2, detailed-design gate and results; preserve iteration 1 |
+| MODIFY | `docs/ai/database-schema/plan.md` | THIS SESSION: approval/answer audit, iteration 4 and truthful source-vs-runtime results; preserve iterations 1–3 |
 | MODIFY | `docs/ai/work-log.md` | THIS SESSION AND LATER: append action/session entries; add/update only the matching progress row |
-| MODIFY | `script/schema.sql` | AFTER DETAILED DESIGN APPROVAL: fresh declarative shared schema; not this session |
+| MODIFY | `script/schema.sql` | THIS SESSION: implement the approved fresh declarative shared schema source, without database execution |
 | MODIFY | `script/seed.sql` | AFTER DETAILED DESIGN APPROVAL: fixtures matching the model; not this session |
 | MODIFY | `script/tests/verify.sql` | AFTER DETAILED DESIGN APPROVAL: declarative tests, transaction demonstrations and query assertions; anonymous DO assertions only for tests, no custom assertion function; not this session |
-| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: record explicit R1=B/R2=A resolutions, retain options/history and existing dictionary/ERD; later append real implementation evidence |
-| CREATE | `docs/ai/database-schema/database-schema.md` | AFTER IMPLEMENTATION: factual feature documentation using the feature template; not created this session |
+| MODIFY | `docs/database/design-baseline.md` | THIS SESSION: reflect approved schema source, concrete object names/counts and application-only limitations; no runtime claims |
+| CREATE | `docs/ai/database-schema/database-schema.md` | THIS SESSION: use feature-template structure but describe actual schema source and IN_PROGRESS / NOT RUN state; future fixtures/integration clearly deferred |
 
 Read-only sources, including the Word document, templates, UI plans/docs, requirements specification and project brief, remain unchanged.
 
@@ -290,7 +310,7 @@ Read-only sources, including the Word document, templates, UI plans/docs, requir
 
 These verify the documentation session only, not the future implementation. Final results are recorded in the session-end work-log entries after checks run.
 
-P1–P4 below retain the earlier planning-session results. The approval-NO/two-file scope in P3 describes that earlier session, not the current approved design phase. Current detailed-design checks D1–D4 follow separately.
+P1–P4 and D1–D4 retain earlier planning/design-session results. Their prior two-/three-file scope and IN_REVIEW state describe those sessions, not this schema-source implementation. Current source-only checks S1–S4 follow separately; no prior runtime PASS is reused.
 
 | ID | Criterion | Verification | Result |
 |---|---|---|---|
@@ -299,16 +319,25 @@ P1–P4 below retain the earlier planning-session results. The approval-NO/two-f
 | P3 | Complete plan; approval remains NO; only two authorized documentation paths change | Final `git status`, `git diff --check`, plan section/placeholder check and work-log preservation comparison | PASS |
 | P4 | Session boundaries, action types, timestamps and progress row follow work-log rules | Compare historical entries to HEAD; validate new lines against section 2 types and actual Vietnam clock; verify end entry and tracker | PASS |
 
-| ID | Current detailed-design criterion | How to verify | Result |
+| ID | Prior detailed-design criterion | How verified in that phase | Result |
 |---|---|---|---|
 | D1 | Actual approval and choices recorded without inferred answers | IN_PROGRESS / YES (19/11/2026); Q1–Q4 and R1=B/R2=A RESOLVED by explicit user messages; no further named decision auto-resolved | PASS |
 | D2 | Detailed baseline is internally consistent and explicitly IN_REVIEW | Static review: 15 dictionaries/109 columns, 33 type-matched FKs and ERD edges, six UNIQUE targets, 36 index definitions, local null rules/actions/creation order; Mermaid visual rendering NOT RUN | PASS |
 | D3 | Changes remain within the three authorized documents | Git diff/status and unchanged SQL/tests/Word hashes; no application changes or implementation feature document | PASS |
 | D4 | Prior logs and iteration history survive; progress is truthful | Pre-session log/tracker preserved except session append and added phase note; iteration 1 intact, truthful tracker and session boundaries | PASS |
 
+### Current schema-source review (not database tests)
+
+| ID | Source criterion | Method / limit | Result |
+|---|---|---|---|
+| S1 | Actual design approval and all historical OPEN questions audited | Explicit Q1=B/Q2=A/Q3=B/Q4=A/R1=B/R2=A messages plus current design approval; historical OPEN text retained; no unanswered DDL choice | PASS |
+| S2 | DDL source agrees with dictionary/keys/FKs/indexes | Inline Node source checker: 15 tables/109 column types/null/defaults, 15 PKs/6 UNIQUE/33 FKs/46 CHECKs/36 exact index definitions; parent order, scoped targets/actions, local CHECK identifiers, names and duplicate-index review; not PostgreSQL parser/runtime validation | PASS |
+| S3 | Only authorized files changed and protected work preserved | Five-path Git scope; unchanged seed/test/Word SHA256 and branch/HEAD; append-only historical log/iteration comparison | PASS |
+| S4 | Feature documentation and progress reflect partial implementation | Seven feature-template sections based on actual source; IN_PROGRESS, Code ongoing, Doc present; eleven runtime criteria NOT RUN; truthful logs/tracker | PASS |
+
 ### Implementation acceptance checks after approval
 
-All are **NOT RUN**: this session is authorized for detailed design only. Run the following after detailed-baseline approval and implementation on a newly created, explicitly disposable `java_chat_database_schema_test` DB, configured through the owner's normal psql connection settings:
+All are **NOT RUN**: this session writes/reviews source without connecting to a database. After the stale seed/verification scripts are rewritten and runtime work is authorized, use an explicitly disposable empty `java_chat_database_schema_test` DB configured through the owner's normal connection settings:
 
 ```powershell
 psql -X -d java_chat_database_schema_test -v ON_ERROR_STOP=1 -c "SHOW server_version_num;"
@@ -317,7 +346,7 @@ psql -X -d java_chat_database_schema_test -v ON_ERROR_STOP=1 -f script/seed.sql
 psql -X -d java_chat_database_schema_test -v ON_ERROR_STOP=1 -f script/tests/verify.sql
 ```
 
-Do not run these against an existing database. Two-session tests will be documented as literal Session A/Session B SQL in the updated baseline; they are not present or claimed executed yet.
+Do not run these against an existing database or use the current old seed/verify unchanged: they reference removed objects and old semantics. The command sequence is a future verification plan, not execution history. Two-session scripts remain to be prepared and are not claimed executed.
 
 | ID | Criterion | How to verify after implementation | Result |
 |---|---|---|---|
@@ -369,13 +398,23 @@ Actual JDBC writes, UserApp session replacement, immediate kick acknowledgement/
 
 **Impact:** Plan/baseline/work-log updates only; no change to the 15-table dictionary, keys or indexes and no SQL/test/application edits. All named Q1–Q4/R1–R2 decisions are answered; V1–V11 remain NOT RUN. Plan stays IN_PROGRESS / YES (19/11/2026); no additional approval question is introduced by this record.
 
+## [ITERATION 4 - 19/11]
+
+**Reason for change:** Minh explicitly approves the detailed design and authorizes updating schema.sql plus factual in-progress documentation, while prohibiting SQL execution/application changes/commit/push. Audit found no unanswered DDL-affecting named choice; all six answers are explicit.
+
+**Old approach:** Decision-recording phase updated three documents only; source SQL still used old split tables/custom guards. Fixtures and runtime acceptance had not begun.
+
+**New approach:** Implement approved DDL source and synchronize baseline/plan/work-log; create the requested feature document with IN_PROGRESS and runtime NOT RUN. Keep seed.sql/verify.sql untouched and identify them as stale/incompatible. Perform static source checks of dictionary, keys/FKs, NULL shapes, creation order and duplicate indexes without connecting to PostgreSQL.
+
+**Impact:** Five existing planned paths are active this turn; no new file outside the boundary. Keep plan IN_PROGRESS / YES, code progress in progress, feature doc present, runtime Verified not complete and Committed unconfirmed. Preserve previous iterations and historical logs. README pull/merge workflow yields to Minh's no-auto-merge instruction; keep fix/db and HEAD unchanged.
+
 ## 11. FINAL RESULT
 
 | Field | Value |
 |---|---|
-| Completion date | Not completed; plan approved and all named design choices resolved; SQL phase not started |
+| Completion date | Not completed; schema-file implementation in progress, database acceptance NOT RUN |
 | Commit message to use after implementation | `feat(database-schema): align PostgreSQL schema with confirmed chat requirements` |
-| Current result | IN_PROGRESS / YES (19/11/2026); R1=B/R2=A recorded explicitly; SQL unchanged and implementation checks NOT RUN |
-| Feature description | Deferred until implementation; `database-schema.md` has not been created |
+| Current result | Schema source written: 15 tables/109 columns/15 PK/6 UNIQUE/33 FK/46 CHECK/36 explicit indexes. Static consistency review only; seed/tests/integration deferred and DB execution NOT RUN |
+| Feature description | database-schema.md created from actual source, marked IN_PROGRESS and runtime checks NOT RUN |
 
-Decision checkpoint: the approved plan, Q1=B/Q2=A/Q3=B/Q4=A and R1=B/R2=A are confirmed. There are no unanswered named design questions. This turn records decisions only; subsequent SQL work follows the agreed design and existing implementation constraints.
+Implementation checkpoint: the detailed design and all named answers are confirmed. Only schema-file implementation/static review is authorized now. All database, fixture and integration acceptance checks remain NOT RUN until actually executed in a later authorized session.

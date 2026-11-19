@@ -3,28 +3,29 @@
 | Field | Value |
 |---|---|
 | Feature / owner | database-schema / Minh |
-| Design status | IN_REVIEW — all named design choices resolved; SQL not implemented |
+| Design status | APPROVED DESIGN / IN_PROGRESS implementation; schema source written, database execution NOT RUN |
 | Design date | 19/11/2026, live Asia/Ho_Chi_Minh date |
 | Plan approval | YES (19/11/2026); [plan](../ai/database-schema/plan.md) |
-| Current session | Baseline, plan and work-log only; no SQL/tests/application changes |
+| Detailed design approval | YES (19/11/2026), explicit approval before schema implementation |
+| Current session | schema.sql plus baseline/plan/work-log/in-progress feature doc; no DB execution, seed/test/application edits |
 | Target | PostgreSQL 17.11 from the existing project target; runtime/version NOT RUN |
 | Detailed choices | R1=B and R2=A explicitly confirmed by Minh on 19/11/2026; both RESOLVED |
 
 ## 1. Basis and scope
 
-This replaces the obsolete trigger-based, split PRIVATE/GROUP design within this file. It describes the proposed next database, not what the unchanged schema.sql currently implements. Prior test results remain in the append-only work-log; none validates this redesign. Target a fresh database, without migration/backfill.
+This approved design is now reflected in [schema.sql](../../script/schema.sql) source, replacing the old trigger-based split model in that file. No database has been updated or verified in this session. Prior runtime results in work-log belong to the earlier model, not this schema. Target a fresh database without migration/backfill.
 
 Minh's explicit decisions override conflicting Word and older documents. The Word source `docs/Phuong_an_da_chot_JAVA_CHAT_SYSTEM.docx` was successfully read in the initial review. Retain its non-conflicting decisions. Do not invent a D40 decision.
 
 Confirmed choices are not reopened: S1 stores the ordered PRIVATE pair in conversations; Q1=B allows exceptional group closure when no eligible successor exists, preserving data/history; Q2=A uses administration audit/manual control retry, without an outbox; Q3=B uses a stable conversation_members row and membership_periods; Q4=A keeps clear time plus an ID watermark. Q8-A/O4 allow at most one currently authorized E2EE device per account, no historical key grants for newly authorized devices, no transfer/backup/recovery secrets. Same still-authorized installation re-login preserves local keys. Every group is E2EE at creation with at least three people, including the creator.
 
-Minh explicitly selected **R1=B** (PENDING/ACTIVE/CLOSED epochs) and **R2=A** (versioned opaque envelopes) on 19/11/2026. These are confirmed storage/lifecycle decisions; section 11 retains the original alternatives and records their resolution. The dictionary remains a design specification, not a claim of implemented DDL or working cryptography.
+Minh explicitly selected **R1=B** (PENDING/ACTIVE/CLOSED epochs), **R2=A** (versioned opaque envelopes) and approved the detailed design on 19/11/2026. Pre-implementation review matched every Q1–Q4/R1–R2 choice to an actual reply; no DDL-affecting named question remains. The dictionary matches written source; cryptographic integration and DB execution are NOT RUN.
 
 Use only tables, identity, PK, FK, NOT NULL, UNIQUE, CHECK, DEFAULT and justified indexes. No business trigger, procedure, custom function, cross-table CHECK, exclusion constraint or extension. Built-in expressions such as lower, btrim, LEAST and GREATEST are allowed.
 
 ## 2. Tables and purposes
 
-There are 15 proposed tables as a consequence of this model, not a legacy count requirement.
+schema.sql declares 15 tables as a consequence of this model, not a legacy count requirement: 109 columns, 15 PKs, 6 table UNIQUE constraints, 33 FKs, 46 CHECKs and 36 explicit indexes (8 unique). These are static source counts, not catalog observations.
 
 | Table | Purpose |
 |---|---|
@@ -231,7 +232,7 @@ erDiagram
 
 - Default `ID` means GENERATED ALWAYS AS IDENTITY for a bigint surrogate PK. Composite PKs have no extra identity.
 - Default `NOW` means CURRENT_TIMESTAMP. It is a transaction-start default, not a commit-order clock. The application supplies one authoritative cutover instant after locks for multi-step changes and validates local ordering. Client timestamps cannot backdate membership/device rights. Clock anomalies fail/retry rather than granting old keys.
-- `none` means no explicit DEFAULT: required values must be supplied. `NULL` is a proposed NULL default. UUIDs are application-supplied; no custom DB generator is used.
+- `none` means no explicit DEFAULT: required values must be supplied. `NULL` means explicit DEFAULT NULL in schema.sql. UUIDs are application-supplied; no custom DB generator is used.
 - Timestamps are timestamptz. Reports use explicit Asia/Ho_Chi_Minh half-open intervals `[start,end)`.
 - Every CHECK is row-local. Required conditional values use explicit IS NOT NULL/IS NULL branches so SQL UNKNOWN does not accidentally permit an incomplete payload/profile.
 - Every FK uses ON DELETE RESTRICT, ON UPDATE RESTRICT, MATCH SIMPLE, NOT DEFERRABLE / immediate. Parents and historical children are retained. This does not prohibit hard deletion of every unreferenced row or changes to unrelated columns.
@@ -240,7 +241,7 @@ erDiagram
 
 ## 5. Data dictionary and local constraints
 
-Every design column appears below. R1/R2 annotations identify the explicitly confirmed choices, not open alternatives. Column types/defaults describe the design; SQL execution remains NOT RUN.
+Every declared column appears below. Static review compared all 109 names/types/nullability/defaults against schema.sql; R1/R2 identify confirmed choices. PostgreSQL syntax/catalog/execution checks remain NOT RUN.
 
 ### 5.1 users
 
@@ -535,7 +536,7 @@ Every table's PK is in section 5. Immediate UNIQUE constraints U01–U06 are req
 | U05 | group_key_grants(key_epoch_id,device_id,period_id) | Bind sender grant to its actual participation period |
 | U06 | messages(conversation_id,message_id) | Bind read/clear/hide pointer to conversation; history scan |
 
-The following additional indexes are justified by invariants or concrete access paths. I01–I36 are review IDs; final SQL may use descriptive names with these definitions.
+The following indexes are declared in schema.sql with descriptive names; I01–I36 remain design IDs. Static review found no exact duplicate definition or plain duplicate of a PK/UNIQUE backing key. Wider U01–U06 targets are intentional FK scope/owner proofs, even though narrower identity PKs already exist.
 
 | Index | Table / expression | Unique / predicate | Reason |
 |---|---|---|---|
@@ -701,18 +702,41 @@ Original recommendation **B**. Minh selected **B** on 19/11/2026. Status **RESOL
 
 Original recommendation **A**. Minh selected **A** on 19/11/2026. Status **RESOLVED**. Keep versioned opaque bytea envelopes and key_format_version/payload_version/envelope_version. This resolves storage representation, not cryptographic algorithms; an actual version-1 codec specification and interoperability tests remain integration dependencies.
 
-No named design question remains unanswered. The concrete dictionary, composite FK targets, uniform RESTRICT actions/index rationale and application boundary for exactly two PRIVATE members are unchanged by these selections. SQL/test/application files are not changed in this decision-recording session.
+No named design question remains unanswered; explicit replies and detailed-design approval were checked before implementation. Dictionary/FK/index definitions and the exactly-two-PRIVATE application boundary are unchanged. Only schema source and authorized documents change this session; seed/test/application files remain untouched.
 
-## 12. Verification state and next gate
+## 12. Written source and verification state
+
+### Actual source mapping
+
+schema.sql names every PK/CHECK/FK. F01–F33 and U01–U06 comments map to the catalogs above. The cyclic pointer FKs are conversation_members_read_message_fk and conversation_members_clear_message_fk, added after messages. All 33 FKs explicitly use MATCH SIMPLE, ON DELETE RESTRICT, ON UPDATE RESTRICT and NOT DEFERRABLE. Ten surrogate keys use GENERATED ALWAYS AS IDENTITY; the other five PKs are composite.
+
+| Design index IDs | Concrete schema.sql index names in ID order |
+|---|---|
+| I01–I04 | users_username_ci_uidx; users_email_ci_uidx; users_created_idx; users_full_name_idx |
+| I05–I09 | login_history_user_time_idx; login_history_time_idx; friend_requests_pending_pair_uidx; friend_requests_inbox_idx; friend_requests_outbox_idx |
+| I10–I16 | friendships_high_user_idx; user_blocks_blocked_user_idx; conversations_private_pair_uidx; conversations_private_high_user_idx; conversations_group_name_idx; conversations_group_created_idx; conversations_creator_idx |
+| I17–I23 | conversation_members_user_idx; membership_periods_open_member_uidx; membership_periods_open_role_idx; e2ee_devices_current_user_uidx; e2ee_devices_installation_idx; group_key_epochs_unended_uidx; group_key_epochs_timeline_idx |
+| I24–I32 | group_key_grants_device_idx; group_key_grants_period_idx; messages_sender_time_idx; messages_sender_period_idx; spam_reports_pending_pair_uidx; spam_reports_target_status_time_idx; spam_reports_time_idx; spam_reports_reporter_time_idx; message_hidden_member_idx |
+| I33–I36 | admin_audit_log_time_idx; admin_audit_log_operation_idx; admin_audit_log_actor_time_idx; admin_audit_log_target_time_idx |
+
+The script wraps CREATE TABLE, the pointer ALTER TABLE and CREATE INDEX statements in a transaction. No custom function/procedure, business trigger, extension installation or database/schema deletion command is declared. CHECK operands are row-local; defaults use built-in CURRENT_TIMESTAMP, not custom helpers.
+
+### Deferred implementation and limits
+
+Section 10 remains mandatory for application writers. ACTIVE epoch eligibility, closed-group send rejection and no-history-key policy require application transactions; valid FKs alone do not prove them. The script does not implement canonical PRIVATE child counts, reciprocal invites/block cleanup, last-admin transfer, one live session, role authorization or immutable history. Nonempty bytea/version checks do not authenticate/decrypt content.
+
+Existing seed.sql and tests/verify.sql were intentionally not changed. They still reference removed split tables/guard functions and old semantics and are **incompatible with this schema source**. Rewrite them before use; do not run them after this DDL or reuse their prior PASS as new-model evidence. No live-database success or feature completion is asserted.
 
 | Check | Result / limitation |
 |---|---|
 | Source precedence / confirmed choices | Based on reviewed repository sources and Minh's actual decisions; old PASS is not new evidence |
-| Dictionary/ERD/FK consistency | PASS static review: 15 dictionaries/109 columns, 15 PKs, six UNIQUE targets, 33 type-matched FK edges and 36 index definitions; no DB or visual-render validation implied |
-| SQL syntax/catalog/seed/assertions | NOT RUN; SQL still implements older schema and was not changed |
+| Dictionary/DDL/ERD/FK consistency | PASS static source review: 109 names/types/nullability/defaults; 15 PKs, six UNIQUE targets, 33 typed FKs/creation order, 46 local CHECKs and 36 indexes; not PostgreSQL parser/runtime validation |
+| Prohibited objects / duplicate indexes | PASS static review: only table/index creation, pointer ALTER and transaction statements; no prohibited object/command or exact duplicate index |
+| PostgreSQL syntax/catalog/schema execution | NOT RUN; no DB connection or installed-version verification |
+| Seed/assertions | NOT RUN; unchanged old scripts are incompatible and deferred |
 | Block/send, clear/send, close/send and device-cutover races | NOT RUN; transaction contract only |
 | JDBC/TCP notification and error UI | NOT RUN; application code untouched |
 | E2EE codec/decryption/device proof/interoperability | NOT RUN; integration not implemented here |
 | Mermaid visual rendering | NOT RUN unless a renderer is available; source/FK structure checked separately |
 
-R1=B/R2=A are now confirmed. During the subsequent implementation phase, use a fresh disposable DB and run plan V1–V11. Negative tests must cover wrong-conversation read/clear/hide, wrong sender period/user, wrong GROUP epoch, wrong device owner, missing sender grant and mismatched sender-grant period. Verify rejoin without personal-state reset, new-device denial of old grants, retained closed-group history and post-close send rejection. Do not turn any of these into PASS from static document review alone.
+R1=B/R2=A and the detailed design are approved, and schema source is written. In a later authorized verification phase, first rewrite the stale fixtures/assertions, then use a fresh disposable DB and run plan V1–V11. Cover wrong-conversation read/clear/hide, wrong sender period/user, wrong GROUP epoch, wrong device owner, missing/mismatched sender grant, retained rejoin state, new-device denial of old grants, retained closed-group history and post-close send rejection. None is PASS from static source review alone.

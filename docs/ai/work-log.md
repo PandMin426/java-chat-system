@@ -324,6 +324,27 @@ Trang
 [19/11/2026 11:20] | VERIFIED | database-schema | PASS: exact selected resolutions, original iterations 1-2 and full dictionary preserved; historical log unchanged except current-session append/permitted tracker note; SQL/test/Word SHA256 unchanged; exactly three docs modified; git diff --check clean. All V1-V11 and runtime/integration tests NOT RUN.
 [19/11/2026 11:20] | SESSION_END | database-schema | R1=B/R2=A recorded with no unanswered named design questions; documentation-only update, SQL/tests/application unchanged, no implementation feature document and no commit/push/merge/reset.
 
+[19/11/2026 11:24] | SESSION_START | database-schema | Implement approved fresh-database schema in script/schema.sql and sync baseline/plan/feature/work-log; tracked files initially clean on fix/db; preserve untracked Word; no SQL execution, application changes, commit/push/merge/reset.
+[19/11/2026 11:24] | PLAN_APPROVED | database-schema | Minh explicitly approved the detailed design and answered choices; this turn authorizes schema-file implementation and factual in-progress feature documentation only, not database execution.
+[19/11/2026 11:24] | DECISION | database-schema | OPEN-question audit against actual chat: Q1=B exceptional closure, Q2=A audit/manual retry, Q3=B stable members plus membership_periods, Q4=A clear watermark, R1=B PENDING epochs, R2=A versioned envelopes; all explicitly answered. Historical OPEN mentions are retained history, not unresolved DDL choices.
+
+[19/11/2026 11:25] | PLAN_UPDATED | database-schema | Iteration 4 activates schema.sql plus baseline/plan/work-log/in-progress feature doc within existing file list; seed/tests/application and DB execution excluded; historical plan iterations preserved.
+[19/11/2026 11:25] | NOTE | database-schema | README section 4 requests pull/merge main, but Minh explicitly prohibits auto-merge; continue existing fix/db without Git mutations. Read-only local comparison main...HEAD returned 0 3; remote freshness not verified.
+[19/11/2026 11:25] | CODE_START | database-schema | Begin approved fresh-database declarative schema source implementation only; runtime verification NOT RUN by user instruction.
+
+[19/11/2026 11:37] | FILE_MODIFIED | database-schema | script/schema.sql: approved 15-table declarative source with 109 columns, 15 PK, 6 UNIQUE, 33 scoped FKs, 46 local CHECKs and 36 explicit indexes; old custom guards/split objects absent; no SQL executed.
+[19/11/2026 11:37] | FILE_MODIFIED | database-schema | docs/database/design-baseline.md: approved-source status, exact object/index mapping, static inventory and application-only limits; explicitly marks unchanged seed.sql/verify.sql incompatible and all database/runtime work NOT RUN.
+[19/11/2026 11:37] | DOC_CREATED | database-schema | Created docs/ai/database-schema/database-schema.md with feature-template structure and actual source facts; IN_PROGRESS, source review separated from NOT RUN runtime acceptance and deferred fixtures/integration.
+[19/11/2026 11:37] | BUG_FOUND | database-schema | Tooling-only: first inline source checker had an invalid optional word-boundary regex and did not review SQL; a baseline patch used a mismatched context line and was rejected atomically without file changes.
+[19/11/2026 11:37] | BUG_FIXED | database-schema | Corrected the inline checker regex and baseline context; source checks pass including exact dictionary/FK/UNIQUE/index correspondence. These checks are not PostgreSQL syntax/catalog/execution tests.
+[19/11/2026 11:37] | FILE_MODIFIED | database-schema | docs/ai/work-log.md: append-only implementation records and permitted tracker changes; Plan complete, Code in progress, Verified incomplete, Doc present, Committed unconfirmed.
+
+[19/11/2026 11:40] | VERIFIED | database-schema | S1-S2 PASS static source only: actual six-answer audit; 15 tables, 109 dictionary-matched column types/null/defaults, 15 PK, 6 UNIQUE, 33 typed scoped FKs with restrictive immediate actions and valid parent/key order, 46 local CHECKs, 36 exact catalog-matched indexes (8 unique), 10 identity columns, 54 allowed statements; no duplicate plain index or prohibited object/command.
+[19/11/2026 11:40] | VERIFIED | database-schema | S3-S4 PASS: five authorized files, seed/test/Word hashes and Git branch/HEAD unchanged, prior iterations/log entries preserved except permitted tracker updates, feature template sections complete and IN_PROGRESS. All V1-V11, PostgreSQL syntax/catalog/execution, fixtures/concurrency, JDBC/TCP and E2EE NOT RUN.
+[19/11/2026 11:40] | FILE_MODIFIED | database-schema | docs/ai/database-schema/plan.md and baseline now reflect written source/static results and unfinished runtime work; feature doc present, Code ongoing and Verified incomplete; no feature-completion claim.
+[19/11/2026 11:40] | COMMIT_REMINDER | database-schema | When the complete feature is ready, use a separate commit: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; this session performs no commit/push/merge/reset.
+[19/11/2026 11:40] | SESSION_END | database-schema | Approved schema source implemented and documented as IN_PROGRESS; all named DDL choices explicitly answered. Database execution NOT RUN, old seed/verify incompatible and untouched, applications/Word/Git state preserved. No conclusion that the database has run successfully.
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -362,6 +383,6 @@ Trang
 | social-private-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
-| database-schema | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
+| database-schema | ✅ | 🔄 | ⬜ | ✅ | ⬜ |
 
-**database-schema current phase:** IN_PROGRESS; plan approved 19/11/2026; R1=B/R2=A explicitly confirmed 19/11/2026, all named design choices resolved. The tracker row remains Plan complete and Code/Verified/Doc/Committed not started because SQL implementation has not begun.
+**database-schema current phase:** IN_PROGRESS; detailed design approved 19/11/2026 and all named choices answered. Schema source written/static review only; seed/test rewrite and all database/integration acceptance NOT RUN. Plan complete; Code in progress; feature Doc present; Verified/Committed incomplete.
