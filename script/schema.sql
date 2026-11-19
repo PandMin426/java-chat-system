@@ -1,13 +1,14 @@
 -- JAVA CHAT SYSTEM / database-schema / PostgreSQL target 17.11.
 -- Approved fresh-database DDL. This is not a migration or a repeatable upgrade.
--- Source review only in this session: database execution has NOT RUN.
+-- Executed on PostgreSQL 17.11 in a fresh isolated test DB on 19/11/2026.
+-- See script/tests/negative-cases.md for the exact target and A/B/C/D results.
 -- See docs/database/design-baseline.md for F01-F33, U01-U06 and I01-I36.
 -- Instants use timestamptz; application report boundaries use Asia/Ho_Chi_Minh.
 -- Application transactions own current authorization, lock ordering, immutable
 -- history, exactly two PRIVATE member rows, group cardinality/admin transfer,
 -- block cleanup, epoch activation and no historical key grants to new devices.
--- Existing seed.sql / tests/verify.sql still target the old schema: do not use
--- them to validate this DDL until they are rewritten for this model.
+-- seed.sql, queries.sql and tests/verify.sql now match this model; fixture
+-- passwords/cryptographic bytes are fake and do not prove login or E2EE.
 BEGIN;
 
 -- Stage 1: retained account identity. BCrypt is computed by the application.

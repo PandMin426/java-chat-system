@@ -345,6 +345,32 @@ Trang
 [19/11/2026 11:40] | COMMIT_REMINDER | database-schema | When the complete feature is ready, use a separate commit: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; this session performs no commit/push/merge/reset.
 [19/11/2026 11:40] | SESSION_END | database-schema | Approved schema source implemented and documented as IN_PROGRESS; all named DDL choices explicitly answered. Database execution NOT RUN, old seed/verify incompatible and untouched, applications/Word/Git state preserved. No conclusion that the database has run successfully.
 
+[19/11/2026 11:46] | SESSION_START | database-schema | Read actual approved schema/plan and stale seed/tests; implement seed.sql, parameterized queries.sql, verify.sql and negative-cases.md; check PostgreSQL tools and isolate a new test database before any SQL; preserve existing Word and Git state.
+[19/11/2026 11:46] | DECISION | database-schema | User authorizes fixture/query/verification work and execution only on a clearly identified fresh test DB; no functions/triggers as test helpers, no application changes or database/schema deletion; A constraints/B queries/C app transactions/D integration remain distinct.
+
+[19/11/2026 12:04] | PLAN_UPDATED | database-schema | Iteration 5 adds requested queries.sql/negative-cases.md before editing and activates fixture/verification work; A/B/C/D separated; no functions/triggers, no important redesign, no application/Git mutations.
+[19/11/2026 12:04] | VERIFIED | database-schema | Environment: sandbox Docker access denied; approved outside-sandbox read succeeds. Existing chat-postgres publishes 127.0.0.1:5432; psql/server 17.11 (170011), role chat_user has create-DB/superuser flags. Metadata read on maintenance postgres only; business chat_system not queried.
+[19/11/2026 12:04] | CODE_START | database-schema | Begin deterministic approved-model fixtures, canonical parameterized visibility queries and isolated A/B/C tests; fake cryptographic bytes are DB fixtures only.
+
+[19/11/2026 12:25] | VERIFIED | database-schema | Created fresh test DB jcs_schema_test_20261119_120407_2ed14e owned by chat_user on chat-postgres a0786fdd6fe1, published 127.0.0.1:5432, PostgreSQL/psql 17.11. Empty public inventory verified before schema; execution uses container Unix socket /var/run/postgresql:5432. Business chat_system not queried; no database/schema deleted.
+[19/11/2026 12:25] | FILE_MODIFIED | database-schema | Replaced seed.sql/verify.sql for approved model and created queries.sql: deterministic fake-password/crypto fixtures, Vietnam month boundaries, stable rejoin/epoch/device history, social/spam cases and nine parameterized queries with shared message visibility. No real authentication or E2EE claim.
+[19/11/2026 12:25] | VERIFIED | database-schema | schema then seed then nine query PREPAREs succeeded on the named test DB. verify.sql PASS A=48 catalog/constraint checks, B=40 actual query assertions, C=11 rollback-only SQL contract simulations; D=1 NOT RUN real integration. Full 15-table plus identity-sequence fingerprint unchanged after outer rollback. Application implementation and concurrent committed races are not established by these results.
+
+[19/11/2026 12:33] | FILE_CREATED | database-schema | script/tests/negative-cases.md: exact target/run instructions, A00-A47 SQLSTATE/constraint catalogue, B01-B40 ordered query expectations, C01-C11 rollback-only contracts and D NOT RUN handoff; committed two-session races explicitly NOT RUN.
+[19/11/2026 12:33] | FILE_MODIFIED | database-schema | Synchronized plan.md, database-schema.md and design-baseline.md with actual isolated execution/catalog/fixture/query results and partial V1-V11 criteria; preserved approved model/answers and iterations 1-4. schema.sql changed factual header comments only; no DDL design change.
+[19/11/2026 12:33] | VERIFIED | database-schema | EXPLAIN (ANALYZE, BUFFERS) executed successfully for group-history q_chat_messages, q_friend_counts and q_activity_monthly on tiny test fixtures; observed index paths for history/monthly and reasonable sequential scans for eight friendship edges; no production performance claim.
+[19/11/2026 12:33] | BUG_FOUND | database-schema | Final source/doc review found a trailing blank line at verify.sql EOF and two negative-case unread cells incorrectly labelled null when unread was not asserted; query ACL header also grouped UserApp Q08 with admin queries.
+[19/11/2026 12:33] | BUG_FIXED | database-schema | Removed trailing blank, labelled unread cells not asserted, and clarified Q02-Q07 admin, Q08 UserApp and Q09 appropriate admin/group authority; no SQL query semantics changed.
+
+[19/11/2026 12:36] | FILE_CREATED | database-schema | script/queries.sql created earlier in this session: nine typed session PREPARE statements with exact fixture examples; this entry explicitly records creation separately from seed/verify modifications.
+[19/11/2026 12:36] | BUG_FOUND | database-schema | Final inline source checker initially rejected pre-existing work-log trailing whitespace because it checked the entire append-only historical file; no new SQL failure or history mutation occurred.
+[19/11/2026 12:36] | BUG_FIXED | database-schema | Scoped whitespace checks to changed sources and used exact historical-prefix/tracker comparisons for work-log; preserved old whitespace/history. Final source/preservation checker PASS.
+[19/11/2026 12:36] | VERIFIED | database-schema | Final verify.sql rerun on exact isolated target again PASS A48/B40/C11 SQL demonstrations, D1 NOT RUN, complete row/sequence fingerprint unchanged. No schema/seed rerun or business DB execution. Remaining V boundary cases, committed concurrency and real application/crypto integration explicitly NOT RUN.
+[19/11/2026 12:36] | VERIFIED | database-schema | Final source review PASS: nine authorized changed paths only, DDL identical after stripping comments, approved dictionary/ERD/FK/index/transaction matrix and iterations 1-4 preserved, Word SHA256/branch fix/db/HEAD unchanged, nine queries/seven feature sections/relative links valid; historical log prefix preserved with only matching tracker/phase changes. git diff --check clean.
+[19/11/2026 12:36] | CODE_DONE | database-schema | Requested seed/queries/verify/negative-case sources and documentation delivered; Plan/Code/Doc complete, Verified in progress because broader criteria/concurrency/integration remain incomplete; no full feature completion claim.
+[19/11/2026 12:36] | COMMIT_REMINDER | database-schema | After complete feature verification, make a separate commit: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; include plan/feature/log. No commit/push/merge/reset performed.
+[19/11/2026 12:36] | SESSION_END | database-schema | SQL fixture/query/test phase delivered and executed only in fresh jcs_schema_test_20261119_120407_2ed14e, PostgreSQL17.11; IN_PROGRESS acceptance, A/B/C SQL results PASS and D/concurrency NOT RUN. Applications, business data, Word and Git state preserved; test database retained, no database/schema deleted.
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -383,6 +409,6 @@ Trang
 | social-private-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
-| database-schema | ✅ | 🔄 | ⬜ | ✅ | ⬜ |
+| database-schema | ✅ | ✅ | 🔄 | ✅ | ⬜ |
 
-**database-schema current phase:** IN_PROGRESS; detailed design approved 19/11/2026 and all named choices answered. Schema source written/static review only; seed/test rewrite and all database/integration acceptance NOT RUN. Plan complete; Code in progress; feature Doc present; Verified/Committed incomplete.
+**database-schema current phase:** IN_PROGRESS acceptance; approved SQL sources, fixtures, nine queries and isolated test suite written. On fresh jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11), schema/seed/queries executed and A48/B40/C11 SQL simulations PASS with unchanged rollback fingerprint. Remaining V cases, committed concurrency races and D application/E2EE integration NOT RUN. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed.

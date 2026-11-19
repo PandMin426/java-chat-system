@@ -6,39 +6,43 @@
 | Created | 19/11/2026 |
 | Last updated | 19/11/2026 |
 | Owner(s) | Minh |
-| Status | IN_PROGRESS — schema source written; database acceptance NOT RUN |
+| Status | IN_PROGRESS — schema/fixtures/queries executed in isolated test DB; remaining concurrency/integration NOT RUN |
 | Related plan | [plan.md](./plan.md) |
 | Detailed design | [design-baseline.md](../../database/design-baseline.md) |
 
 ## 1. DESCRIPTION
 
-[schema.sql](../../../script/schema.sql) now declares the approved shared PRIVATE/GROUP PostgreSQL model using declarative tables, constraints and indexes. Its source replaces the earlier split-table/trigger implementation and includes retained profiles, login snapshots, stable personal state, participation periods, E2EE metadata and spam/administration records. The script has not been run on PostgreSQL; fixtures, database acceptance and application integration remain unfinished.
+[schema.sql](../../../script/schema.sql) declares the approved shared PRIVATE/GROUP PostgreSQL model using declarative tables, constraints and indexes. Matching seed.sql, queries.sql and verify.sql now execute in a new isolated PostgreSQL17.11 test database: A=48 constraint/catalog checks, B=40 actual query assertions and C=11 rollback-only SQL transaction demonstrations PASS. D server/client/E2EE integration and committed concurrency races remain NOT RUN. This updates the existing feature document; prior approvals and plan iterations remain preserved.
 
 The implementation follows actual choices Q1=B, Q2=A, Q3=B, Q4=A, R1=B and R2=A, plus O1–O4, Q8-A and S1. The pre-implementation question audit found no unanswered DDL-affecting named choice; historical OPEN records remain as history rather than being deleted or interpreted as new questions.
 
 ## 2. PURPOSE / USE CASE
 
 - **Actor:** Minh maintaining the database source; future ChatServer and JDBC AdminApp writers.
-- **Trigger:** Explicit user approval of the detailed design and instruction to implement schema.sql without database execution.
-- **Goal:** Provide a coherent fresh-database DDL source and explicit DB/application boundaries for accounts, social relations, messaging, groups, E2EE metadata, reporting and administration.
+- **Trigger:** Explicit approval of the detailed design, followed by the request to implement matching fixtures/queries/tests and execute them only on a clearly identified new test DB.
+- **Goal:** Provide coherent fresh-database SQL sources, reproducible isolated evidence and explicit DB/application boundaries for accounts, social relations, messaging, E2EE metadata, reporting and administration.
 
 ## 3. RELATED CLASSES / FILES
 
 | Action | File path | Actual role in this session |
 |---|---|---|
-| MODIFIED | `script/schema.sql` | Replaced old source with approved 15-table declarative DDL and indexes |
-| MODIFIED | `docs/database/design-baseline.md` | Synchronized approved design to actual source objects, static counts and unresolved implementation limits |
-| MODIFIED | `docs/ai/database-schema/plan.md` | Recorded detailed approval/answer audit, iteration 4, current scope and static-vs-runtime verification |
-| MODIFIED | `docs/ai/work-log.md` | Append-only approval/actions/session results and permitted progress-tracker changes |
-| CREATED | `docs/ai/database-schema/database-schema.md` | This factual in-progress feature description, using the feature-template structure |
+| MODIFIED | `script/schema.sql` | Factual header comments only this iteration; approved DDL unchanged and executed once on the new empty test DB |
+| MODIFIED | `script/seed.sql` | Replaced old fixtures with explicit approved-model rows, fake labelled password/crypto data and aligned identity sequences |
+| CREATED | `script/queries.sql` | Nine typed session PREPARE statements; common message visibility for history/search/page/around with expected examples |
+| MODIFIED | `script/tests/verify.sql` | A/B/C SQL assertions with isolated intentional failures/savepoints/full rollback and D NOT RUN reporting |
+| CREATED | `script/tests/negative-cases.md` | Target, run instructions, exact case expectations, categories and untested boundaries |
+| MODIFIED | `docs/database/design-baseline.md` | Preserved dictionary/design, synchronized actual fixture/query/catalog evidence and remaining application limits |
+| MODIFIED | `docs/ai/database-schema/plan.md` | Preserved approvals/iterations1–4; iteration5 scope/target and truthful per-criterion results |
+| MODIFIED | `docs/ai/work-log.md` | Append-only actions/session results and permitted matching progress-tracker updates |
+| MODIFIED | `docs/ai/database-schema/database-schema.md` | Existing seven-section factual feature description updated from executed SQL |
 
-No Java/FXML/CSS, seed.sql, verify.sql, templates or Word content was changed. No application class implements this new schema contract yet in this feature.
+No Java/FXML/CSS, templates or Word content changed. No application implementation or integration result is supplied by this SQL work.
 
 ## 4. DATA AND PROTOCOL
 
 ### Database source changes
 
-Static source inventory: **15 tables, 109 columns, 15 PKs, 6 table UNIQUE constraints, 33 FKs, 46 CHECKs and 36 explicit indexes**, of which 8 are unique. Ten surrogate PK columns use GENERATED ALWAYS AS IDENTITY; the other five PKs are composite. These counts describe source declarations, not a live catalog.
+Source inventory, now corroborated by A00 against the real test catalog: **15 tables, 109 columns, 15 PKs, 6 table UNIQUE constraints, 33 FKs, 46 CHECKs and 36 explicit indexes**, of which 8 are unique. Total catalog indexes are **57**, including 21 PK/UNIQUE backing indexes. Ten surrogate PK columns use GENERATED ALWAYS AS IDENTITY; the other five PKs are composite.
 
 | Table group | Actual declared tables |
 |---|---|
@@ -48,7 +52,7 @@ Static source inventory: **15 tables, 109 columns, 15 PKs, 6 table UNIQUE constr
 | E2EE metadata | e2ee_devices, group_key_epochs, group_key_grants |
 | Moderation | spam_reports |
 
-The source no longer declares login_events/app_open_events or separate private_conversations/private_messages/private_message_hides/chat_groups/group_memberships/group_messages. No database was migrated or had those objects removed: this script is for a new empty database only.
+The source no longer declares login_events/app_open_events or separate private_conversations/private_messages/private_message_hides/chat_groups/group_memberships/group_messages. The script ran only on a newly created empty test database; no existing database was migrated or had objects removed.
 
 Declared constraints and indexes provide:
 
@@ -71,43 +75,48 @@ N/A — no network implementation or application files changed. The approved fut
 
 ## 5. HOW TO RUN / TEST
 
-### Prerequisites for a future authorized execution
+### Identified environment and initial execution
 
-- An explicitly disposable, empty PostgreSQL test database and normal psql connection settings supplied by its operator. Target version is 17.11 from the approved project target; installed version was not checked this session.
-- Detailed baseline/plan remain the source for transaction responsibilities.
-- Rewrite seed.sql and tests/verify.sql before using them with this schema. Both unchanged files currently target removed objects and old rules and are incompatible.
+| Property | Actual value on 19/11/2026 |
+|---|---|
+| Existing server/container | chat-postgres a0786fdd6fe1; postgres:17 |
+| Published host/port | 127.0.0.1:5432 |
+| New test database / owner | jcs_schema_test_20261119_120407_2ed14e / chat_user |
+| Server/psql | 17.11; server_version_num170011 |
+| Execution transport | docker exec psql through /var/run/postgresql:5432 inside the same server; host TCP NOT RUN |
+| Initial isolation | New TEMPLATE template0 database, zero public tables verified before schema |
+| Run order/result | schema → seed → nine PREPAREs → verify, all successful |
+| Preservation | No business chat_system query, DB/schema deletion, tool install, extension or application change |
 
-### How to run
+Host psql/createdb were absent; the existing Docker container supplied psql. Docker access initially failed inside the sandbox and succeeded after tool approval. Maintenance postgres was used only for metadata and CREATE DATABASE. No password is embedded in sources/logs.
 
-**No PostgreSQL command was executed in this session.** The following is a future operator instruction, status NOT RUN, for an already provisioned empty disposable database; it is not execution evidence:
+### Repeat rollback-safe tests
+
+Run the following only on the exact seeded test target. It copies source files and reruns verification, not schema/seed:
 
 ```powershell
-psql -X -d java_chat_database_schema_test -v ON_ERROR_STOP=1 -f script/schema.sql
+docker cp "D:/java-chat-system/script/." "chat-postgres:/tmp/jcs_schema_test_20261119_120407_2ed14e/"
+docker exec chat-postgres psql -h /var/run/postgresql -p 5432 -X -U chat_user -d jcs_schema_test_20261119_120407_2ed14e -v ON_ERROR_STOP=1 -v test_db=jcs_schema_test_20261119_120407_2ed14e -f /tmp/jcs_schema_test_20261119_120407_2ed14e/tests/verify.sql
 ```
 
-Do not run this against an existing application database or rerun it as an upgrade. Do not follow it with the old seed/verification files. This feature adds no database-creation/deletion command and performs no migration.
+The initial run used the same connection with schema.sql, seed.sql and queries.sql in that order before verify.sql. For a full fresh run, create a new uniquely named empty test database after identifying the server/role; do not delete/reset the old database or rerun schema/seed on it. seed/queries/verify require test_db to match current_database and the dedicated test-name pattern. schema.sql is run-once fresh DDL, not a migration. See [negative-cases.md](../../../script/tests/negative-cases.md) for safety guards, session usage and exact cases.
 
-### Static source review actually performed
+### Actual results and scope
 
-An inline Node.js source checker read schema.sql and baseline without a DB connection. It compared every column/type/null/default, PK/UNIQUE target, FK arity/type/scope and declaration order; reviewed statement classes, object-name lengths and duplicate index definitions; and matched all 33 FK signatures to the baseline catalog. Source counts were 15/109/15/6/33/46/36 as reported above. `git diff --check` and scoped source-hash checks are recorded in work-log. This is lexical/source-consistency review, **not** the PostgreSQL parser, catalog inspection or runtime constraint testing.
-
-### How to test — implementation acceptance remains unfinished
-
-| Plan check | Future verification | Result |
+| Classification | Actual result | What remains unproven |
 |---|---|---|
-| V1 | Fresh DB accepts schema plus rewritten fixtures/assertions; inspect real inventory and prohibited objects | NOT RUN |
-| V2 | Reject malformed/case-duplicate/reused deleted identifiers; retain profile/history; exercise lifecycle writer contract | NOT RUN |
-| V3 | Preserve login snapshots and exclude AdminApp from UserApp activity/monthly distinct counts | NOT RUN |
-| V4 | Reject wrong PRIVATE/payload shape and cross-conversation/period/device/grant references; demonstrate exact-two-member creation | NOT RUN |
-| V5 | Exercise reciprocal invitations, rejection/re-invite and atomic block cleanup/send races | NOT RUN |
-| V6 | Exercise stable rejoin state, read monotonicity, hides and clear/send boundary/timestamp ties | NOT RUN |
-| V7 | Exercise group size/roles, explicit transfer or exceptional closure, retained history and close/send race | NOT RUN |
-| V8 | Exercise single current device/epoch, owner scope, no back-grants and application cutover/activation under concurrency | NOT RUN |
-| V9 | Exercise directed spam eligibility/PENDING uniqueness, DISMISSED and D38 all-report resolution | NOT RUN |
-| V10 | Verify level-two-only distinct friends, activity/registration/window counts and visibility-filtered PRIVATE search/navigation | NOT RUN |
-| V11 | Compare real catalog/ERD, inspect representative query plans and finalize evidence/documentation | NOT RUN |
+| A — DB/catalog | A00–A47, 48 PASS: inventory/prohibited-object checks plus 47 exact expected SQLSTATE/constraint or NOT NULL-column failures | Only tested cases, not every possible invalid input or application rule |
+| B — query results | B01–B40, 40 PASS using actual prepared statements | Authenticated caller identity and production application adoption |
+| C — SQL writer contract | C01–C11, 11 PASS, each rolled back | Real JDBC/ChatServer code; two-session committed races NOT RUN |
+| D — real integration | D01 NOT RUN | Login/socket/session/control ACK/error UI/device proof/codec/decryption/local keys |
 
-Mermaid visual rendering, JDBC/TCP sessions/control errors, E2EE codec/decryption/device proof and client group search are also NOT RUN. No old test PASS is reused here.
+Every intentional A failure is isolated in an anonymous-block subtransaction. C uses per-case savepoints; the outer test transaction rolls back. The final complete 15-table/identity-sequence fingerprint equals the pre-test fingerprint, proving these tests left the fixture unchanged. No helper function/trigger is created and no expected trigger behavior is retained.
+
+B covers Vietnam-local month/day edges under multiple session zones, preserved snapshots, AdminApp exclusion, direct versus only-level-two friends, self-registration, directed spam, D18 search, retained closed-group rights, rejoin state, and one common visibility contract for history/search/page/around. Q01 tests personal read/clear/hide, endpoint/device ownership, revoked/new device denial, missing/hidden/cleared/wrong-conversation anchors and exact ordered results. Group SQL plaintext search returns no rows. Password/key/cipher values remain fake DB fixtures.
+
+EXPLAIN (ANALYZE, BUFFERS) executed for q_chat_messages group history, q_friend_counts and q_activity_monthly. Index paths were observed in history/monthly plans; sequential friendship scans on eight edges are reasonable. No realistic-volume performance guarantee is inferred. Prior static dictionary/FK/index review remains source evidence; actual PostgreSQL execution/catalog results are new evidence.
+
+Plan V1–V11 now has explicit PASS/partial results and the unexecuted cases. Missing long/non-ASCII username edge cases, inverted PRIVATE-pair case, empty-clear/tie/monotonic writer cases, full group add/remove/activation writers and committed concurrency races remain NOT RUN. Mermaid visual rendering, real JDBC/TCP/control, E2EE crypto and deferred client group search are also NOT RUN. Full Verified is not complete.
 
 ## 6. TECHNICAL NOTES
 
@@ -119,23 +128,23 @@ Mermaid visual rendering, JDBC/TCP sessions/control errors, E2EE codec/decryptio
 - R1=B stores readiness shape and one unended epoch, but the application must reject sends while PENDING, after closure or with stale device/period/epoch. It closes old epochs and validates a complete consistent wrapped-key batch before activation.
 - Q8-A/O4 require session termination and generation-based key routing. The DB limits current devices and binds owners; time eligibility/no historical key issuance is application-controlled. Same still-authorized installation re-login preserves its generation/local keys. No mechanism can erase keys already copied to an old client.
 - R2=A stores positive codec versions and nonempty opaque bytes, not an implemented cryptographic algorithm. Client/server integration must establish the codec, proof of private-key possession, authenticated headers and consistent key material. No plaintext group search is performed in SQL.
-- App-open source is successful UserApp login_history; AdminApp uses admin_audit_log. Distinct level-two friends are destinations reached through one direct friend, deduplicated, minus self and every direct friend. No aggregate table/function is introduced; query implementations remain later work.
+- App-open source is successful UserApp login_history; AdminApp uses admin_audit_log. q_activity_monthly counts distinct users per month and returns twelve months. q_friend_counts deduplicates destinations reached through one direct friend, minus self and every direct friend; no aggregate table/function is introduced.
 - Writers must use READ COMMITTED, sorted affected user locks then sorted conversation locks, fresh eligibility checks and atomic updates for social/group/device/report transitions. JDBC/ChatServer must share that protocol; DB declarations do not force arbitrary SQL clients to follow it.
 
 ### Changes from the original plan
 
-Iterations 1–3 preserve explicit design answers and prior approval history. Iteration 4 records actual detailed-design approval and narrows this session to schema-source implementation plus factual IN_PROGRESS documentation. Planned seed/assertion/concurrency/integration work is deferred; no scope expansion, application change or DB execution occurred.
+Iterations 1–3 preserve explicit design answers and prior approval history; iteration 4 records schema-source implementation. Iteration 5 activates the user's requested fixture/query/test/runtime work, adds queries.sql/negative-cases.md to the file boundary before editing, and separates A/B/C/D evidence. No important DDL change, application edit or newly inferred design answer occurred.
 
 ## 7. KNOWN ISSUES / LIMITATIONS
 
-- PostgreSQL syntax acceptance, execution, real catalog and every runtime constraint/query/concurrency test are NOT RUN. Source review cannot establish that the database has run successfully.
-- Existing seed.sql and verify.sql are stale/incompatible; rewriting them and running the approved checks remains required work. The feature is not DONE.
+- Fresh test-schema/seed execution and the stated A/B/C SQL checks PASS. This does not complete broader V1–V11 acceptance or establish actual application/E2EE behavior. The feature remains IN_PROGRESS.
+- verify.sql uses one connection. Concurrent committed block/send, clear/send, admin-transfer/close/send and device-cutover races are NOT RUN; shared sorted lock/recheck contracts still require a two-session harness and application integration.
 - No migration/repeatable upgrade or compatibility layer for old table names exists.
 - Account/role authorization, one active socket session, login event authenticity, immutable history, legal transitions, full interval non-overlap, block logic and group cardinality are application obligations. Direct SQL may violate them while satisfying every declared constraint.
 - FKs restrict referenced deletes/identity updates but do not prohibit deleting every unreferenced row or editing all non-key history/profile fields. Soft-delete-only and immutable records require disciplined writers.
 - Audit events do not provide automatic control delivery or crash recovery. A successful JDBC commit cannot stand in for TCP acknowledgement.
 - Real E2EE, new-device history restrictions, local key retention, cipher validity, client group search, email reset and LLM integration were not implemented by this schema work.
-- B-tree indexes are not proof of fast arbitrary substring search; query EXPLAIN/performance remains NOT RUN. Name ordering/prefix usefulness depends on actual collation/query/planner behavior.
+- B-tree indexes are not proof of fast arbitrary substring search. Three representative EXPLAIN ANALYZE runs succeeded on tiny fixtures; production-volume performance/benchmarks remain NOT RUN. Name ordering/prefix usefulness depends on actual collation/query/planner behavior.
 - No commit/push/merge/reset is performed; branch remains fix/db. README's automatic main merge step is overridden by Minh's explicit no-auto-merge instruction; only local ancestry was inspected.
 
 When the whole feature is completed and verified, make its separate commit with message `feat(database-schema): align PostgreSQL schema with confirmed chat requirements`; this session creates no commit.

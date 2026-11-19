@@ -3,29 +3,29 @@
 | Field | Value |
 |---|---|
 | Feature / owner | database-schema / Minh |
-| Design status | APPROVED DESIGN / IN_PROGRESS implementation; schema source written, database execution NOT RUN |
+| Design status | APPROVED DESIGN / IN_PROGRESS acceptance; fresh test schema/seed/query/SQL checks executed |
 | Design date | 19/11/2026, live Asia/Ho_Chi_Minh date |
 | Plan approval | YES (19/11/2026); [plan](../ai/database-schema/plan.md) |
 | Detailed design approval | YES (19/11/2026), explicit approval before schema implementation |
-| Current session | schema.sql plus baseline/plan/work-log/in-progress feature doc; no DB execution, seed/test/application edits |
-| Target | PostgreSQL 17.11 from the existing project target; runtime/version NOT RUN |
+| Current session | Matching seed.sql/queries.sql/verify.sql/negative-cases.md plus docs/log; isolated runtime evidence; no application edits |
+| Target | Actual PostgreSQL/psql 17.11 (170011); chat-postgres a0786fdd6fe1, published 127.0.0.1:5432; exact test DB in section 12 |
 | Detailed choices | R1=B and R2=A explicitly confirmed by Minh on 19/11/2026; both RESOLVED |
 
 ## 1. Basis and scope
 
-This approved design is now reflected in [schema.sql](../../script/schema.sql) source, replacing the old trigger-based split model in that file. No database has been updated or verified in this session. Prior runtime results in work-log belong to the earlier model, not this schema. Target a fresh database without migration/backfill.
+This approved design is reflected in [schema.sql](../../script/schema.sql), replacing the old trigger-based split model in that file. It has now run with matching fixtures, prepared queries and isolated checks in the new dedicated database identified in section 12. Prior runtime results for the old model are not reused as evidence. No business database was queried or changed; this is fresh-database work without migration/backfill.
 
 Minh's explicit decisions override conflicting Word and older documents. The Word source `docs/Phuong_an_da_chot_JAVA_CHAT_SYSTEM.docx` was successfully read in the initial review. Retain its non-conflicting decisions. Do not invent a D40 decision.
 
 Confirmed choices are not reopened: S1 stores the ordered PRIVATE pair in conversations; Q1=B allows exceptional group closure when no eligible successor exists, preserving data/history; Q2=A uses administration audit/manual control retry, without an outbox; Q3=B uses a stable conversation_members row and membership_periods; Q4=A keeps clear time plus an ID watermark. Q8-A/O4 allow at most one currently authorized E2EE device per account, no historical key grants for newly authorized devices, no transfer/backup/recovery secrets. Same still-authorized installation re-login preserves local keys. Every group is E2EE at creation with at least three people, including the creator.
 
-Minh explicitly selected **R1=B** (PENDING/ACTIVE/CLOSED epochs), **R2=A** (versioned opaque envelopes) and approved the detailed design on 19/11/2026. Pre-implementation review matched every Q1–Q4/R1–R2 choice to an actual reply; no DDL-affecting named question remains. The dictionary matches written source; cryptographic integration and DB execution are NOT RUN.
+Minh explicitly selected **R1=B** (PENDING/ACTIVE/CLOSED epochs), **R2=A** (versioned opaque envelopes) and approved the detailed design on 19/11/2026. Pre-implementation review matched every Q1–Q4/R1–R2 choice to an actual reply; no DDL-affecting named question remains. Dictionary and source agree and catalog/SQL checks have run; cryptographic/application integration remains NOT RUN.
 
 Use only tables, identity, PK, FK, NOT NULL, UNIQUE, CHECK, DEFAULT and justified indexes. No business trigger, procedure, custom function, cross-table CHECK, exclusion constraint or extension. Built-in expressions such as lower, btrim, LEAST and GREATEST are allowed.
 
 ## 2. Tables and purposes
 
-schema.sql declares 15 tables as a consequence of this model, not a legacy count requirement: 109 columns, 15 PKs, 6 table UNIQUE constraints, 33 FKs, 46 CHECKs and 36 explicit indexes (8 unique). These are static source counts, not catalog observations.
+schema.sql declares 15 tables as a consequence of this model, not a legacy count requirement: 109 columns, 15 PKs, 6 table UNIQUE constraints, 33 FKs, 46 CHECKs and 36 explicit indexes (8 unique). A00 corroborated these totals against the actual test catalog; 57 total indexes include 21 PK/UNIQUE backing indexes.
 
 | Table | Purpose |
 |---|---|
@@ -241,7 +241,7 @@ erDiagram
 
 ## 5. Data dictionary and local constraints
 
-Every declared column appears below. Static review compared all 109 names/types/nullability/defaults against schema.sql; R1/R2 identify confirmed choices. PostgreSQL syntax/catalog/execution checks remain NOT RUN.
+Every declared column appears below. Static review compared all 109 names/types/nullability/defaults against schema.sql; R1/R2 identify confirmed choices. PostgreSQL accepted the DDL and A00 checked catalog totals; this iteration changes no column, key or index design.
 
 ### 5.1 users
 
@@ -702,7 +702,7 @@ Original recommendation **B**. Minh selected **B** on 19/11/2026. Status **RESOL
 
 Original recommendation **A**. Minh selected **A** on 19/11/2026. Status **RESOLVED**. Keep versioned opaque bytea envelopes and key_format_version/payload_version/envelope_version. This resolves storage representation, not cryptographic algorithms; an actual version-1 codec specification and interoperability tests remain integration dependencies.
 
-No named design question remains unanswered; explicit replies and detailed-design approval were checked before implementation. Dictionary/FK/index definitions and the exactly-two-PRIVATE application boundary are unchanged. Only schema source and authorized documents change this session; seed/test/application files remain untouched.
+No named design question remains unanswered; explicit replies and detailed-design approval were checked before implementation. Dictionary/FK/index definitions and the exactly-two-PRIVATE application boundary are unchanged. Iteration 5 adds matching seed/query/test artifacts and real isolated execution evidence; application files remain untouched.
 
 ## 12. Written source and verification state
 
@@ -721,22 +721,32 @@ schema.sql names every PK/CHECK/FK. F01–F33 and U01–U06 comments map to the 
 
 The script wraps CREATE TABLE, the pointer ALTER TABLE and CREATE INDEX statements in a transaction. No custom function/procedure, business trigger, extension installation or database/schema deletion command is declared. CHECK operands are row-local; defaults use built-in CURRENT_TIMESTAMP, not custom helpers.
 
-### Deferred implementation and limits
+### Executed fixtures, queries and remaining limits
 
 Section 10 remains mandatory for application writers. ACTIVE epoch eligibility, closed-group send rejection and no-history-key policy require application transactions; valid FKs alone do not prove them. The script does not implement canonical PRIVATE child counts, reciprocal invites/block cleanup, last-admin transfer, one live session, role authorization or immutable history. Nonempty bytea/version checks do not authenticate/decrypt content.
 
-Existing seed.sql and tests/verify.sql were intentionally not changed. They still reference removed split tables/guard functions and old semantics and are **incompatible with this schema source**. Rewrite them before use; do not run them after this DDL or reuse their prior PASS as new-model evidence. No live-database success or feature completion is asserted.
+seed.sql and tests/verify.sql now match this approved schema. queries.sql contains nine typed, session-scoped PREPARE statements; tests/negative-cases.md documents case IDs, exact expected errors/results, run commands and A/B/C/D boundaries. No helper function/trigger is created. Passwords/public keys/wrapped keys/ciphertext are explicitly fake database fixtures, including future synthetic November/December events; they do not establish real login/device proof/E2EE.
+
+Actual target on 19/11/2026: **jcs_schema_test_20261119_120407_2ed14e**, owner **chat_user**, server **chat-postgres a0786fdd6fe1**, published **127.0.0.1:5432**, PostgreSQL/psql17.11/version_num170011. Transport was container Unix socket **/var/run/postgresql:5432**; external TCP was not exercised. Created from template0 and verified empty before schema→seed→query preparation→verify. No existing business database was queried and no database/schema was deleted. The schema and seed committed once; verification rolled back and retained an identical full 15-table/identity-sequence fingerprint.
+
+Fixture coverage includes ten retained accounts, eleven UserApp login snapshots, the distinct-level-two graph with triangles/multiple paths, eight conversations and 79 messages, nineteen stable members/twenty periods, seven device generations/five epochs/eleven grants, personal hide/read/clear state, all spam statuses and directed PENDING pairs, and synthetic administration/control outcomes. Each GROUP has three initial members. Role control and successful network acknowledgements are not inferred from those synthetic rows.
+
+Q01 is the common history/page/PRIVATE-search/around-anchor path: enforce active nondeleted viewer, canonical PRIVATE endpoint or eligible GROUP grant/device/period/epoch; filter closed-time boundary, personal clear watermark and per-message hides once before paging/search/anchor selection. Returned GROUP wrapped envelope uses the same eligibility join. A new device cannot fetch earlier grants; rejoining with the same current device retains eligible prior-period history and stable read/hide/clear state. Blocks do not erase existing history or shared-group rights. Incoming-only unread totals are computed before search/paging. Q02 deduplicates only-level-two friends; Q03–Q07 use explicit Vietnam date windows and exclude AdminApp login from activity; Q08 applies asymmetric D18 people-search filtering; Q09 exposes role/period metadata without authenticating the caller.
 
 | Check | Result / limitation |
 |---|---|
 | Source precedence / confirmed choices | Based on reviewed repository sources and Minh's actual decisions; old PASS is not new evidence |
-| Dictionary/DDL/ERD/FK consistency | PASS static source review: 109 names/types/nullability/defaults; 15 PKs, six UNIQUE targets, 33 typed FKs/creation order, 46 local CHECKs and 36 indexes; not PostgreSQL parser/runtime validation |
-| Prohibited objects / duplicate indexes | PASS static review: only table/index creation, pointer ALTER and transaction statements; no prohibited object/command or exact duplicate index |
-| PostgreSQL syntax/catalog/schema execution | NOT RUN; no DB connection or installed-version verification |
-| Seed/assertions | NOT RUN; unchanged old scripts are incompatible and deferred |
-| Block/send, clear/send, close/send and device-cutover races | NOT RUN; transaction contract only |
+| Dictionary/DDL/ERD/FK consistency | Prior full source comparison retained; actual parser accepted DDL and A00 confirmed 15/109/15/6/33/46 inventory and 57 total indexes |
+| Prohibited objects / duplicate indexes | Source review plus A00: no custom public function/procedure/non-internal trigger/unapproved extension; no exact duplicate explicit index |
+| PostgreSQL syntax/catalog/schema execution | PASS on exact fresh test target above, not on a business database |
+| Seed / A constraint checks | Seed committed successfully; A00–A47 PASS, exact SQLSTATE/constraint or NOT NULL column, isolated error subtransactions |
+| B actual query assertions | B01–B40 PASS; exact visible message IDs/unread, graph/report/snapshot/Vietnam-boundary assertions from actual queries.sql |
+| C SQL transaction simulations | C01–C11 PASS inside rollback savepoints; deliberate unsafe direct SQL demonstrates application-only boundaries |
+| Verification isolation | PASS full row/identity-sequence fingerprint equality after outer rollback |
+| Representative EXPLAIN ANALYZE/BUFFERS | Executed for group history, friend counts and monthly activity; small fixtures do not establish production performance |
+| Block/send, clear/send, last-admin/close/send and device-cutover committed races | NOT RUN; single-connection suite is not a two-session writer harness |
 | JDBC/TCP notification and error UI | NOT RUN; application code untouched |
 | E2EE codec/decryption/device proof/interoperability | NOT RUN; integration not implemented here |
 | Mermaid visual rendering | NOT RUN unless a renderer is available; source/FK structure checked separately |
 
-R1=B/R2=A and the detailed design are approved, and schema source is written. In a later authorized verification phase, first rewrite the stale fixtures/assertions, then use a fresh disposable DB and run plan V1–V11. Cover wrong-conversation read/clear/hide, wrong sender period/user, wrong GROUP epoch, wrong device owner, missing/mismatched sender grant, retained rejoin state, new-device denial of old grants, retained closed-group history and post-close send rejection. None is PASS from static source review alone.
+R1=B/R2=A and the detailed design remain approved; no important design change was required. Executed A/B/C results establish their specific fixture/SQL contracts only. Plan V1–V11 records partial criteria explicitly: remaining writer boundary cases, two-session committed races and real JDBC/TCP/client/codec integration still require verification. The feature remains IN_PROGRESS, not a claim that the full chat system or E2EE works. See [negative cases](../../script/tests/negative-cases.md) and the [feature document](../ai/database-schema/database-schema.md) for reproduction and limitations.
