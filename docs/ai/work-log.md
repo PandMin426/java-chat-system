@@ -272,6 +272,51 @@ Trang
 
 
 
+### [19/11/2026]
+
+[19/11/2026 09:56] | SESSION_START | database-schema | Owner Minh; inspect existing schema and confirmed requirements, then prepare an approval-only plan; preserve the pre-existing untracked Word source and change no SQL.
+
+[19/11/2026 10:02] | PLAN_CREATED | database-schema | Created docs/ai/database-schema/plan.md using the actual _template structure; owner Minh; AWAITING_APPROVAL; Plan approved by user NO; SQL and implementation feature document deferred.
+[19/11/2026 10:02] | DECISION | database-schema | Recorded Minh-confirmed O1-O4, Q8=A and S1 as requirements; proposed declarative schema and separated DB guarantees, application transactions and server/client duties; recommendations remain unapproved.
+[19/11/2026 10:02] | NOTE | database-schema | Read the pre-existing Word body and tables successfully (152 paragraphs); no AGENTS.md found; stale templates path and absent append marker handled without changing old rules or historical entries; old 16-table and trigger-based verification does not validate new requirements.
+[19/11/2026 10:02] | QUESTION | database-schema | Presented Q1 last-admin removal without an eligible successor (A block until transfer, B explicit closure exception), Q2 control delivery (A audit/manual retry, B outbox), Q3 membership history (A intervals, B separate periods), Q4 clear boundary (A timestamp plus ID watermark, B timestamp only); recommend A for each, all OPEN.
+[19/11/2026 10:02] | FILE_MODIFIED | database-schema | docs/ai/work-log.md: appended planning actions and added the database-schema tracker row (Plan complete, Code/Verified/Doc/Committed not started); restored an append marker after new entries only.
+
+[19/11/2026 10:03] | FILE_MODIFIED | database-schema | docs/ai/database-schema/plan.md: recorded documentation verification results only; approach unchanged, implementation checks remain NOT RUN.
+[19/11/2026 10:03] | VERIFIED | database-schema | PASS: requested sources and Word content reviewed, 11 plan sections and no template residue, AWAITING_APPROVAL/NO preserved, all original work-log content and progress rows unchanged, and git diff --check clean; only plan/work-log modified.
+[19/11/2026 10:03] | VERIFIED | database-schema | SQL execution, PostgreSQL runtime/version, schema/seed/verify.sql, concurrency, Java/JDBC/TCP and cryptographic integration tests NOT RUN: planning-only session; no implementation feature document created.
+[19/11/2026 10:03] | COMMIT_REMINDER | database-schema | Reminder for the eventual completed feature only: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; no commit performed in this session.
+[19/11/2026 10:03] | SESSION_END | database-schema | Initial plan prepared for Minh review; Q1-Q4 OPEN, Status AWAITING_APPROVAL and approval NO; tracker Plan complete only; existing SQL, Word source and historical logs preserved; no commit/push/merge/reset.
+
+[19/11/2026 10:28] | SESSION_START | database-schema | Apply Minh answers Q1=B, Q2=A, Q3=B with membership_periods, Q4=A to the existing plan; preserve existing working-tree changes and historical records; no SQL changes in this decision-recording session.
+
+[19/11/2026 10:31] | DECISION | database-schema | Minh confirmed Q1=B: exceptional group closure stops new messages, retains data and history within existing access rights, then permits leave or account soft deletion; closure is not message deletion.
+[19/11/2026 10:31] | DECISION | database-schema | Minh confirmed Q2=A audit/control outcome with idempotent manual retry; Q3=B one stable conversation_members row per conversation/user plus membership_periods; Q4=A cleared_at plus cleared_through_message_id.
+[19/11/2026 10:31] | PLAN_UPDATED | database-schema | Iteration 1: revised docs/ai/database-schema/plan.md to confirmed B/A/B/A decisions; updated membership-period FKs, closure transaction, risks and V6/V7; preserved original options/recommendations and recorded all four questions RESOLVED.
+[19/11/2026 10:31] | FILE_MODIFIED | database-schema | docs/ai/work-log.md: append-only session/decision/verification entries; reviewed tracker, retaining Plan complete and Code/Verified/Doc/Committed not started because implementation has not begun.
+[19/11/2026 10:31] | VERIFIED | database-schema | PASS: pre-session work-log content preserved byte-for-byte after removing only this session append; four RESOLVED decisions match Minh, iteration 1 recorded, candidate inventory uses membership_periods and no outbox, SQL/Word hashes unchanged, git diff --check clean.
+[19/11/2026 10:31] | VERIFIED | database-schema | All eleven implementation acceptance checks remain NOT RUN; no SQL, database runtime, concurrency, Java/JDBC/TCP or E2EE execution performed in this decision-recording session.
+[19/11/2026 10:31] | SESSION_END | database-schema | Recorded Minh decisions Q1=B/Q2=A/Q3=B/Q4=A and revised plan only; overall implementation approval not explicitly given, so AWAITING_APPROVAL/NO retained; no SQL or feature document changes and no commit/push/merge/reset.
+
+[19/11/2026 10:44] | SESSION_START | database-schema | Resume after an interrupted commentary-only turn; inspect existing changes and prepare detailed review design in baseline/plan/work-log only; preserve SQL, tests, application files and pre-existing Word source.
+[19/11/2026 10:44] | PLAN_APPROVED | database-schema | Minh explicitly approved the agreed plan in the preceding user message; recorded on the actual current date, limited by the request to detailed design review before SQL. Q1-Q4 remain resolved only by their prior explicit answers.
+
+[19/11/2026 11:02] | PLAN_UPDATED | database-schema | Iteration 2: record actual plan approval YES (19/11/2026), IN_PROGRESS detailed-design phase and three-document session boundary; preserve iteration 1; new R1/R2 remain OPEN and Q1-Q4 retain prior answers.
+[19/11/2026 11:02] | FILE_MODIFIED | database-schema | docs/database/design-baseline.md: replaced obsolete baseline with IN_REVIEW 15-table proposal, Mermaid ERDs, 109-column dictionary, 33 FK actions, 6 composite UNIQUE targets, CHECK/index rationale, cyclic-FK order and DB/application matrix.
+[19/11/2026 11:02] | QUESTION | database-schema | Detailed design R1: pre-prepare keys before atomic cutover (A) or PENDING epoch then activation (B, recommended); R2: versioned opaque envelopes (A, recommended) or structured crypto fields (B). Neither choice is approved; await Minh before SQL.
+[19/11/2026 11:02] | BUG_FOUND | database-schema | Tooling only: baseline patch with delete/add of one path was rejected before mutation; initial static validator excluded numeric characters in e2ee_devices and incorrectly counted 14 dictionaries.
+[19/11/2026 11:02] | BUG_FIXED | database-schema | Wrote only the authorized baseline using native UTF-8 file APIs and corrected validator identifier matching; static check now finds all 15 tables and passes FK/column/key correspondence.
+[19/11/2026 11:02] | FILE_MODIFIED | database-schema | docs/ai/work-log.md: appended approval/design actions and a current-phase note for the existing tracker; Plan complete only, Code/Verified/Doc/Committed not started; no historical log entry changed.
+
+[19/11/2026 11:04] | BUG_FOUND | database-schema | A document-scope validator used an incorrectly parenthesized PowerShell join comparison and falsely rejected the three expected paths; no additional file changed.
+[19/11/2026 11:04] | BUG_FIXED | database-schema | Corrected comparison grouping; git status/diff confirms exactly plan, work-log and baseline changes with only the pre-existing untracked Word file.
+[19/11/2026 11:04] | VERIFIED | database-schema | D1-D4 PASS by static review: actual approval/date, Q1-Q4 preserved and R1/R2 OPEN; 15 tables/109 typed nullable/default columns, 15 PKs, 6 UNIQUE targets, 33 FKs matching ERD labels/types/targets, 36 index definitions, FK action/creation/nullability review and original iteration 1 preservation.
+[19/11/2026 11:04] | VERIFIED | database-schema | All SQL/seed/test and Word SHA256 values match session-start snapshots; pre-existing work-log preserved except allowed append and current-phase note; only three authorized docs changed; git diff --check clean. V1-V11, DB runtime/concurrency, Mermaid visual rendering, JDBC/TCP and E2EE integration NOT RUN.
+[19/11/2026 11:04] | COMMIT_REMINDER | database-schema | For the eventual completed feature use a separate commit: feat(database-schema): align PostgreSQL schema with confirmed chat requirements; no commit/push performed.
+[19/11/2026 11:04] | SESSION_END | database-schema | Approved plan IN_PROGRESS with baseline IN_REVIEW, concrete design ready for Minh review; R1=B/R2=A are recommendations only and remain OPEN. SQL/tests/application unchanged; tracker Plan complete only and current-phase note updated.
+
+<!-- APPEND NEW ENTRIES -->
+
 ---
 
 ## 5. PROGRESS TRACKER
@@ -308,3 +353,6 @@ Trang
 | social-private-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
+| database-schema | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
+
+**database-schema current phase:** IN_PROGRESS; detailed baseline IN_REVIEW; plan approved 19/11/2026. The tracker row remains Plan complete and Code/Verified/Doc/Committed not started because no SQL implementation has begun.
