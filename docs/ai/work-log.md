@@ -473,6 +473,24 @@ Trang
 [20/11/2026 20:27] | DOC_CREATED | db-fe-conflict-fix | Created docs/ai/db-fe-conflict-fix/db-fe-conflict-fix.md; plan.md status DONE
 [20/11/2026 20:27] | COMMIT_REMINDER | db-fe-conflict-fix | Reminded user: feat(db-fe-conflict-fix): resolve DB, FE and Part 3 conflicts and remove stale files (deletions/untracking already staged; user commits)
 [20/11/2026 20:27] | SESSION_END | db-fe-conflict-fix | All approved items fixed, tests 29/29 + 23/23 PASS, 4 screenshots regenerated, no commit made, E6 branches left to the user
+[20/11/2026 20:34] | SESSION_START | report-v1-sync | Final check of the V1 report (Google Doc BaoCao_V1_Mau) and the analysis doc outside Part 3 against main 8a5016d
+[20/11/2026 20:34] | PLAN_CREATED | report-v1-sync | Created docs/ai/report-v1-sync/plan.md - replaceAllText for wrong phrases, guarded batches for fact cells and new rows, targeted Claude Doc updates
+[20/11/2026 20:34] | PLAN_APPROVED | report-v1-sync | User asked to check and fix the report and allowed edits outside Part 3; assumptions in plan section 4 (facts only, Minh's chapter 4 authoring left to Minh)
+[20/11/2026 20:34] | CODE_START | report-v1-sync | Started report edits
+[20/11/2026 20:37] | NOTE | db-fe-conflict-fix | User committed the feature as 8a5016d on main; tracker Committed set to done
+[20/11/2026 20:37] | FILE_MODIFIED | report-v1-sync | Google Doc BaoCao_V1_Mau batch 1 (23 replaceAllText, all matched): 1.4 server/admin bullets (AdminApp over JDBC), create_db.sql -> schema.sql (4x), seed/tests files, 4.1 facts, 4.5 data rows (no IP, no last_seen, no delivered/seen, E2EE keys), 4.6 note, 4.7 content, S11-D2 no email, S13 status column, appendix B script files, C.1 row 6 path
+[20/11/2026 20:37] | FILE_MODIFIED | report-v1-sync | Google Doc batch 2 (42 guarded requests): PostgreSQL 17 in 1.3, Minh rows 4-5 product and date 19/11, 4.1 15 tables, 4.5 'Bảng đáp ứng' 14 cells, seed.sql psql line, 2 rows in table 2.2 and 3 rows in table C.1; batch 3 (22 guarded inserts) filled the new rows
+[20/11/2026 20:37] | BUG_FOUND | report-v1-sync | Generated batch 2 sorted insertText before deleteContentRange at the same index, which would delete the inserted text
+[20/11/2026 20:37] | BUG_FIXED | report-v1-sync | Sort key changed so the delete runs before the insert; checked the order before sending; nothing wrong was sent
+[20/11/2026 20:37] | VERIFIED | report-v1-sync | Fresh read + docs_index outline: 0 matches for create_db, 'địa chỉ IP', last_seen, 'Cờ nhóm mã hóa', 'qua email người dùng', 'duy nhất truy cập', sample_data, 'mã hóa khi lưu'; filled cells correct and not bold (criteria 1-2 PASS)
+[20/11/2026 20:37] | NOTE | report-v1-sync | 4 embedded screenshots are outdated (S01 Hình 5.1, S10 Hình 5.16, S11-D2 Hình 5.19, S13 Hình 5.21); Docs API cannot upload local images, user replaces them by hand
+[20/11/2026 20:43] | FILE_MODIFIED | report-v1-sync | Claude Doc rev 156->177 (43 ops): section 4 group commands; UC29 JavaFX chart; SD1/SD2/SD4/SD5/SD6/SD7/SD8/SD12 schema names, both-way block, no logout_time/IP, admin audit/ACK; SD9/SD10/SD11 diagrams and lists rewritten for creator+2, admin-only rename, epochs/grants; table 7.1 = 15 schema tables; 7.2/7.3/8/9 items
+[20/11/2026 20:43] | VERIFIED | report-v1-sync | Claude Doc search: is_encrypted 0, 'không mã hóa' 0, '_keys' only GET_MEMBER_KEYS; table 7.1 view shows 15 rows matching schema.sql (criterion 3 PASS)
+[20/11/2026 20:43] | NOTE | report-v1-sync | Section 1 prompt (Swing/MySQL) and Part 3 option columns kept as historical record; report chapter 4 sections 4.2-4.4, 4.6 left to Minh
+[20/11/2026 20:43] | CODE_DONE | report-v1-sync | Implementation finished
+[20/11/2026 20:43] | DOC_CREATED | report-v1-sync | Created docs/ai/report-v1-sync/report-v1-sync.md; plan.md status DONE
+[20/11/2026 20:43] | COMMIT_REMINDER | report-v1-sync | Reminded user: feat(report-v1-sync): align V1 report and analysis doc with the current project
+[20/11/2026 20:43] | SESSION_END | report-v1-sync | Report and analysis doc aligned with main 8a5016d; 4 outdated screenshots to replace by hand; no commit made
 
 <!-- APPEND NEW ENTRIES -->
 
@@ -516,6 +534,7 @@ Trang
 | ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ✅ |
 | docs-db-rule-sync | ✅ | ✅ | ✅ | ✅ | ✅ |
 | docs-restructure | ✅ | ✅ | ✅ | ✅ | ✅ |
-| db-fe-conflict-fix | ✅ | ✅ | ✅ | ✅ | ⬜ |
+| db-fe-conflict-fix | ✅ | ✅ | ✅ | ✅ | ✅ |
+| report-v1-sync | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.
