@@ -152,7 +152,7 @@ vite.config.ts.timestamp-*
 #.agent/
 
 # Java / Maven / IDE
-target/
+**/target/
 *.class
 .idea/
 *.iml
