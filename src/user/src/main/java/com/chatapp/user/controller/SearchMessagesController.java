@@ -38,16 +38,16 @@ public class SearchMessagesController {
         }
         ChatViews.fillMessages(previewBox, List.of(
                 Message.day("07/11/2026"),
-                Message.groupIn("Võ Minh", "VM", "Script tạo database mình đẩy lên rồi, mọi người pull về chạy thử nhé.", "21:40"),
+                Message.in("Script tạo database mình đẩy lên rồi, bạn pull về chạy thử nhé.", "21:40"),
                 Message.out("Ok, mình ghép thử với màn hình đăng ký.", "21:45"),
-                new Message(Kind.IN, "Võ Minh", "VM", "Nhớ nộp ", "báo cáo", " V1 trước 19h30 nhé", "21:50", true),
-                Message.groupIn("Đỗ Hà", "ĐH", "Ok anh", "21:52")));
+                Message.hit(Kind.IN, "Nhớ nộp ", "báo cáo", " V1 trước 19h30 nhé", "21:50", true),
+                Message.out("Ok bạn", "21:52")));
     }
 
     private Node groupHeader(SearchHit hit) {
         Label name = new Label(hit.conversation());
         name.getStyleClass().addAll("small", "strong");
-        HBox header = new HBox(8, ChatViews.avatar(hit.initials(), null, "sm", hit.group() ? "group" : "plain"), name);
+        HBox header = new HBox(8, ChatViews.avatar(hit.initials(), null, "sm"), name);
         header.getStyleClass().add("result-group");
         return header;
     }
@@ -81,6 +81,6 @@ public class SearchMessagesController {
 
     @FXML
     private void onOpenConversation() {
-        Navigator.showMain("GroupChatView");
+        Navigator.showMain("ChatView");
     }
 }

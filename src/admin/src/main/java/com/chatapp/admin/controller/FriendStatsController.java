@@ -33,7 +33,7 @@ public class FriendStatsController {
         nameColumn.setComparator(Collator.getInstance(AdminNavigator.LOCALE)::compare);
         Tables.date(createdColumn, FriendStatRow::created, Tables.DATE);
         Tables.number(directColumn, FriendStatRow::direct);
-        Tables.number(twoHopColumn, FriendStatRow::withFriendsOfFriends);
+        Tables.number(twoHopColumn, FriendStatRow::friendsOfFriends);
         table.getItems().setAll(SampleData.FRIEND_STATS.stream().filter(r -> r.direct() > 5).toList());
         table.getSortOrder().add(nameColumn);
     }

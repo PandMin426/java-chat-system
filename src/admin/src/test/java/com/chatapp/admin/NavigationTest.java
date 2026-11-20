@@ -62,13 +62,14 @@ class NavigationTest {
         assertShows("86 nhóm");
         click("Báo cáo spam");
         // Row buttons live in table cells, which exist only once the table is skinned; check the page text.
-        assertShows("4 báo cáo đang chờ xử lý. Khóa tài khoản sẽ ngắt kết nối người đó ngay nếu đang online.");
+        assertShows("Mỗi dòng là một lần báo cáo. Khóa tài khoản sẽ ngắt kết nối người đó ngay nếu đang online và "
+                + "chuyển mọi báo cáo về người đó sang “Đã xử lý”; “Bỏ qua” chỉ đóng báo cáo đang chọn.");
         click("Đăng ký mới");
         assertShows("Người dùng đăng ký mới");
         click("Số lượng bạn bè");
-        assertShows("5 người phù hợp");
+        assertShows("4 người phù hợp");
         click("Người dùng hoạt động");
-        assertShows("Chat nhóm");
+        assertShows("Lượt mở ứng dụng");
         click("Người dùng");
         assertShows("Thêm người dùng");
         click("Đăng xuất");

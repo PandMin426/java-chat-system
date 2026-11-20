@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -12,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<!-- S08 Tìm tin nhắn trong mọi cuộc trò chuyện (UC-20) -->
+<!-- S08 Tìm tin nhắn trong mọi cuộc trò chuyện 1-1 (UC-20). Groups are end-to-end encrypted, so they are not searched (D26). -->
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.chatapp.user.controller.SearchMessagesController">
 
@@ -29,19 +26,9 @@
                 <TextField text="báo cáo"/>
                 <FontIcon iconLiteral="fth-search" translateX="10" mouseTransparent="true"/>
             </StackPane>
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <ComboBox maxWidth="Infinity" HBox.hgrow="ALWAYS">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Mọi cuộc trò chuyện"/>
-                            <String fx:value="Chỉ chat 1-1"/>
-                            <String fx:value="Chỉ nhóm"/>
-                        </FXCollections>
-                    </items>
-                    <value><String fx:value="Mọi cuộc trò chuyện"/></value>
-                </ComboBox>
-                <Label text="5 kết quả" styleClass="small,muted"/>
-            </HBox>
+            <Label text="4 kết quả" styleClass="small,muted"/>
+            <Label text="Chỉ tìm trong chat 1-1: nhóm được mã hóa đầu cuối nên không tìm được tin nhắn nhóm."
+                   styleClass="xs,muted" wrapText="true"/>
         </VBox>
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
             <VBox fx:id="resultBox"/>
@@ -51,10 +38,10 @@
     <!-- Preview of the selected result in its conversation -->
     <VBox HBox.hgrow="ALWAYS">
         <HBox styleClass="chat-header">
-            <Label text="ĐA" styleClass="avatar,group"/>
+            <Label text="TB" styleClass="avatar"/>
             <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
-                <Label text="Đồ án Java" styleClass="strong"/>
-                <Label text="Kết quả 1/5 · 07/11 21:50" styleClass="small,muted"/>
+                <Label text="Trần Thị Bích" styleClass="strong"/>
+                <Label text="Kết quả 1/4 · 07/11 21:50" styleClass="small,muted"/>
             </VBox>
             <Button text="Mở cuộc trò chuyện" styleClass="sm" onAction="#onOpenConversation"/>
         </HBox>

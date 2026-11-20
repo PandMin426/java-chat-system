@@ -3,9 +3,13 @@ package com.chatapp.user;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Clicks through the V1 navigation: every screen and dialog of the inventory must be reachable. */
@@ -78,7 +83,7 @@ class NavigationTest {
         click("Tìm tin nhắn trong mọi cuộc trò chuyện");
         assertShows("Mở cuộc trò chuyện");
         click("Mở cuộc trò chuyện");
-        assertShows("Thông tin nhóm");
+        assertShows("Trợ lý AI");
         clickRail(4);
         assertShows("Đăng nhập ChatApp");
     }
@@ -99,18 +104,100 @@ class NavigationTest {
     }
 
     @Test
+    void chatMenuOpensSelectMode() throws Exception {
+        click("Đăng nhập");
+        // The count label is empty until select mode starts.
+        menu("Chọn tin nhắn để xóa");
+        assertShows("Đã chọn 0 tin");
+        click("Hủy");
+    }
+
+    @Test
     void groupAdminMenuOpensConfirm() throws Exception {
         click("Đăng nhập");
-        click("Tìm tin nhắn trong mọi cuộc trò chuyện");
-        click("Mở cuộc trò chuyện");
+        openGroup();
         click("Thêm thành viên");
         assertDialog("Thêm thành viên");
         menu("Xóa khỏi nhóm…");
         assertDialog("Xóa khỏi nhóm?");
     }
 
+    /** D31: the creator plus at least 3 people; the sample has exactly 3 picked. */
+    @Test
+    void createGroupNeedsThreeMembers() throws Exception {
+        click("Đăng nhập");
+        click("Nhóm mới");
+        assertFalse(dialogButton("Tạo nhóm").isDisabled());
+        FxTestSupport.onFx(() -> {
+            ((ButtonBase) dialogRoot().lookup(".chip .button")).fire();
+            return null;
+        });
+        assertTrue(dialogButton("Tạo nhóm").isDisabled());
+    }
+
+    /** D33: the only admin leaving must pick a new admin first. */
+    @Test
+    void lastAdminLeavingPicksNewAdmin() throws Exception {
+        click("Đăng nhập");
+        openGroup();
+        click("Rời nhóm");
+        assertTrue(dialogButton("Chuyển quyền và rời nhóm").isDisabled());
+        FxTestSupport.onFx(() -> {
+            ((RadioButton) dialogRoot().lookup(".radio-button")).setSelected(true);
+            return null;
+        });
+        assertFalse(dialogButton("Chuyển quyền và rời nhóm").isDisabled());
+        assertDialog("Chuyển quyền admin");
+    }
+
+    /** D37: a report needs at least one reason and is only offered from a chat, not from the friend list. */
+    @Test
+    void spamReportNeedsReason() throws Exception {
+        click("Đăng nhập");
+        menu("Báo cáo spam…");
+        assertFalse(dialogButton("Gửi báo cáo").isDisabled());
+        FxTestSupport.onFx(() -> {
+            dialogRoot().lookupAll(".check-box").stream()
+                    .map(n -> (CheckBox) n)
+                    .filter(c -> "Quảng cáo, bán hàng".equals(c.getText()))
+                    .forEach(c -> c.setSelected(false));
+            return null;
+        });
+        assertTrue(dialogButton("Gửi báo cáo").isDisabled());
+        assertDialog("Báo cáo spam");
+
+        boolean friendMenuReports = FxTestSupport.onFx(() -> {
+            TabPane tabs = (TabPane) Navigator.load("FriendsView").lookup(".tab-pane");
+            Node allBox = ((ScrollPane) tabs.getTabs().get(0).getContent()).getContent();
+            return allBox.lookupAll(".menu-button").stream()
+                    .flatMap(n -> ((MenuButton) n).getItems().stream())
+                    .anyMatch(i -> i.getText().startsWith("Báo cáo spam"));
+        });
+        assertFalse(friendMenuReports);
+    }
+
     private Parent root() {
         return stage.getScene().getRoot();
+    }
+
+    private void openGroup() throws Exception {
+        FxTestSupport.onFx(() -> {
+            Navigator.showMain("GroupChatView");
+            return null;
+        });
+    }
+
+    /** Root of the last opened window (a dialog). */
+    private static Parent dialogRoot() {
+        return Window.getWindows().get(Window.getWindows().size() - 1).getScene().getRoot();
+    }
+
+    private static ButtonBase dialogButton(String text) throws Exception {
+        return FxTestSupport.onFx(() -> dialogRoot().lookupAll(".button").stream()
+                .filter(n -> n instanceof ButtonBase b && text.equals(b.getText()))
+                .map(n -> (ButtonBase) n)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no dialog button \"" + text + "\"")));
     }
 
     private void click(String text) throws Exception {

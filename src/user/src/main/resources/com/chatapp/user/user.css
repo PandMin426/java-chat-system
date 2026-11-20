@@ -59,15 +59,6 @@
 }
 .search-link .ikonli-font-icon { -fx-icon-size: 16px; -fx-icon-color: -c-muted; }
 .conv-cell { -fx-padding: 10 14; -fx-border-color: transparent transparent #F4F4F4 transparent; }
-.unread {
-    -fx-background-color: -c-accent;
-    -fx-background-radius: 9;
-    -fx-text-fill: white;
-    -fx-font-size: 11px;
-    -fx-font-family: "Segoe UI Semibold";
-    -fx-padding: 0 6;
-    -fx-min-height: 18;
-}
 .inline-icon { -fx-icon-size: 13px; -fx-icon-color: -c-ink-3; }
 
 /* ---------- Chat area ---------- */
