@@ -36,7 +36,7 @@ Align the V1 screens (UserApp and AdminApp) with two rules of the approved datab
 - Rename dotted sample usernames in `user/.../SampleData.java`, `admin/.../SampleData.java` and FXML texts.
 - Fix the S02 username hint and add the rule hint to the S11a add form.
 - Change D01 minimum from 3 others to 2 others (text, controller, sample picks, test).
-- Regenerate the affected screenshots in `docs/screens/`.
+- Regenerate the affected screenshots in `docs/frontend/screens/`.
 
 ### Out of scope
 - Real validation (regex check on submit, error labels) — comes with the `auth` / `admin-user-mgmt` features.
@@ -96,8 +96,8 @@ Align the V1 screens (UserApp and AdminApp) with two rules of the approved datab
 | MODIFY | `src/admin/src/main/java/com/chatapp/admin/controller/UserFormController.java` | Username hint in add mode |
 | MODIFY | `src/admin/src/main/resources/com/chatapp/admin/view/UserFormDialog.fxml` | `wrapText` on username hint (Iteration 1) |
 | MODIFY | `src/user/src/main/resources/com/chatapp/user/view/ReportSpamDialog.fxml` | Username in subtitle (Iteration 1) |
-| MODIFY | `docs/screens/**.png` | Regenerated screenshots |
-| CREATE | `docs/ai/ui-username-group-size/ui-username-group-size.md` | Feature description (Rule 2) |
+| MODIFY | `docs/frontend/screens/**.png` | Regenerated screenshots |
+| CREATE | `docs/frontend/ai/ui-username-group-size/ui-username-group-size.md` | Feature description (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 
 ---

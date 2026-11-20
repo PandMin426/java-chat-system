@@ -41,7 +41,7 @@ Aligns the V1 screens of UserApp and AdminApp with two database rules from `scri
 | MODIFIED | `src/admin/src/main/resources/com/chatapp/admin/view/ResetPasswordDialog.fxml` | Username `bich_tran` |
 | MODIFIED | `src/admin/src/main/resources/com/chatapp/admin/view/UserFormDialog.fxml` | `wrapText` on `usernameHint` |
 | MODIFIED | `src/admin/src/main/java/com/chatapp/admin/controller/UserFormController.java` | `usernameHint` always shown: rule text in add mode, "Không đổi được." in edit mode |
-| MODIFIED | `docs/screens/user/*.png`, `docs/screens/admin/*.png` | 20 regenerated screenshots (S01, S02, S04, S04b, S06, S07, S09, D01, D02, D04, S11, S11a, S11b, S11c, S12, S13, S14, S15b, S16, S17a) |
+| MODIFIED | `docs/frontend/screens/user/*.png`, `docs/frontend/screens/admin/*.png` | 20 regenerated screenshots (S01, S02, S04, S04b, S06, S07, S09, D01, D02, D04, S11, S11a, S11b, S11c, S12, S13, S14, S15b, S16, S17a) |
 
 ---
 

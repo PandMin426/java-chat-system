@@ -44,9 +44,9 @@ All screens of the admin subsystem (`admin.jar`) as JavaFX FXML views with contr
 | CREATED | `src/admin/src/test/java/com/chatapp/admin/FxTestSupport.java` | JavaFX start-up / FX-thread helper |
 | CREATED | `src/admin/src/test/java/com/chatapp/admin/FxmlLoadTest.java` | 11 views + 7 inside the main window + user form in both modes + view count |
 | CREATED | `src/admin/src/test/java/com/chatapp/admin/NavigationTest.java` | Fires nav items and buttons; checks screens, dialogs and chart bar counts |
-| CREATED | `src/admin/src/test/java/com/chatapp/admin/ScreenshotTool.java` | Writes report PNGs to `docs/screens/admin/` |
-| CREATED | `docs/screens/admin/*.png` (13) | Screenshots for the V1 report |
-| MODIFIED | `docs/screens/user/S09-ho-so.png` | Regenerated after the date-format fix |
+| CREATED | `src/admin/src/test/java/com/chatapp/admin/ScreenshotTool.java` | Writes report PNGs to `docs/frontend/screens/admin/` |
+| CREATED | `docs/frontend/screens/admin/*.png` (13) | Screenshots for the V1 report |
+| MODIFIED | `docs/frontend/screens/user/S09-ho-so.png` | Regenerated after the date-format fix |
 
 ---
 
@@ -107,7 +107,7 @@ Click "Đăng nhập" (no check in V1) → Người dùng.
 | # | Test steps | Expected result | Result |
 |---|---|---|---|
 | 1 | `.\mvnw.cmd -pl src/admin test` | `FxmlLoadTest` 20 + `NavigationTest` 3 pass | PASS (23/23; 24 with ScreenshotTool) |
-| 2 | `.\mvnw.cmd -pl src/admin test -Dtest=ScreenshotTool` | 13 PNGs in `docs/screens/admin/` | PASS, all reviewed |
+| 2 | `.\mvnw.cmd -pl src/admin test -Dtest=ScreenshotTool` | 13 PNGs in `docs/frontend/screens/admin/` | PASS, all reviewed |
 | 3 | `.\mvnw.cmd -pl src/admin javafx:run` | Login window, clean output | PASS (alive 20 s, clean log) |
 | 4 | Whole project `.\mvnw.cmd install -Dtest=FxmlLoadTest,NavigationTest,ScreenshotTool -Dsurefire.failIfNoSpecifiedTests=false` | Both modules green | PASS (48/48) |
 

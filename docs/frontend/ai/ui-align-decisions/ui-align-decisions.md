@@ -19,7 +19,7 @@ Updates the V1 JavaFX screens of both apps so they match the business decisions 
 ## 2. PURPOSE / USE CASE
 
 - **Actor:** User and Admin (reviewers of the V1 screens; the team building V2 on top of them)
-- **Trigger:** Opening the V1 apps or the screenshots in `docs/screens/`
+- **Trigger:** Opening the V1 apps or the screenshots in `docs/frontend/screens/`
 - **Goal:** Every screen shows the agreed behaviour, so V2 implements the same rules the screens show
 
 ---
@@ -57,7 +57,7 @@ Updates the V1 JavaFX screens of both apps so they match the business decisions 
 | MODIFIED | `src/admin/src/main/resources/com/chatapp/admin/view/FriendStatsView.fxml` | D22: subtitle, column "Bạn của bạn (cấp 2)", example |
 | MODIFIED | `src/admin/src/main/resources/com/chatapp/admin/view/ActiveUsersView.fxml` | D39: "mở ứng dụng = số lần đăng nhập thành công" |
 | MODIFIED | `src/admin/src/test/java/com/chatapp/admin/NavigationTest.java` | New SpamView subtitle text |
-| MODIFIED | `docs/screens/user/*.png`, `docs/screens/admin/*.png` | Regenerated; new `docs/screens/user/D06-chuyen-quyen-admin.png` |
+| MODIFIED | `docs/frontend/screens/user/*.png`, `docs/frontend/screens/admin/*.png` | Regenerated; new `docs/frontend/screens/user/D06-chuyen-quyen-admin.png` |
 
 ---
 
@@ -91,14 +91,14 @@ N/A - no network communication (V1 screens only).
 | # | Test steps | Expected result | Result |
 |---|---|---|---|
 | 1 | `./mvnw -B test` | All views load: user 29/29, admin 23/23 tests pass | PASS |
-| 2 | Open `docs/screens/user/S03-quen-mat-khau.png` | Only the email field | PASS |
+| 2 | Open `docs/frontend/screens/user/S03-quen-mat-khau.png` | Only the email field | PASS |
 | 3 | Open `S04-tro-chuyen.png` / `S05-nhom-chat.png` | Blue unread counts on conversation rows | PASS |
 | 4 | Open `S08-tim-tin-nhan.png`, `S05-nhom-chat.png` | 4 results, all 1-1, no filter; group header without search, composer without AI | PASS |
 | 5 | `NavigationTest.createGroupNeedsThreeMembers` | "Tạo nhóm" enabled with 3 picked, disabled after removing one | PASS |
 | 6 | `NavigationTest.lastAdminLeavingPicksNewAdmin` | "Rời nhóm" opens "Chuyển quyền admin"; confirm enabled only after a choice | PASS |
 | 7 | `NavigationTest.spamReportNeedsReason` | Send disabled with no reason; Friends menu has no report item | PASS |
-| 8 | Open `docs/screens/admin/S14-bao-cao-spam.png` | "Lý do" column; pending row has "Khóa tài khoản" + "Bỏ qua"; others show "Đã xử lý · đã khóa" / "Đã bỏ qua" | PASS |
-| 9 | Open `docs/screens/admin/S16-so-luong-ban-be.png` | Column "Bạn của bạn (cấp 2)"; example gives 1 for A | PASS |
+| 8 | Open `docs/frontend/screens/admin/S14-bao-cao-spam.png` | "Lý do" column; pending row has "Khóa tài khoản" + "Bỏ qua"; others show "Đã xử lý · đã khóa" / "Đã bỏ qua" | PASS |
+| 9 | Open `docs/frontend/screens/admin/S16-so-luong-ban-be.png` | Column "Bạn của bạn (cấp 2)"; example gives 1 for A | PASS |
 
 ---
 

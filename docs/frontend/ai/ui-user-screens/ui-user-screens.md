@@ -40,8 +40,8 @@ All screens of the user subsystem (`user.jar`) as JavaFX FXML views with control
 | CREATED | `src/user/src/main/resources/com/chatapp/user/user.css` | User-app styles: rail, conversation column, bubbles, side panels, chips, dialogs |
 | CREATED | `src/user/src/test/java/com/chatapp/user/FxmlLoadTest.java` | Loads every FXML (+ 6 views inside the main window); also holds `FxTestSupport` |
 | CREATED | `src/user/src/test/java/com/chatapp/user/NavigationTest.java` | Fires real buttons/menus and checks which screen or dialog opens |
-| CREATED | `src/user/src/test/java/com/chatapp/user/ScreenshotTool.java` | Writes report PNGs to `docs/screens/user/` |
-| CREATED | `docs/screens/user/*.png` (13) | Screenshots for the V1 report |
+| CREATED | `src/user/src/test/java/com/chatapp/user/ScreenshotTool.java` | Writes report PNGs to `docs/frontend/screens/user/` |
+| CREATED | `docs/frontend/screens/user/*.png` (13) | Screenshots for the V1 report |
 
 ---
 
@@ -87,7 +87,7 @@ Click "Đăng nhập" (no check in V1) → main window. Rail: Trò chuyện / B�
 | # | Test steps | Expected result | Result |
 |---|---|---|---|
 | 1 | `.\mvnw.cmd -pl src/user test` | `FxmlLoadTest` 19 + `NavigationTest` 4 pass | PASS (23/23) |
-| 2 | `.\mvnw.cmd -pl src/user test -Dtest=ScreenshotTool` | 13 PNGs in `docs/screens/user/` | PASS |
+| 2 | `.\mvnw.cmd -pl src/user test -Dtest=ScreenshotTool` | 13 PNGs in `docs/frontend/screens/user/` | PASS |
 | 3 | Compare each PNG with its prototype board | Same fields, buttons, menu items | PASS (differences below) |
 | 4 | `.\mvnw.cmd -pl src/user javafx:run` | Login window, no exception or CSS warning in output | PASS (process alive after 20 s, clean log) |
 

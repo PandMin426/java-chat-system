@@ -258,7 +258,7 @@ This table describes delivered files and the current change boundary. Iteration 
 
 | Action | File path | Timing and purpose |
 |---|---|---|
-| MODIFY | `docs/ai/database-schema/plan.md` | THIS SESSION: preserve approvals/iterations 1–5; iteration 6 final review, current scope/evidence/gates and exact requested commit message |
+| MODIFY | `docs/database/ai/database-schema/plan.md` | THIS SESSION: preserve approvals/iterations 1–5; iteration 6 final review, current scope/evidence/gates and exact requested commit message |
 | MODIFY | `docs/ai/work-log.md` | THIS SESSION AND LATER: append action/session entries; add/update only the matching progress row |
 | READ ONLY | `script/schema.sql` | Approved 15-table DDL, previously executed in the identified fresh test DB |
 | READ ONLY | `script/seed.sql` | Deterministic DB-only fixtures and aligned identity sequences, delivered in iteration 5 |
@@ -266,7 +266,7 @@ This table describes delivered files and the current change boundary. Iteration 
 | READ ONLY | `script/tests/verify.sql` | A/B/C isolated SQL checks and D NOT RUN reporting, delivered/executed in iteration 5 |
 | READ ONLY | `script/tests/negative-cases.md` | Exact case expectations, target and prior results, delivered in iteration 5 |
 | MODIFY | `docs/database/design-baseline.md` | THIS SESSION: preserve model/dictionary, add final decision coverage and evidence/gate distinctions |
-| MODIFY | `docs/ai/database-schema/database-schema.md` | THIS SESSION: factual delivered files/schema/run/test/limits plus read-only README/use-case/UI handoff |
+| MODIFY | `docs/database/ai/database-schema/database-schema.md` | THIS SESSION: factual delivered files/schema/run/test/limits plus read-only README/use-case/UI handoff |
 
 Read-only sources, including the Word document, templates, UI plans/docs, requirements specification and project brief, remain unchanged.
 
@@ -343,7 +343,7 @@ P1–P4, D1–D4 and S1–S4 retain earlier planning/design/source-session resul
 
 Actual target: **jcs_schema_test_20261119_120407_2ed14e**, owner chat_user, on existing chat-postgres **a0786fdd6fe1**, published **127.0.0.1:5432**. PostgreSQL/psql 17.11, version_num170011. Execution used container Unix socket **/var/run/postgresql:5432**; host TCP was not tested. The new TEMPLATE template0 database had zero public tables before schema. No business database, extension installation, database/schema deletion or application edit was involved.
 
-schema→seed→nine PREPAREs→verify succeeded. verify.sql reports **A=48 PASS, B=40 PASS, C=11 PASS SQL simulations, D=1 NOT RUN**. A errors are per-case subtransactions; C has per-case savepoints, outer verification ROLLBACK and complete 15-table/identity-sequence fingerprint equality. Exact case IDs, expected SQLSTATE/constraint or ordered results and repeat commands are in [negative-cases.md](../../../script/tests/negative-cases.md). Schema/seed are run-once; do not rerun them on the populated target. New full runs require a new uniquely named empty test DB, without dropping previous databases.
+schema→seed→nine PREPAREs→verify succeeded. verify.sql reports **A=48 PASS, B=40 PASS, C=11 PASS SQL simulations, D=1 NOT RUN**. A errors are per-case subtransactions; C has per-case savepoints, outer verification ROLLBACK and complete 15-table/identity-sequence fingerprint equality. Exact case IDs, expected SQLSTATE/constraint or ordered results and repeat commands are in [negative-cases.md](../../../../script/tests/negative-cases.md). Schema/seed are run-once; do not rerun them on the populated target. New full runs require a new uniquely named empty test DB, without dropping previous databases.
 
 | ID | Criterion | Actual evidence / remaining limits | Result |
 |---|---|---|---|

@@ -5,7 +5,7 @@
 | Feature / owner | database-schema / Minh |
 | Design status | APPROVED DESIGN / IN_PROGRESS acceptance; fresh test schema/seed/query/SQL checks executed |
 | Design date | 19/11/2026, live Asia/Ho_Chi_Minh date |
-| Plan approval | YES (19/11/2026); [plan](../ai/database-schema/plan.md) |
+| Plan approval | YES (19/11/2026); [plan](ai/database-schema/plan.md) |
 | Detailed design approval | YES (19/11/2026), explicit approval before schema implementation |
 | Current session | Final review of unchanged SQL/tests and recorded runtime evidence; four docs/tracker only; no SQL rerun, application or external handoff edits |
 | Target | Actual PostgreSQL/psql 17.11 (170011); chat-postgres a0786fdd6fe1, published 127.0.0.1:5432; exact test DB in section 12 |
@@ -749,7 +749,7 @@ Q01 is the common history/page/PRIVATE-search/around-anchor path: enforce active
 | E2EE codec/decryption/device proof/interoperability | NOT RUN; integration not implemented here |
 | Mermaid visual rendering | NOT RUN unless a renderer is available; source/FK structure checked separately |
 
-R1=B/R2=A and the detailed design remain approved; no important design change was required. Executed A/B/C results establish their specific fixture/SQL contracts only. Plan V1–V11 records partial criteria explicitly: remaining writer boundary cases, two-session committed races and real JDBC/TCP/client/codec integration still require verification. The feature remains IN_PROGRESS, not a claim that the full chat system or E2EE works. See [negative cases](../../script/tests/negative-cases.md) and the [feature document](../ai/database-schema/database-schema.md) for reproduction and limitations.
+R1=B/R2=A and the detailed design remain approved; no important design change was required. Executed A/B/C results establish their specific fixture/SQL contracts only. Plan V1–V11 records partial criteria explicitly: remaining writer boundary cases, two-session committed races and real JDBC/TCP/client/codec integration still require verification. The feature remains IN_PROGRESS, not a claim that the full chat system or E2EE works. See [negative cases](../../script/tests/negative-cases.md) and the [feature document](ai/database-schema/database-schema.md) for reproduction and limitations.
 
 ### Final review provenance and acceptance gate
 

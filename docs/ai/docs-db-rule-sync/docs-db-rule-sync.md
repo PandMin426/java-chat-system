@@ -29,10 +29,10 @@ Brings the living documentation in line with the two database rules that `ui-use
 | Action | File path | Role |
 |---|---|---|
 | MODIFIED | `docs/ai/requirements-analysis/use-case-specification.md` | BR-01: 3–30 `[A-Za-z0-9_]`, case-insensitive unique/login; BR-09 and M19: ≥ 3 members including the creator; UC-22 step 4: button enabled at ≥ 2 other members |
-| MODIFIED | `docs/ai/ui-align-decisions/plan.md` | Superseded notes on the D8 and D31 rows |
-| MODIFIED | `docs/ai/ui-align-decisions/ui-align-decisions.md` | Superseded notes on the two D31 file rows and the D31 conflict note |
-| MODIFIED | `docs/ai/database-schema/database-schema.md` | Resolved note on the `CreateGroupController` handoff row |
-| MODIFIED | `docs/ai/ui-username-group-size/ui-username-group-size.md` | Removed the known-issue line about stale ui-align-decisions docs |
+| MODIFIED | `docs/frontend/ai/ui-align-decisions/plan.md` | Superseded notes on the D8 and D31 rows |
+| MODIFIED | `docs/frontend/ai/ui-align-decisions/ui-align-decisions.md` | Superseded notes on the two D31 file rows and the D31 conflict note |
+| MODIFIED | `docs/database/ai/database-schema/database-schema.md` | Resolved note on the `CreateGroupController` handoff row |
+| MODIFIED | `docs/frontend/ai/ui-username-group-size/ui-username-group-size.md` | Removed the known-issue line about stale ui-align-decisions docs |
 
 ---
 
@@ -69,7 +69,7 @@ grep -rn "creator + 3\|ít nhất 3 người khác\|MemberPicker(3)\|minPicked =
 ## 6. TECHNICAL NOTES
 
 - Old feature docs are annotated, not rewritten, so they still show what each feature did at the time.
-- Not edited on purpose: `docs/Final_Project_He_Thong_Chat_Chi_Tiet.md` (course brief: "tối thiểu một tên đăng nhập"; the DB decision is stricter), `docs/reports/*` and `docs/research_notes/*` (dated analysis snapshots with line references), old `work-log.md` entries (append-only).
+- Not edited on purpose: `docs/Final_Project_He_Thong_Chat_Chi_Tiet.md` (course brief: "tối thiểu một tên đăng nhập"; the DB decision is stricter), `docs/database/reports/*` and `docs/database/research_notes/*` (dated analysis snapshots with line references), old `work-log.md` entries (append-only).
 - Networking: none; no WebSocket.
 
 ### Changes from the original plan

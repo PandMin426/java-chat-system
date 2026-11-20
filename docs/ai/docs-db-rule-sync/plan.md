@@ -36,7 +36,7 @@
 
 ### Out of scope
 - `docs/Final_Project_He_Thong_Chat_Chi_Tiet.md` — instructor's brief, never edited.
-- `docs/reports/*`, `docs/research_notes/*` — dated analysis snapshots with line references; editing them would falsify what was analysed.
+- `docs/database/reports/*`, `docs/database/research_notes/*` — dated analysis snapshots with line references; editing them would falsify what was analysed.
 - `docs/ai/work-log.md` old entries — append-only.
 - Other DB-vs-use-case differences listed in `database-schema.md` handoff (mandatory E2EE instead of the "Mã hóa tin nhắn" option, admin-only rename, Q1 closure, D38, activity definition…) — unless the user picks option B of Q1.
 
@@ -72,10 +72,10 @@
 | Action | File path | Description |
 |---|---|---|
 | MODIFY | `docs/ai/requirements-analysis/use-case-specification.md` | BR-01, BR-09, M19, UC-22 step 4 |
-| MODIFY | `docs/ai/ui-align-decisions/plan.md` | Superseded notes on D8/D31 rows |
-| MODIFY | `docs/ai/ui-align-decisions/ui-align-decisions.md` | Superseded notes on D31 lines |
-| MODIFY | `docs/ai/database-schema/database-schema.md` | Resolved note on CreateGroupController handoff row |
-| MODIFY | `docs/ai/ui-username-group-size/ui-username-group-size.md` | Remove stale known-issue line |
+| MODIFY | `docs/frontend/ai/ui-align-decisions/plan.md` | Superseded notes on D8/D31 rows |
+| MODIFY | `docs/frontend/ai/ui-align-decisions/ui-align-decisions.md` | Superseded notes on D31 lines |
+| MODIFY | `docs/database/ai/database-schema/database-schema.md` | Resolved note on CreateGroupController handoff row |
+| MODIFY | `docs/frontend/ai/ui-username-group-size/ui-username-group-size.md` | Remove stale known-issue line |
 | CREATE | `docs/ai/docs-db-rule-sync/docs-db-rule-sync.md` | Feature description (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 

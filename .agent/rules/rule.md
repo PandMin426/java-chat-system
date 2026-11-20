@@ -25,7 +25,7 @@
 
 Before starting ANY code-related task, the AI MUST:
 1. Identify the name of the feature being requested.
-2. Check whether the folder `docs/ai/<feature-name>/` already exists.
+2. Decide the feature's folder `<feature-dir>` (see Rule 6): `docs/<area>/ai/<feature-name>/` where `<area>` is `frontend`, `backend` or `database`, or `docs/ai/<feature-name>/` for a cross-cutting feature (requirements, setup, docs-only work, or a feature that spans several areas). Check whether that folder already exists.
 3. If it does not exist → create the folder and create `plan.md` FIRST. You MUST NOT write a single line of code before this step is done.
 4. Tell the user clearly: `"Creating plan.md for feature [feature name] before coding."`
 
@@ -35,9 +35,9 @@ Before starting ANY code-related task, the AI MUST:
 
 **Absolutely mandatory. No exceptions.**
 
-- File path: `docs/ai/<feature-name>/plan.md`
+- File path: `<feature-dir>/plan.md` (see Rule 0 and Rule 6)
 - The AI MUST create this file BEFORE writing any code.
-- The AI MUST create it by copying the structure of `docs/ai/templates/plan.template.md` and filling in every section (no placeholders left, no empty sections).
+- The AI MUST create it by copying the structure of `docs/ai/_template/plan.template.md` and filling in every section (no placeholders left, no empty sections).
 - `plan.md` MUST contain:
   - Feature name
   - Feature goal (expected input/output)
@@ -57,9 +57,9 @@ Before starting ANY code-related task, the AI MUST:
 
 **Absolutely mandatory. No exceptions.**
 
-- File path: `docs/ai/<feature-name>/<feature-name>.md`
+- File path: `<feature-dir>/<feature-name>.md`
 - This file is the feature's own README. Create it immediately after the feature is completed (or during implementation if the content is already clear).
-- The AI MUST create it by copying the structure of `docs/ai/templates/feature.template.md` and filling in every section (no placeholders left, no empty sections).
+- The AI MUST create it by copying the structure of `docs/ai/_template/feature.template.md` and filling in every section (no placeholders left, no empty sections).
 - It MUST describe only what was actually implemented, verified against the real code and files (not copied from `plan.md`).
 - Required content:
   - Feature name and short description
@@ -120,8 +120,8 @@ Before starting ANY code-related task, the AI MUST:
 Before declaring any feature complete, the AI MUST self-check ALL of the following:
 
 ```
-[ ] docs/ai/<feature-name>/plan.md exists and is fully filled in?
-[ ] docs/ai/<feature-name>/<feature-name>.md exists, was created from the template, and matches the actual code?
+[ ] <feature-dir>/plan.md exists and is fully filled in?
+[ ] <feature-dir>/<feature-name>.md exists, was created from the template, and matches the actual code?
 [ ] docs/ai/work-log.md has been updated with the actions just performed (append-only, real timestamps, valid action types)?
 [ ] The progress tracker table in work-log.md reflects this feature's current status?
 [ ] The user has been reminded to make a separate commit for this feature?
@@ -142,18 +142,25 @@ Every project MUST follow this structure:
 ```
 project-root/
 ├── docs/
-│   └── ai/
-│       ├── work-log.md              ← GLOBAL, updated every session
-│       ├── templates/
-│       │   ├── plan.template.md     ← copy this to create every new plan.md
-│       │   └── feature.template.md  ← copy this to create every new <feature-name>.md
-│       ├── <feature-name-1>/
-│       │   ├── plan.md
-│       │   └── <feature-name-1>.md
-│       ├── <feature-name-2>/
-│       │   ├── plan.md
-│       │   └── <feature-name-2>.md
-│       └── ...
+│   ├── ai/
+│   │   ├── work-log.md              ← GLOBAL, updated every session
+│   │   ├── _template/
+│   │   │   ├── plan.template.md     ← copy this to create every new plan.md
+│   │   │   └── feature.template.md  ← copy this to create every new <feature-name>.md
+│   │   └── <cross-cutting-feature>/ ← requirements, setup, docs-only or multi-area features
+│   │       ├── plan.md
+│   │       └── <cross-cutting-feature>.md
+│   ├── frontend/
+│   │   ├── ai/<feature-name>/       ← UserApp / AdminApp screen features (plan.md + <feature-name>.md)
+│   │   └── screens/                 ← screenshots (user/, admin/)
+│   ├── backend/
+│   │   └── ai/<feature-name>/       ← server, socket, protocol features
+│   ├── database/
+│   │   ├── ai/<feature-name>/       ← schema / SQL features
+│   │   ├── design-baseline.md
+│   │   ├── reports/
+│   │   └── research_notes/
+│   └── Final_Project_He_Thong_Chat_Chi_Tiet.md  ← course brief
 ├── src/
 │   ├── admin/
 │   └── user/
@@ -162,7 +169,7 @@ project-root/
 └── README.md
 ```
 
-The AI MUST create this exact structure from the start and MUST NOT place AI documentation files anywhere else.
+The AI MUST follow this exact structure and MUST NOT place AI documentation files anywhere else. `<feature-dir>` in the other rules means `docs/<area>/ai/<feature-name>/` (area = `frontend`, `backend` or `database`) or, for a cross-cutting feature, `docs/ai/<feature-name>/`. `work-log.md` and `_template/` always stay in `docs/ai/`. Feature names stay unique across all areas.
 
 ---
 
@@ -269,7 +276,7 @@ For multi-step tasks, state a brief plan in this form (and put it in `plan.md`):
 # PART C — REQUIRED ORDER OF ACTIONS (SUMMARY)
 
 ```
-1. [BEFORE CODING]  → Announce (Rule 0), then create docs/ai/<feature>/plan.md
+1. [BEFORE CODING]  → Announce (Rule 0), then create <feature-dir>/plan.md
                       (include assumptions, success criteria, file list)
 2. [BEFORE CODING]  → If requirements are unclear or ambiguous, ask the user (Rule 9);
                       present the plan for approval (Rule 7)
@@ -277,7 +284,7 @@ For multi-step tasks, state a brief plan in this form (and put it in `plan.md`):
 4. [WHILE CODING]   → Update plan.md if the approach changes ([ITERATION X - DD/MM])
 5. [WHILE CODING]   → Update work-log.md continuously
 6. [AFTER CODING]   → Verify success criteria (Rule 12)
-7. [AFTER CODING]   → Create docs/ai/<feature>/<feature>.md
+7. [AFTER CODING]   → Create <feature-dir>/<feature>.md
 8. [AFTER CODING]   → Update work-log.md (completion entry)
 9. [FINAL]          → Remind the user to make a separate commit: feat(<feature>): <description>
 10. [CHECK]         → Run the Rule 5 checklist before saying "done"

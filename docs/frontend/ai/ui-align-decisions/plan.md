@@ -97,7 +97,7 @@ D1–D7, D10 (user decided to keep the current dialog), D11–D17, D19, D21, D23
 - **Verify:** Admin FxmlLoadTest/NavigationTest pass; screenshot S16 shows the level-2 column.
 
 ### Step 6: Tests, screenshots, docs
-- **Action:** Update tests whose expected titles change, add the new dialog to `ScreenshotTool`, regenerate `docs/screens/**`, write `ui-align-decisions.md`, update `work-log.md`.
+- **Action:** Update tests whose expected titles change, add the new dialog to `ScreenshotTool`, regenerate `docs/frontend/screens/**`, write `ui-align-decisions.md`, update `work-log.md`.
 - **Verify:** `mvnw test` green for user and admin modules; regenerated PNGs show the changes.
 
 ### Alternatives considered
@@ -139,8 +139,8 @@ D1–D7, D10 (user decided to keep the current dialog), D11–D17, D19, D21, D23
 | MODIFY | `src/admin/src/main/resources/com/chatapp/admin/view/ActiveUsersView.fxml` | D39 subtitle |
 | MODIFY | `src/admin/src/main/java/com/chatapp/admin/controller/FriendStatsController.java` | D22 renamed record field |
 | MODIFY | `src/admin/src/test/java/com/chatapp/admin/NavigationTest.java` | New SpamView subtitle (iteration 1) |
-| MODIFY | `docs/screens/**/*.png` | Regenerated screenshots |
-| CREATE | `docs/ai/ui-align-decisions/ui-align-decisions.md` | Feature description (Rule 2) |
+| MODIFY | `docs/frontend/screens/**/*.png` | Regenerated screenshots |
+| CREATE | `docs/frontend/ai/ui-align-decisions/ui-align-decisions.md` | Feature description (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 
 ---

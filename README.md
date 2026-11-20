@@ -47,7 +47,11 @@ java-chat-system/
 ├── release/               # V2: admin.jar, user.jar, server.jar, config.properties
 ├── git/                   # Ảnh chụp commit của từng thành viên
 ├── docs/
-│   └── ai/                # plan.md, <feature>.md, work-log.md (bắt buộc khi dùng AI)
+│   ├── ai/                # work-log.md, _template/, feature dùng chung (requirements, setup, docs)
+│   ├── frontend/          # ai/<feature>/ cho màn hình + screens/ (ảnh chụp user, admin)
+│   ├── backend/           # ai/<feature>/ cho server, socket
+│   ├── database/          # ai/<feature>/ cho CSDL + design-baseline, reports, research_notes
+│   └── Final_Project_He_Thong_Chat_Chi_Tiet.md   # Đề bài
 ├── .gitignore
 └── README.md
 ```

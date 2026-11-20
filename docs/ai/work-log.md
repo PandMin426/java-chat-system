@@ -16,7 +16,7 @@
    ```
    - Use exactly one space on each side of every `|`. Do NOT pad or align columns.
    - `<ACTION_TYPE>` MUST be one of the types in section 2. Do NOT invent new types.
-   - `<feature-name>` MUST match the folder name in `docs/ai/` (kebab-case). For actions that belong to no feature, use `setup` (project initialization) or `global` (anything else).
+   - `<feature-name>` MUST match the feature folder name (kebab-case) in `docs/<area>/ai/` or `docs/ai/` (see rule.md Rule 6). For actions that belong to no feature, use `setup` (project initialization) or `global` (anything else).
    - `<details>` MUST be written in English, concise, and specific (file paths, error messages, reasons).
 4. **Timestamps MUST be real.** Use the real current local time in 24-hour format. If you can run commands, get it from the system (for example `date '+%d/%m/%Y %H:%M'`). If you cannot access a clock, ASK the user for the current date and time. NEVER guess or invent a timestamp.
 5. **Daily headings.** Group entries under a heading `### [DD/MM/YYYY]`. When the date changes, add a new heading at the end of the log.
@@ -55,7 +55,7 @@
 
 <!--
 [DD/MM/YYYY HH:MM] | SESSION_START | <feature-name> | <session goal>
-[DD/MM/YYYY HH:MM] | PLAN_CREATED | <feature-name> | Created docs/ai/<feature-name>/plan.md - approach: <short summary>
+[DD/MM/YYYY HH:MM] | PLAN_CREATED | <feature-name> | Created <feature-dir>/plan.md - approach: <short summary>
 [DD/MM/YYYY HH:MM] | QUESTION | <feature-name> | Asked user: <question or assumption>
 [DD/MM/YYYY HH:MM] | PLAN_APPROVED | <feature-name> | User approved the plan
 [DD/MM/YYYY HH:MM] | CODE_START | <feature-name> | Started implementing <class/module>
@@ -67,7 +67,7 @@
 [DD/MM/YYYY HH:MM] | PLAN_UPDATED | <feature-name> | Approach changed because: <reason>. Iteration 2
 [DD/MM/YYYY HH:MM] | CODE_DONE | <feature-name> | Implementation finished
 [DD/MM/YYYY HH:MM] | VERIFIED | <feature-name> | Checked <criterion> by <method> - result: <pass/fail>
-[DD/MM/YYYY HH:MM] | DOC_CREATED | <feature-name> | Created docs/ai/<feature-name>/<feature-name>.md
+[DD/MM/YYYY HH:MM] | DOC_CREATED | <feature-name> | Created <feature-dir>/<feature-name>.md
 [DD/MM/YYYY HH:MM] | COMMIT_REMINDER | <feature-name> | Reminded user: feat(<feature-name>): <message>
 [DD/MM/YYYY HH:MM] | SESSION_END | <feature-name> | <summary of session result>
 -->
@@ -431,6 +431,22 @@ Trang
 [20/11/2026 19:24] | CODE_DONE | docs-db-rule-sync | Implementation finished
 [20/11/2026 19:24] | DOC_CREATED | docs-db-rule-sync | Created docs/ai/docs-db-rule-sync/docs-db-rule-sync.md
 [20/11/2026 19:24] | COMMIT_REMINDER | docs-db-rule-sync | AI commits at user's request: feat(docs-db-rule-sync): sync username and group-size rules in docs
+[20/11/2026 19:28] | COMMIT_REMINDER | docs-db-rule-sync | At user's request AI committed 2c6d73b feat(docs-db-rule-sync): sync username and group-size rules in docs (not pushed)
+[20/11/2026 19:28] | CODE_START | docs-restructure | Started moving docs folders
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | git mv docs/screens -> docs/frontend/screens; docs/ai/ui-user-screens, ui-admin-screens, ui-align-decisions, ui-username-group-size -> docs/frontend/ai/; docs/ai/database-schema -> docs/database/ai/; docs/reports, docs/research_notes -> docs/database/
+[20/11/2026 19:28] | FILE_CREATED | docs-restructure | docs/backend/.gitkeep
+[20/11/2026 19:28] | BUG_FOUND | docs-restructure | First link rewrite dropped the './' prefix of unchanged links (e.g. ./plan.md -> plan.md) and the path-rename pass also rewrote the 'Current' column of docs-restructure/plan.md
+[20/11/2026 19:28] | BUG_FIXED | docs-restructure | Restored moved md contents from the index, kept links whose target is unchanged, re-ran; restored plan old-path column by hand and removed a duplicated '| MOVE |' cell
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | 20 markdown files - relative links recomputed and docs/... mentions renamed; research_notes user_tai_khoan.md 3 workspace-style links renamed by hand
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | .agent/rules/rule.md - <feature-dir> rule (docs/<area>/ai/<feature> or docs/ai/<feature>), Rule 6 tree, templates/ -> _template/; _template/*.md copy-to paths; work-log header rule 3 and template entries
+[20/11/2026 19:28] | DECISION | docs-restructure | Fixed rule.md 'docs/ai/templates/' -> 'docs/ai/_template/' (NOTE 08/11/2026) since those lines were rewritten for the new layout
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | README.md docs/ tree; user/admin ScreenshotTool.java default output ../../docs/frontend/screens/<app>
+[20/11/2026 19:28] | VERIFIED | docs-restructure | Link check: no new broken links (459 pre-existing workspace-style links in 2 research notes unchanged); stale-path grep clean outside old log entries and the plan; mvnw test user 29/29 admin 23/23; ScreenshotTool writes byte-identical PNGs to docs/frontend/screens - criteria 1-4 PASS
+[20/11/2026 19:28] | NOTE | docs-restructure | README/rule.md still list script/create_db.sql (real: schema.sql, seed.sql, queries.sql); left unchanged, already in database-schema handoff
+[20/11/2026 19:28] | CODE_DONE | docs-restructure | Implementation finished
+[20/11/2026 19:28] | DOC_CREATED | docs-restructure | Created docs/ai/docs-restructure/docs-restructure.md
+[20/11/2026 19:28] | COMMIT_REMINDER | docs-restructure | AI commits at user's request: feat(docs-restructure): split docs into frontend, backend and database
+[20/11/2026 19:28] | SESSION_END | docs-restructure | Three features committed (ui-username-group-size, docs-db-rule-sync, docs-restructure); nothing pushed; target/ build outputs left unstaged
 
 <!-- APPEND NEW ENTRIES -->
 
@@ -473,6 +489,6 @@ Trang
 | database-schema | ✅ | ✅ | 🔄 | ✅ | ⬜ |
 | ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ✅ |
 | docs-db-rule-sync | ✅ | ✅ | ✅ | ✅ | ✅ |
-| docs-restructure | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
+| docs-restructure | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.

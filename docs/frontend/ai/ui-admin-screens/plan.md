@@ -21,7 +21,7 @@ Build every screen of the admin subsystem (`admin.jar`) as JavaFX FXML views mat
 ### Input
 - Prototype boards `A-*.dc.html` in `../design-ui/prototype-canvas/project/` (published at https://claude.ai/artifact/MxZtuhNSYunZ2YF3Z4odwA)
 - Use cases UC-30..UC-46 in `docs/ai/requirements-analysis/use-case-specification.md`
-- Skeleton and `theme.css` from `project-setup`; answers to questions 1–5 of `docs/ai/ui-user-screens/plan.md` (same decisions apply here)
+- Skeleton and `theme.css` from `project-setup`; answers to questions 1–5 of `docs/frontend/ai/ui-user-screens/plan.md` (same decisions apply here)
 
 ### Output / Expected result
 - `mvnw.cmd -pl src/admin javafx:run` opens the admin login window; every admin screen and dialog can be reached and looks like its prototype board
@@ -56,7 +56,7 @@ Build every screen of the admin subsystem (`admin.jar`) as JavaFX FXML views mat
 
 | # | Type | Description | Status |
 |---|---|---|---|
-| 1 | ASSUMPTION | Navigation, sample data, icons, fonts and screenshot tool follow the answers to questions 1–5 in `docs/ai/ui-user-screens/plan.md` (all "yes / recommended", 08/11/2026) | CONFIRMED (08/11/2026) |
+| 1 | ASSUMPTION | Navigation, sample data, icons, fonts and screenshot tool follow the answers to questions 1–5 in `docs/frontend/ai/ui-user-screens/plan.md` (all "yes / recommended", 08/11/2026) | CONFIRMED (08/11/2026) |
 | 2 | ASSUMPTION | Table sorting uses TableView's built-in header click; columns not required to sort are `sortable="false"` | CONFIRMED (08/11/2026) |
 | 3 | ASSUMPTION | Bar charts: one series, bars in `#151515`, current month in accent `#1764D8`, a Tooltip with the exact value on each bar (dataviz rule: hover layer by default) | CONFIRMED (08/11/2026) |
 | 4 | ASSUMPTION | Table cell values come from small Java records in `SampleData`, bound with `setCellValueFactory(c -> new SimpleStringProperty(...))` | CONFIRMED (08/11/2026) |
@@ -111,8 +111,8 @@ Build every screen of the admin subsystem (`admin.jar`) as JavaFX FXML views mat
 | CREATE | `src/admin/src/test/java/com/chatapp/admin/FxTestSupport.java` | Iteration 1: JavaFX start-up and FX-thread helper for tests |
 | CREATE | `src/admin/src/test/java/com/chatapp/admin/NavigationTest.java` | Iteration 1: clicks through nav and dialogs |
 | CREATE | `src/admin/src/test/java/com/chatapp/admin/FxmlLoadTest.java` | Loads every FXML |
-| CREATE | `src/admin/src/test/java/com/chatapp/admin/ScreenshotTool.java` + `docs/screens/admin/*.png` | Only if chosen |
-| CREATE | `docs/ai/ui-admin-screens/ui-admin-screens.md` | Feature description document (Rule 2) |
+| CREATE | `src/admin/src/test/java/com/chatapp/admin/ScreenshotTool.java` + `docs/frontend/screens/admin/*.png` | Only if chosen |
+| CREATE | `docs/frontend/ai/ui-admin-screens/ui-admin-screens.md` | Feature description document (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 
 ---
@@ -178,7 +178,7 @@ Build every screen of the admin subsystem (`admin.jar`) as JavaFX FXML views mat
 |---|---|
 | Completion date | 08/11/2026 |
 | Commit message to use | `feat(ui-admin-screens): add JavaFX screens for the admin subsystem` |
-| Notes | 11 FXML views, 24 admin tests passing (48 in total), 13 screenshots in `docs/screens/admin/`. Shared `DateFields` in `common` also fixes the user app's date format. |
+| Notes | 11 FXML views, 24 admin tests passing (48 in total), 13 screenshots in `docs/frontend/screens/admin/`. Shared `DateFields` in `common` also fixes the user app's date format. |
 
 ---
 *Feature description: [ui-admin-screens.md](./ui-admin-screens.md)*

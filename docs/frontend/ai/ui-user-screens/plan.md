@@ -63,7 +63,7 @@ Build every screen of the user subsystem (`user.jar`) as JavaFX FXML views, matc
 | 2 | QUESTION | Sample data: put hardcoded sample rows (same names as the prototype) in one `SampleData` class, deleted when V2 loads real data? Recommended: yes — empty lists make useless screenshots. **Answer 08/11/2026:** yes. | RESOLVED |
 | 3 | QUESTION | Icons: Ikonli (`ikonli-javafx` + Feather pack, 1 dependency, `<FontIcon iconLiteral="fth-search"/>` in FXML) or hand-written `SVGPath` shapes? Recommended: Ikonli. **Answer 08/11/2026:** Ikonli. | RESOLVED |
 | 4 | QUESTION | Fonts: Windows system fonts `Segoe UI` + `Consolas` (no files to ship), or bundle Inter + JetBrains Mono `.ttf` (OFL license, ~1 MB) to match the prototype exactly? Recommended: system fonts. **Answer 08/11/2026:** system fonts (Segoe UI + Consolas). | RESOLVED |
-| 5 | QUESTION | Add a small `ScreenshotTool` (loads each FXML off-screen and saves `docs/screens/user/*.png` with `Scene.snapshot`) to produce the report screenshots in one command? Recommended: yes. **Answer 08/11/2026:** yes. | RESOLVED |
+| 5 | QUESTION | Add a small `ScreenshotTool` (loads each FXML off-screen and saves `docs/frontend/screens/user/*.png` with `Scene.snapshot`) to produce the report screenshots in one command? Recommended: yes. **Answer 08/11/2026:** yes. | RESOLVED |
 | 6 | ASSUMPTION | All UI text in Vietnamese, same wording as the prototype | CONFIRMED (08/11/2026) |
 | 7 | ASSUMPTION | One controller per FXML; list cells (conversation, message bubble, friend row) built by small cell factories in the controller, not separate FXML files | CONFIRMED (08/11/2026) |
 
@@ -119,8 +119,8 @@ All QUESTION rows must be RESOLVED before coding starts.
 | CREATE | `src/user/src/test/java/com/chatapp/user/FxmlLoadTest.java` | Loads every FXML |
 | CREATE | `src/user/src/test/java/com/chatapp/user/NavigationTest.java` | Iteration 2: clicks through navigation and dialogs |
 | MODIFY | `src/common/src/main/resources/com/chatapp/common/theme.css` | Iteration 2: combo-box, arrow button and checkbox mark fixes |
-| CREATE | `src/user/src/test/java/com/chatapp/user/ScreenshotTool.java` + `docs/screens/user/*.png` | Only if Q5 = yes |
-| CREATE | `docs/ai/ui-user-screens/ui-user-screens.md` | Feature description document (Rule 2) |
+| CREATE | `src/user/src/test/java/com/chatapp/user/ScreenshotTool.java` + `docs/frontend/screens/user/*.png` | Only if Q5 = yes |
+| CREATE | `docs/frontend/ai/ui-user-screens/ui-user-screens.md` | Feature description document (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 
 ---
@@ -186,7 +186,7 @@ All QUESTION rows must be RESOLVED before coding starts.
 |---|---|
 | Completion date | 08/11/2026 |
 | Commit message to use | `feat(ui-user-screens): add JavaFX screens for the user subsystem` |
-| Notes | 13 FXML views, 23 passing tests, 13 report screenshots in `docs/screens/user/`. Interactive states that need logic stay for V2 (see feature doc). |
+| Notes | 13 FXML views, 23 passing tests, 13 report screenshots in `docs/frontend/screens/user/`. Interactive states that need logic stay for V2 (see feature doc). |
 
 ---
 *Feature description: [ui-user-screens.md](./ui-user-screens.md)*
