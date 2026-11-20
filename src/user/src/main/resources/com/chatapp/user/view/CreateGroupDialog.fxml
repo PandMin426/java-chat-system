@@ -14,7 +14,8 @@
       fx:controller="com.chatapp.user.controller.CreateGroupController" styleClass="dialog-root" prefWidth="500">
     <VBox styleClass="dialog-head">
         <Label text="Tạo nhóm chat" styleClass="h2"/>
-        <Label text="Thêm ít nhất 3 người khác. Bạn sẽ là admin của nhóm." styleClass="small,muted"/>
+        <Label text="Nhóm cần ít nhất 3 người, tính cả bạn: thêm ít nhất 2 người khác. Bạn sẽ là admin của nhóm."
+               styleClass="small,muted" wrapText="true"/>
     </VBox>
     <VBox styleClass="dialog-body">
         <VBox spacing="6">

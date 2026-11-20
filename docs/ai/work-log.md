@@ -392,6 +392,29 @@ Trang
 [19/11/2026 14:03] | COMMIT_REMINDER | database-schema | Minh requested separate commit message: feat(database-schema): redesign PostgreSQL schema for approved decisions; include plan/feature/work-log. No commit/push/merge/reset performed.
 [19/11/2026 14:03] | SESSION_END | database-schema | Final review and four-document handoff complete; feature remains IN_PROGRESS with required V2/V4-V9 acceptance incomplete. Prior new-model A48/B40/C11 PASS retained with bounded claims, D NOT RUN; no new DDL decision required. SQL/application/external sources/Word/previous logs/approval history/Git state preserved; no runtime rerun.
 
+### [20/11/2026]
+[20/11/2026 19:03] | SESSION_START | ui-username-group-size | Align screens with DB username rule ^[A-Za-z0-9_]{3,30}$ (case-insensitive) and group minimum of 3 people including creator
+[20/11/2026 19:03] | PLAN_CREATED | ui-username-group-size | Created docs/ai/ui-username-group-size/plan.md - rename dotted sample usernames to _, fix S02/S11a hints, D01 minPicked 3->2
+[20/11/2026 19:03] | QUESTION | ui-username-group-size | Asked user: "tối đa 3 người tính cả admin" vs DB "at least 3 including creator"; plan assumes minimum
+[20/11/2026 19:08] | PLAN_APPROVED | ui-username-group-size | User approved the plan; answered Q1: minimum 3 people including creator (creator + 2), no maximum, D04 stays >= 1
+[20/11/2026 19:08] | CODE_START | ui-username-group-size | Started renaming sample usernames and fixing hints/D01 minimum
+[20/11/2026 19:08] | FILE_MODIFIED | ui-username-group-size | src/user/.../sample/SampleData.java, src/admin/.../sample/SampleData.java - usernames '.' -> '_' (emails unchanged); user GROUP_PICKED reduced to 2 people
+[20/11/2026 19:08] | FILE_MODIFIED | ui-username-group-size | LoginView.fxml, RegisterView.fxml, ProfileView.fxml, ChatView.fxml, ResetPasswordDialog.fxml - username texts '.' -> '_'
+[20/11/2026 19:08] | BUG_FOUND | ui-username-group-size | Dotted-username sed also changed an.nguyen@gmail.com in ProfileView.fxml and RegisterView.fxml
+[20/11/2026 19:08] | BUG_FIXED | ui-username-group-size | Restored both emails to an.nguyen@gmail.com
+[20/11/2026 19:09] | PLAN_UPDATED | ui-username-group-size | Iteration 1: verification grep found kevin.tran in ReportSpamDialog.fxml and dotted names in two admin SampleData comments; S11a hint needs wrapText in UserFormDialog.fxml
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | RegisterView.fxml - hint: letters, digits and _ only, case-insensitive; ReportSpamDialog.fxml - kevin_tran
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | UserFormController.java - usernameHint shows the rule in add mode and "Không đổi được." in edit mode; UserFormDialog.fxml - wrapText on usernameHint
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | CreateGroupController.java - MemberPicker minimum 3 -> 2; CreateGroupDialog.fxml - subtitle "ít nhất 3 người, tính cả bạn"; NavigationTest.java - D31 comment
+[20/11/2026 19:09] | DECISION | ui-username-group-size | Hint says usernames are not case-sensitive because uniqueness/login use lower(username) (users_username_ci_uidx); supersedes old F-01 wording
+[20/11/2026 19:10] | CODE_DONE | ui-username-group-size | Implementation finished
+[20/11/2026 19:10] | VERIFIED | ui-username-group-size | ./mvnw -B -q test: user 29/29, admin 23/23 PASS (criteria 3, 4)
+[20/11/2026 19:10] | VERIFIED | ui-username-group-size | Grep of sample record usernames and FXML: none outside ^[A-Za-z0-9_]{3,30}$ (criterion 1 PASS); 20 screenshots regenerated, S02/S11a/S11b/D01/D02 reviewed (criterion 2 PASS)
+[20/11/2026 19:10] | NOTE | ui-username-group-size | docs/ai/ui-align-decisions plan/feature docs still say D31 creator + 3; historical docs left unchanged
+[20/11/2026 19:11] | DOC_CREATED | ui-username-group-size | Created docs/ai/ui-username-group-size/ui-username-group-size.md
+[20/11/2026 19:11] | COMMIT_REMINDER | ui-username-group-size | Reminded user: feat(ui-username-group-size): align usernames and group minimum with DB rules
+[20/11/2026 19:11] | SESSION_END | ui-username-group-size | Done: usernames follow DB regex on all screens, hints state the rule, D01 needs creator + 2; tests and screenshots updated; no commit made
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -431,5 +454,6 @@ Trang
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | database-schema | ✅ | ✅ | 🔄 | ✅ | ⬜ |
+| ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.

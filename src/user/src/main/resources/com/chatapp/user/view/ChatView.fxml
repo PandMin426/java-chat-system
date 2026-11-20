@@ -58,7 +58,7 @@
             <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
                 <Label text="Trần Thị Bích" styleClass="strong"/>
                 <HBox spacing="4">
-                    <Label text="bich.tran" styleClass="small,muted,mono"/>
+                    <Label text="bich_tran" styleClass="small,muted,mono"/>
                     <Label text="· Đang online" styleClass="small,muted"/>
                 </HBox>
             </VBox>
