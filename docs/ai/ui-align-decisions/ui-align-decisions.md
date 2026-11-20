@@ -40,9 +40,9 @@ Updates the V1 JavaFX screens of both apps so they match the business decisions 
 | MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/GroupChatController.java` | D33: `onLeave` opens TransferAdminDialog for the last admin, else a "Rời nhóm?" confirm |
 | CREATED | `src/user/src/main/resources/com/chatapp/user/view/TransferAdminDialog.fxml` | D33: D06 dialog, pick the new admin |
 | CREATED | `src/user/src/main/java/com/chatapp/user/controller/TransferAdminController.java` | One `radio-row` per other member; confirm disabled until one is chosen |
-| MODIFIED | `src/user/src/main/resources/com/chatapp/user/view/CreateGroupDialog.fxml` | D31: "Thêm ít nhất 3 người khác" |
+| MODIFIED | `src/user/src/main/resources/com/chatapp/user/view/CreateGroupDialog.fxml` | D31: "Thêm ít nhất 3 người khác" (**Superseded 20/11/2026 by ui-username-group-size:** "ít nhất 3 người, tính cả bạn: thêm ít nhất 2 người khác") |
 | MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/MemberPicker.java` | New `minPicked` parameter; confirm disabled while fewer are picked |
-| MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/CreateGroupController.java` | `minPicked = 3` (D31) |
+| MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/CreateGroupController.java` | `minPicked = 3` (D31) (**Superseded 20/11/2026 by ui-username-group-size:** `minPicked = 2`) |
 | MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/AddMemberController.java` | `minPicked = 1` |
 | MODIFIED | `src/user/src/main/resources/com/chatapp/user/view/ReportSpamDialog.fxml` | D37: five reason check boxes (multi-select) |
 | MODIFIED | `src/user/src/main/java/com/chatapp/user/controller/ReportSpamController.java` | "Gửi báo cáo" disabled while no reason is ticked |
@@ -65,7 +65,7 @@ Updates the V1 JavaFX screens of both apps so they match the business decisions 
 
 ### Database changes
 N/A - no database changes. The screens now differ from `script/schema.sql` in these points, to be handled by the database owner:
-- D31: groups need the creator + at least 3 members (schema comment says at least one other member).
+- D31: groups need the creator + at least 3 members (schema comment says at least one other member). **Superseded 20/11/2026 by ui-username-group-size:** the approved DB baseline requires at least 3 people including the creator; screens follow it.
 - D37/D38: `spam_reports` has no reason and no status (PENDING / RESOLVED / DISMISSED) columns.
 - D39: "mở ứng dụng" = one successful login, while the schema also has `app_open_events`.
 - D9: no flag to show the "đổi mật khẩu" reminder after a login with a reset password.

@@ -35,7 +35,7 @@ Align the V1 JavaFX screens (user and admin) with the business decisions D1–D4
 
 | Decision | Screen(s) | Change |
 |---|---|---|
-| D8 username 3–30 chars | S02 RegisterView | Hint "4–30 ký tự" → "3–30 ký tự" |
+| D8 username 3–30 chars | S02 RegisterView | Hint "4–30 ký tự" → "3–30 ký tự". **Superseded 20/11/2026 by ui-username-group-size:** DB allows only `[A-Za-z0-9_]` (no `.`) and is case-insensitive; hint and sample usernames updated there |
 | D9 reset by email only, remind to change password | S03 ForgotPasswordView, MainView | Remove the username field; error/sent texts by email only; sent note adds "đổi mật khẩu sau khi đăng nhập"; hidden reminder banner in MainView (shown by V2 after a login with a reset password) linking to Profile |
 | D18 block keeps shared groups | Block confirm (ChatViews.confirmBlock) | Note adds "Trong nhóm chung hai bên vẫn chat bình thường." |
 | D22 "bạn của bạn" = level-2 friends only (user answer: option b) | S16 FriendStatsView | Column/subtitle/example count only friends-of-friends, excluding direct friends and self; sample values updated |
@@ -43,7 +43,7 @@ Align the V1 JavaFX screens (user and admin) with the business decisions D1–D4
 | D24 unread count | S04/S05 conversation list | Unread-count badge on conversation rows (new `unread` field in `SampleData.Conversation`) |
 | D26 + D35/D36 search skips encrypted groups (= all groups) | S08 SearchMessagesView, S05 GroupChatView | Remove the "Mọi cuộc trò chuyện / Chỉ chat 1-1 / Chỉ nhóm" filter; sample hits and preview from 1-1 chats only; note "Nhóm mã hóa đầu cuối không được tìm kiếm"; remove "Tìm trong nhóm" button from the group header |
 | D29 LLM modes "Sửa câu" / "Gợi ý trả lời"; off for encrypted groups | S04 ChatView, S05 GroupChatView | Rename toggle "Chỉnh câu" → "Sửa câu"; remove the AI button from the group composer |
-| D31 creator + ≥ 3 people | D01 CreateGroupDialog, MemberPicker | Text "Thêm ít nhất 3 người khác"; create button disabled while fewer than 3 picked (add member keeps ≥ 1); sample picks 3 people |
+| D31 creator + ≥ 3 people | D01 CreateGroupDialog, MemberPicker | Text "Thêm ít nhất 3 người khác"; create button disabled while fewer than 3 picked (add member keeps ≥ 1); sample picks 3 people. **Superseded 20/11/2026 by ui-username-group-size:** DB baseline requires ≥ 3 people including the creator (creator + 2), so D01 now needs ≥ 2 others |
 | D33 leave group, last admin picks successor | S05 GroupChatView + new D06 TransferAdminDialog | "Rời nhóm" button in the group info panel; last admin → dialog to pick the new admin; otherwise a "Rời nhóm?" confirm. Sample: current user is the only admin |
 | D35 E2EE consequences | S05 group info panel | Line "Không tìm kiếm / không dùng trợ lý AI trong nhóm; đăng nhập máy khác không đọc được tin cũ." |
 | D37 report only people who messaged you, with reasons (multi-select) | D02 ReportSpamDialog, S06 FriendsView | Reason check boxes (multi-select), send disabled until ≥ 1 reason; remove "Báo cáo spam…" from the Friends row menu (report only from a conversation) |

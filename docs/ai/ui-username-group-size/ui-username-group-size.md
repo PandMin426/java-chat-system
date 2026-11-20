@@ -92,4 +92,3 @@ Iteration 1: added `wrapText` on the S11a username hint (`UserFormDialog.fxml`) 
 ## 7. KNOWN ISSUES / LIMITATIONS
 
 - No real validation yet: the regex check and error labels come with the `auth` and `admin-user-mgmt` features.
-- `docs/ai/ui-align-decisions/*` still describe D31 as creator + 3; those historical docs were not edited.

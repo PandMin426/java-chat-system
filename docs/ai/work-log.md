@@ -415,6 +415,23 @@ Trang
 [20/11/2026 19:11] | COMMIT_REMINDER | ui-username-group-size | Reminded user: feat(ui-username-group-size): align usernames and group minimum with DB rules
 [20/11/2026 19:11] | SESSION_END | ui-username-group-size | Done: usernames follow DB regex on all screens, hints state the rule, D01 needs creator + 2; tests and screenshots updated; no commit made
 
+[20/11/2026 19:18] | SESSION_START | docs-db-rule-sync | Sync docs with DB username/group-size rules and restructure docs/ into frontend/backend/database
+[20/11/2026 19:18] | PLAN_CREATED | docs-db-rule-sync | Created docs/ai/docs-db-rule-sync/plan.md - update use-case BR-01/BR-09/M19/UC-22 and add superseded notes to historical feature docs
+[20/11/2026 19:18] | PLAN_CREATED | docs-restructure | Created docs/ai/docs-restructure/plan.md - git mv screens->frontend, reports/research_notes->database, brief->general, add backend; update links and ScreenshotTool path
+[20/11/2026 19:18] | QUESTION | docs-restructure | Asked user: rule.md Rule 6 requires docs/ai; keep docs/ai or split feature folders by layer (rule change)? Where do general docs go?
+[20/11/2026 19:18] | QUESTION | docs-db-rule-sync | Asked user: "các điểm khác liên quan" = only username/group-size rules, or full use-case sync with all DB decisions?
+[20/11/2026 19:24] | PLAN_APPROVED | docs-db-rule-sync | User approved; Q1 answered: only username + group-size rules; AI to commit each feature (no push)
+[20/11/2026 19:24] | PLAN_APPROVED | docs-restructure | User approved; Q1: split feature folders into docs/<area>/ai and update rule.md; Q2: course brief stays at docs root
+[20/11/2026 19:24] | COMMIT_REMINDER | ui-username-group-size | At user's request AI committed 3039631 feat(ui-username-group-size): align usernames and group minimum with DB rules (branch fix_FE_v2, not pushed; target/ files left unstaged)
+[20/11/2026 19:24] | CODE_START | docs-db-rule-sync | Started documentation sync
+[20/11/2026 19:24] | FILE_MODIFIED | docs-db-rule-sync | docs/ai/requirements-analysis/use-case-specification.md - BR-01 3-30 [A-Za-z0-9_] case-insensitive; BR-09/M19 >=3 incl. creator; UC-22 step 4 >=2 others
+[20/11/2026 19:24] | FILE_MODIFIED | docs-db-rule-sync | ui-align-decisions plan.md/ui-align-decisions.md - superseded notes on D8/D31; database-schema.md - resolved note on CreateGroupController handoff; ui-username-group-size.md - removed stale known issue
+[20/11/2026 19:24] | VERIFIED | docs-db-rule-sync | grep: no old username/group rule in use-case spec; every remaining old-rule mention outside work-log/reports/research_notes is annotated - criteria 1-2 PASS
+[20/11/2026 19:24] | NOTE | docs-db-rule-sync | Use-case spec still differs from DB on E2EE option, admin-only rename, closure, D38, activity; left unchanged per user's scope choice
+[20/11/2026 19:24] | CODE_DONE | docs-db-rule-sync | Implementation finished
+[20/11/2026 19:24] | DOC_CREATED | docs-db-rule-sync | Created docs/ai/docs-db-rule-sync/docs-db-rule-sync.md
+[20/11/2026 19:24] | COMMIT_REMINDER | docs-db-rule-sync | AI commits at user's request: feat(docs-db-rule-sync): sync username and group-size rules in docs
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -454,6 +471,8 @@ Trang
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | database-schema | ✅ | ✅ | 🔄 | ✅ | ⬜ |
-| ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ⬜ |
+| ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ✅ |
+| docs-db-rule-sync | ✅ | ✅ | ✅ | ✅ | ✅ |
+| docs-restructure | ✅ | ⬜ | ⬜ | ⬜ | ⬜ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.
