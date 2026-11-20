@@ -1,131 +1,225 @@
--- Demo fixtures for a fresh V1 schema. Run once, on a test database only.
--- Password, public key, wrapped key and ciphertext values are placeholders.
+-- DB FIXTURES ONLY: passwords are NOT BCrypt; public keys, wrapped keys and
+-- ciphertext are fake bytes. No real login, device proof or E2EE is demonstrated.
+-- Run once after schema.sql in a NEW dedicated jcs_schema_test_* database.
+-- Required psql variable: -v test_db=the_exact_database_name
+\set ON_ERROR_STOP on
 BEGIN;
-
-DO $$
-DECLARE
-    minh_id bigint;
-    lower_minh_id bigint;
-    trang_id bigint;
-    binh_id bigint;
-    archived_id bigint;
-    chat_id bigint;
-    archived_chat_id bigint;
-    hidden_id bigint;
-    team_id bigint;
-    closed_team_id bigint;
-    minh_membership bigint;
-    trang_membership bigint;
-    archived_membership bigint;
-    old_device bigint;
-    new_device bigint;
-    trang_device bigint;
-    epoch_id bigint;
-    first_at CONSTANT timestamptz := '2026-10-31 16:00:00+00';
-    change_at CONSTANT timestamptz := '2026-10-31 17:00:00+00';
-    rejoin_at CONSTANT timestamptz := '2026-10-31 18:00:00+00';
+SELECT set_config('jcs.test_db', :'test_db', false);
+DO $guard$
 BEGIN
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('Minh', ' Minh@example.test ', 'fixture-only', 'Minh Hòa', 'SELF_REGISTERED', first_at)
-    RETURNING user_id INTO minh_id;
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('minh', 'other@example.test', 'fixture-only', 'Minh Hoa', 'SELF_REGISTERED', change_at)
-    RETURNING user_id INTO lower_minh_id;
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('Trang', 'trang@example.test', 'fixture-only', 'Thu Trang', 'SELF_REGISTERED', first_at)
-    RETURNING user_id INTO trang_id;
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('Binh', 'binh@example.test', 'fixture-only', 'Bình An', 'SELF_REGISTERED', change_at)
-    RETURNING user_id INTO binh_id;
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('archive', 'archive@example.test', 'fixture-only', 'Archive', 'SELF_REGISTERED', first_at)
-    RETURNING user_id INTO archived_id;
-    INSERT INTO users (username, email, password_hash, full_name, system_role, account_status, registration_source, created_at)
-    VALUES ('demo_admin', 'admin@example.test', 'fixture-only', 'Demo Admin', 'ADMIN', 'ACTIVE', 'INTERNAL', change_at),
-           ('locked_user', 'locked@example.test', 'fixture-only', 'Locked User', 'USER', 'LOCKED', 'INTERNAL', change_at);
-
-    INSERT INTO login_events (user_id, logged_in_at)
-    VALUES (minh_id, first_at), (minh_id, change_at), (archived_id, first_at);
-    INSERT INTO app_open_events (user_id, opened_at)
-    VALUES (minh_id, first_at), (minh_id, change_at), (minh_id, rejoin_at), (trang_id, rejoin_at);
-
-    PERFORM lock_social_pair(minh_id, trang_id);
-    PERFORM lock_social_pair(trang_id, binh_id);
-    INSERT INTO friend_requests (sender_id, recipient_id, requested_at)
-    VALUES (minh_id, trang_id, first_at), (trang_id, binh_id, first_at),
-           (lower_minh_id, binh_id, first_at), (minh_id, binh_id, first_at);
-    UPDATE friend_requests SET request_status = 'ACCEPTED', resolved_at = change_at
-    WHERE (sender_id, recipient_id) IN ((minh_id, trang_id), (trang_id, binh_id));
-    INSERT INTO friendships (user_low_id, user_high_id)
-    VALUES (LEAST(minh_id, trang_id), GREATEST(minh_id, trang_id)),
-           (LEAST(trang_id, binh_id), GREATEST(trang_id, binh_id));
-    INSERT INTO user_blocks (blocker_id, blocked_id) VALUES (binh_id, lower_minh_id);
-
-    INSERT INTO private_conversations (user_low_id, user_high_id)
-    VALUES (LEAST(minh_id, trang_id), GREATEST(minh_id, trang_id)) RETURNING conversation_id INTO chat_id;
-    INSERT INTO private_conversations (user_low_id, user_high_id)
-    VALUES (LEAST(minh_id, archived_id), GREATEST(minh_id, archived_id)) RETURNING conversation_id INTO archived_chat_id;
-    INSERT INTO private_conversations (user_low_id, user_high_id)
-    VALUES (LEAST(minh_id, lower_minh_id), GREATEST(minh_id, lower_minh_id));
-
-    INSERT INTO private_messages (conversation_id, sender_id, content, sent_at)
-    VALUES (chat_id, minh_id, 'Hòa nhắn từ bản mẫu', change_at) RETURNING private_message_id INTO hidden_id;
-    INSERT INTO private_messages (conversation_id, sender_id, content, sent_at)
-    VALUES (chat_id, trang_id, 'Tin vẫn hiện với người nhận', rejoin_at),
-           (chat_id, trang_id, 'Hoa không dấu', rejoin_at),
-           (archived_chat_id, archived_id, 'Tin nhắn của tài khoản cũ', first_at);
-    INSERT INTO private_message_hides (private_message_id, user_id) VALUES (hidden_id, minh_id);
-    INSERT INTO spam_reports (reporter_id, reported_user_id, reported_at)
-    VALUES (minh_id, trang_id, rejoin_at), (minh_id, trang_id, rejoin_at), (minh_id, archived_id, change_at);
-
-    INSERT INTO chat_groups (group_name, created_at) VALUES ('Nhóm V1', first_at) RETURNING group_id INTO team_id;
-    INSERT INTO group_memberships (group_id, user_id, group_role, joined_at)
-    VALUES (team_id, minh_id, 'ADMIN', first_at) RETURNING membership_id INTO minh_membership;
-    INSERT INTO group_memberships (group_id, user_id, joined_at)
-    VALUES (team_id, trang_id, first_at) RETURNING membership_id INTO trang_membership;
-    INSERT INTO e2ee_devices (user_id, public_key, authorized_at)
-    VALUES (minh_id, decode('0101', 'hex'), first_at) RETURNING device_id INTO old_device;
-    INSERT INTO e2ee_devices (user_id, public_key, authorized_at)
-    VALUES (trang_id, decode('0201', 'hex'), first_at) RETURNING device_id INTO trang_device;
-    INSERT INTO group_key_epochs (group_id, starts_at) VALUES (team_id, first_at) RETURNING key_epoch_id INTO epoch_id;
-    INSERT INTO group_key_grants (key_epoch_id, device_id, group_id, membership_id, user_id, wrapped_key)
-    VALUES (epoch_id, old_device, team_id, minh_membership, minh_id, decode('1101', 'hex')),
-           (epoch_id, trang_device, team_id, trang_membership, trang_id, decode('1201', 'hex'));
-    INSERT INTO group_messages (group_id, key_epoch_id, sender_membership_id, encrypted_payload, sent_at)
-    VALUES (team_id, epoch_id, minh_membership, decode('2101', 'hex'), first_at + interval '30 minutes');
-
-    UPDATE group_memberships SET left_at = change_at WHERE membership_id = trang_membership;
-    UPDATE e2ee_devices SET revoked_at = change_at WHERE device_id = old_device;
-    UPDATE group_key_epochs SET ends_at = change_at WHERE key_epoch_id = epoch_id;
-    INSERT INTO e2ee_devices (user_id, public_key, authorized_at)
-    VALUES (minh_id, decode('0102', 'hex'), change_at) RETURNING device_id INTO new_device;
-    INSERT INTO group_key_epochs (group_id, starts_at) VALUES (team_id, change_at) RETURNING key_epoch_id INTO epoch_id;
-    INSERT INTO group_key_grants (key_epoch_id, device_id, group_id, membership_id, user_id, wrapped_key)
-    VALUES (epoch_id, new_device, team_id, minh_membership, minh_id, decode('1102', 'hex'));
-    INSERT INTO group_messages (group_id, key_epoch_id, sender_membership_id, encrypted_payload, sent_at)
-    VALUES (team_id, epoch_id, minh_membership, decode('2102', 'hex'), change_at + interval '15 minutes');
-
-    UPDATE group_key_epochs SET ends_at = rejoin_at WHERE key_epoch_id = epoch_id;
-    INSERT INTO group_memberships (group_id, user_id, joined_at)
-    VALUES (team_id, trang_id, rejoin_at) RETURNING membership_id INTO trang_membership;
-    INSERT INTO group_key_epochs (group_id, starts_at) VALUES (team_id, rejoin_at) RETURNING key_epoch_id INTO epoch_id;
-    INSERT INTO group_key_grants (key_epoch_id, device_id, group_id, membership_id, user_id, wrapped_key)
-    VALUES (epoch_id, new_device, team_id, minh_membership, minh_id, decode('1103', 'hex')),
-           (epoch_id, trang_device, team_id, trang_membership, trang_id, decode('1203', 'hex'));
-    INSERT INTO group_messages (group_id, key_epoch_id, sender_membership_id, encrypted_payload, sent_at)
-    VALUES (team_id, epoch_id, trang_membership, decode('2103', 'hex'), rejoin_at + interval '5 minutes');
-
-    INSERT INTO chat_groups (group_name, created_at) VALUES ('Nhóm lưu trữ', first_at) RETURNING group_id INTO closed_team_id;
-    INSERT INTO group_memberships (group_id, user_id, group_role, joined_at)
-    VALUES (closed_team_id, archived_id, 'ADMIN', first_at) RETURNING membership_id INTO archived_membership;
-    INSERT INTO group_memberships (group_id, user_id, joined_at) VALUES (closed_team_id, binh_id, first_at);
-    UPDATE chat_groups SET closed_at = rejoin_at WHERE group_id = closed_team_id;
-    UPDATE group_memberships SET left_at = rejoin_at WHERE membership_id = archived_membership;
-    UPDATE users SET account_status = 'DELETED', username = NULL, email = NULL, password_hash = NULL,
-        full_name = NULL, address = NULL, birth_date = NULL, gender = NULL WHERE user_id = archived_id;
-    INSERT INTO users (username, email, password_hash, full_name, registration_source, created_at)
-    VALUES ('archive', ' ARCHIVE@example.test ', 'fixture-only', 'Replacement', 'SELF_REGISTERED', rejoin_at);
+    IF current_database() <> current_setting('jcs.test_db')
+       OR current_database() !~ '^jcs_schema_test_[0-9]{8}_[0-9]{6}_[0-9a-f]{6}$' THEN
+        RAISE EXCEPTION 'Refusing fixtures outside the explicitly named test database';
+    END IF;
+    IF EXISTS (SELECT 1 FROM users) THEN
+        RAISE EXCEPTION 'Fixtures require an empty schema; do not append or overwrite';
+    END IF;
 END;
-$$;
+$guard$;
 
+-- Explicit IDs make examples stable. Built-in sequence alignment is at the end.
+INSERT INTO users (user_id, username, email, password_hash, full_name,
+                   system_role, account_status, registration_source, created_at, deleted_at)
+OVERRIDING SYSTEM VALUE VALUES
+(1,'Minh','Minh@example.test','DB_FIXTURE_NOT_BCRYPT','Minh Updated','USER','ACTIVE','SELF_REGISTERED','2026-10-31 23:59:59+07',NULL),
+(2,'Trang','trang@example.test','DB_FIXTURE_NOT_BCRYPT','Trang Tran','USER','ACTIVE','SELF_REGISTERED','2026-11-01 00:00:00+07',NULL),
+(3,'Binh','binh@example.test','DB_FIXTURE_NOT_BCRYPT','Binh Le','USER','ACTIVE','SELF_REGISTERED','2026-11-01 10:00:00+07',NULL),
+(4,'Dung','dung@example.test','DB_FIXTURE_NOT_BCRYPT','Dung Vo','USER','ACTIVE','SELF_REGISTERED','2026-11-02 09:00:00+07',NULL),
+(5,'Lan','lan@example.test','DB_FIXTURE_NOT_BCRYPT','Lan Pham','USER','ACTIVE','SELF_REGISTERED','2026-10-15 09:00:00+07',NULL),
+(6,'Nam','nam@example.test','DB_FIXTURE_NOT_BCRYPT','Nam Ho','USER','ACTIVE','SELF_REGISTERED','2026-11-30 23:59:59.999999+07',NULL),
+(7,'Archive','archive@example.test','DB_FIXTURE_NOT_BCRYPT','Archive User','USER','ACTIVE','SELF_REGISTERED','2026-10-01 09:00:00+07','2026-11-08 08:00:00+07'),
+(8,'Locked_User','locked@example.test','DB_FIXTURE_NOT_BCRYPT','Locked User','USER','LOCKED','INTERNAL','2026-11-03 00:00:00+07',NULL),
+(9,'demo_admin','admin@example.test','DB_FIXTURE_NOT_BCRYPT','Demo Admin','ADMIN','ACTIVE','INTERNAL','2026-10-01 09:00:00+07',NULL),
+(10,'Solo','solo@example.test','DB_FIXTURE_NOT_BCRYPT','Solo User','USER','ACTIVE','SELF_REGISTERED','2026-12-01 00:00:00+07',NULL);
+
+-- Synthetic successful UserApp events; actual authentication is NOT tested.
+-- Oct/Nov/Dec monthly distinct users: 2/4/3; November has six login rows.
+INSERT INTO login_history (login_id,user_id,logged_in_at,username_snapshot,full_name_snapshot,remote_ip)
+OVERRIDING SYSTEM VALUE VALUES
+(1,1,'2026-10-31 23:59:59.999999+07','Minh','Minh Original','127.0.0.1'),
+(2,1,'2026-11-01 00:00:00+07','Minh','Minh Original','127.0.0.1'),
+(3,1,'2026-11-30 23:59:59.999999+07','Minh','Minh Updated','127.0.0.1'),
+(4,1,'2026-12-01 00:00:00+07','Minh','Minh Updated','127.0.0.1'),
+(5,2,'2026-11-01 00:00:00+07','Trang','Trang Tran','127.0.0.2'),
+(6,2,'2026-11-15 12:00:00+07','Trang','Trang Tran','127.0.0.2'),
+(7,7,'2026-11-05 12:00:00+07','Archive','Archive User','127.0.0.7'),
+(8,4,'2026-12-01 12:00:00+07','Dung','Dung Vo','127.0.0.4'),
+(9,3,'2026-11-02 10:00:00+07','Binh','Binh Le','127.0.0.3'),
+(10,5,'2026-10-15 12:00:00+07','Lan','Lan Pham','127.0.0.5'),
+(11,6,'2026-12-02 12:00:00+07','Nam','Nam Ho','127.0.0.6');
+
+-- Minh direct={2,3,5}; level-two={4,6}. 4 is reached through two paths;
+-- the 1-2-5 triangle excludes direct friends/self; 7 is three hops from 1.
+INSERT INTO friendships(user_low_id,user_high_id,created_at) VALUES
+(1,2,'2026-11-04 10:00:00+07'),(1,3,'2026-11-04 10:00:00+07'),
+(1,5,'2026-11-04 10:00:00+07'),(2,5,'2026-11-04 10:00:00+07'),
+(2,4,'2026-11-04 10:00:00+07'),(3,4,'2026-11-04 10:00:00+07'),
+(5,6,'2026-12-02 10:01:00+07'),(4,7,'2026-11-04 10:00:00+07');
+INSERT INTO friend_requests(request_id,sender_id,recipient_id,status,requested_at,resolved_at)
+OVERRIDING SYSTEM VALUE VALUES
+(1,1,2,'ACCEPTED','2026-11-03 10:00:00+07','2026-11-04 10:00:00+07'),
+(2,4,6,'REJECTED','2026-12-02 09:00:00+07','2026-12-02 09:01:00+07'),
+(3,4,6,'PENDING','2026-12-02 09:02:00+07',NULL),
+(4,2,3,'CANCELLED','2026-11-05 10:02:00+07','2026-11-06 08:00:00+07'),
+(5,6,5,'ACCEPTED','2026-12-02 10:00:00+07','2026-12-02 10:01:00+07');
+-- 2/3 are not friends and their pending request has been cancelled explicitly.
+-- They remain members of GROUP 201; shared group visibility is not blocked.
+INSERT INTO user_blocks(blocker_id,blocked_id,created_at) VALUES(2,3,'2026-11-06 08:00:00+07');
+
+INSERT INTO conversations(conversation_id,conversation_type,created_by_user_id,
+                          private_user_low_id,private_user_high_id,group_name,created_at,closed_at)
+OVERRIDING SYSTEM VALUE VALUES
+(101,'PRIVATE',1,1,2,NULL,'2026-11-03 08:00:00+07',NULL),
+(102,'PRIVATE',2,2,3,NULL,'2026-11-03 08:00:00+07',NULL),
+(103,'PRIVATE',1,1,5,NULL,'2026-11-03 08:00:00+07',NULL),
+(104,'PRIVATE',1,1,7,NULL,'2026-11-03 08:00:00+07',NULL),
+(105,'PRIVATE',1,1,10,NULL,'2026-12-02 08:00:00+07',NULL),
+(201,'GROUP',1,NULL,NULL,'Team E2EE fixture','2026-11-03 08:00:00+07',NULL),
+(202,'GROUP',7,NULL,NULL,'Closed group fixture','2026-11-04 08:00:00+07','2026-11-08 08:00:00+07'),
+(203,'GROUP',1,NULL,NULL,'Pending key fixture','2026-11-11 08:00:00+07',NULL);
+INSERT INTO conversation_members(conversation_id,user_id,member_created_at)
+SELECT c.conversation_id,v.user_id,c.created_at
+FROM (VALUES(101,1),(101,2),(102,2),(102,3),(103,1),(103,5),(104,1),(104,7),
+            (105,1),(105,10),(201,1),(201,2),(201,3),(202,7),(202,4),(202,5),
+            (203,1),(203,4),(203,5)) AS v(conversation_id,user_id)
+JOIN conversations c USING(conversation_id);
+INSERT INTO membership_periods(period_id,conversation_id,user_id,conversation_type,group_role,joined_at,left_at)
+OVERRIDING SYSTEM VALUE VALUES
+(11,101,1,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(12,101,2,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(21,102,2,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(22,102,3,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(31,103,1,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(32,103,5,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(41,104,1,'PRIVATE','MEMBER','2026-11-03 08:00:00+07',NULL),
+(42,104,7,'PRIVATE','MEMBER','2026-11-03 08:00:00+07','2026-11-08 08:00:00+07'),
+(51,105,1,'PRIVATE','MEMBER','2026-12-02 08:00:00+07',NULL),
+(52,105,10,'PRIVATE','MEMBER','2026-12-02 08:00:00+07',NULL),
+(101,201,1,'GROUP','ADMIN','2026-11-03 08:00:00+07',NULL),
+(102,201,2,'GROUP','MEMBER','2026-11-03 08:00:00+07','2026-11-10 08:00:00+07'),
+(103,201,3,'GROUP','MEMBER','2026-11-03 08:00:00+07',NULL),
+(104,201,2,'GROUP','MEMBER','2026-11-15 08:00:00+07',NULL),
+(201,202,7,'GROUP','ADMIN','2026-11-04 08:00:00+07','2026-11-08 08:00:00+07'),
+(202,202,4,'GROUP','MEMBER','2026-11-04 08:00:00+07','2026-11-07 08:00:00+07'),
+(203,202,5,'GROUP','MEMBER','2026-11-04 08:00:00+07','2026-11-07 08:00:00+07'),
+(301,203,1,'GROUP','ADMIN','2026-11-11 08:00:00+07',NULL),
+(302,203,4,'GROUP','MEMBER','2026-11-11 08:00:00+07',NULL),
+(303,203,5,'GROUP','MEMBER','2026-11-11 08:00:00+07',NULL);
+
+-- Nonempty fake bytes satisfy storage shape only, not a real codec or crypto.
+INSERT INTO e2ee_devices(device_id,user_id,device_uid,public_key,authorized_at,revoked_at)
+OVERRIDING SYSTEM VALUE VALUES
+(11,1,'00000000-0000-0000-0000-000000000011',decode('aa11','hex'),'2026-11-03 08:00:00+07','2026-11-10 08:00:00+07'),
+(12,1,'00000000-0000-0000-0000-000000000012',decode('aa12','hex'),'2026-11-10 08:00:00+07',NULL),
+(21,2,'00000000-0000-0000-0000-000000000021',decode('aa21','hex'),'2026-11-03 08:00:00+07',NULL),
+(31,3,'00000000-0000-0000-0000-000000000031',decode('aa31','hex'),'2026-11-03 08:00:00+07',NULL),
+(41,4,'00000000-0000-0000-0000-000000000041',decode('aa41','hex'),'2026-11-04 08:00:00+07',NULL),
+(51,5,'00000000-0000-0000-0000-000000000051',decode('aa51','hex'),'2026-11-04 08:00:00+07',NULL),
+(71,7,'00000000-0000-0000-0000-000000000071',decode('aa71','hex'),'2026-11-04 08:00:00+07','2026-11-08 08:00:00+07');
+INSERT INTO group_key_epochs(key_epoch_id,conversation_id,epoch_status,starts_at,activated_at,ends_at)
+OVERRIDING SYSTEM VALUE VALUES
+(1001,201,'CLOSED','2026-11-03 08:00:00+07','2026-11-03 08:01:00+07','2026-11-10 08:00:00+07'),
+(1002,201,'CLOSED','2026-11-10 08:00:00+07','2026-11-10 08:01:00+07','2026-11-15 08:00:00+07'),
+(1003,201,'ACTIVE','2026-11-15 08:00:00+07','2026-11-15 08:01:00+07',NULL),
+(2001,202,'CLOSED','2026-11-04 08:00:00+07','2026-11-04 08:01:00+07','2026-11-08 08:00:00+07'),
+(3001,203,'PENDING','2026-11-11 08:00:00+07',NULL,NULL);
+INSERT INTO group_key_grants(key_epoch_id,device_id,conversation_id,user_id,period_id,wrapped_key,granted_at)
+SELECT v.epoch,v.device,v.conv,v.uid,v.period,decode('bb01','hex'),v.granted::timestamptz
+FROM (VALUES
+(1001,11,201,1,101,'2026-11-03 08:00:30+07'),(1001,21,201,2,102,'2026-11-03 08:00:30+07'),
+(1001,31,201,3,103,'2026-11-03 08:00:30+07'),
+(1002,12,201,1,101,'2026-11-10 08:00:30+07'),(1002,31,201,3,103,'2026-11-10 08:00:30+07'),
+(1003,12,201,1,101,'2026-11-15 08:00:30+07'),(1003,21,201,2,104,'2026-11-15 08:00:30+07'),
+(1003,31,201,3,103,'2026-11-15 08:00:30+07'),
+(2001,71,202,7,201,'2026-11-04 08:00:30+07'),(2001,41,202,4,202,'2026-11-04 08:00:30+07'),
+(2001,51,202,5,203,'2026-11-04 08:00:30+07')) AS v(epoch,device,conv,uid,period,granted);
+
+INSERT INTO messages(message_id,conversation_id,conversation_type,sender_user_id,sender_period_id,text_content,sent_at)
+OVERRIDING SYSTEM VALUE VALUES
+(1,101,'PRIVATE',2,12,'Alpha old','2026-11-05 09:00:00+07'),
+(2,101,'PRIVATE',1,11,'Minh reply old','2026-11-05 09:01:00+07'),
+(3,101,'PRIVATE',2,12,'Alpha hidden','2026-11-05 09:02:00+07'),
+(4,101,'PRIVATE',2,12,'Hòa ALPHA visible','2026-11-05 09:03:00+07'),
+(5,101,'PRIVATE',1,11,'Minh newer','2026-11-05 09:04:00+07'),
+(6,101,'PRIVATE',2,12,'Alpha recent','2026-11-05 09:05:00+07'),
+(7,102,'PRIVATE',3,22,'Binh incoming to Trang','2026-11-05 10:00:00+07'),
+(8,102,'PRIVATE',2,21,'Trang reply','2026-11-05 10:01:00+07'),
+(9,103,'PRIVATE',1,31,'Only outgoing','2026-11-05 11:00:00+07'),
+(10,103,'PRIVATE',1,31,'literal 100% underscore_','2026-11-05 11:01:00+07'),
+(11,104,'PRIVATE',7,42,'Retained from deleted user','2026-11-05 12:00:00+07'),
+(12,104,'PRIVATE',1,41,'Reply to Archive','2026-11-05 12:01:00+07');
+-- Sixty received-only messages test the default/clamped 50-row keyset page.
+INSERT INTO messages(message_id,conversation_id,conversation_type,sender_user_id,sender_period_id,text_content,sent_at)
+OVERRIDING SYSTEM VALUE
+SELECT n,105,'PRIVATE',10,52,'page fixture '||n,
+       '2026-12-02 10:00:00+07'::timestamptz+(n-20)*interval '1 second'
+FROM generate_series(20,79) AS n;
+INSERT INTO messages(message_id,conversation_id,conversation_type,sender_user_id,sender_period_id,
+                     ciphertext,payload_version,key_epoch_id,sender_device_id,sent_at)
+OVERRIDING SYSTEM VALUE VALUES
+(1001,201,'GROUP',1,101,decode('cc01','hex'),1,1001,11,'2026-11-05 13:00:00+07'),
+(1002,201,'GROUP',2,102,decode('cc02','hex'),1,1001,21,'2026-11-05 13:01:00+07'),
+(1003,201,'GROUP',1,101,decode('cc03','hex'),1,1002,12,'2026-11-12 13:00:00+07'),
+(1004,201,'GROUP',2,104,decode('cc04','hex'),1,1003,21,'2026-11-16 13:00:00+07'),
+(1005,201,'GROUP',3,103,decode('cc05','hex'),1,1003,31,'2026-11-16 13:01:00+07'),
+(2001,202,'GROUP',7,201,decode('cc11','hex'),1,2001,71,'2026-11-04 09:00:00+07'),
+(2002,202,'GROUP',4,202,decode('cc12','hex'),1,2001,41,'2026-11-04 10:00:00+07');
+UPDATE conversation_members SET last_read_message_id=4,cleared_at='2026-11-05 09:01:30+07',cleared_through_message_id=2 WHERE conversation_id=101 AND user_id=1;
+UPDATE conversation_members SET last_read_message_id=2 WHERE conversation_id=101 AND user_id=2;
+UPDATE conversation_members SET last_read_message_id=1001 WHERE conversation_id=201 AND user_id=2;
+UPDATE conversation_members SET last_read_message_id=1003,cleared_at='2026-11-10 08:00:00+07',cleared_through_message_id=1002 WHERE conversation_id=201 AND user_id=3;
+INSERT INTO message_hidden(message_id,user_id,conversation_id,hidden_at) VALUES
+(3,1,101,'2026-11-05 09:06:00+07'),(4,2,101,'2026-11-05 09:06:00+07'),
+(1002,2,201,'2026-11-05 14:00:00+07');
+
+INSERT INTO spam_reports(report_id,reporter_id,reported_user_id,reason,status,reported_at,resolved_at,resolved_by_user_id)
+OVERRIDING SYSTEM VALUE VALUES
+(1,1,2,NULL,'PENDING','2026-11-06 09:00:00+07',NULL,NULL),
+(2,2,1,'Unwanted replies','PENDING','2026-11-06 09:01:00+07',NULL,NULL),
+(3,1,7,'Retained archived target','RESOLVED','2026-11-06 10:00:00+07','2026-11-07 10:00:00+07',9),
+(4,2,3,'Reviewed and ignored','DISMISSED','2026-11-05 10:05:00+07','2026-11-05 11:00:00+07',9),
+(5,2,3,NULL,'PENDING','2026-11-07 09:00:00+07',NULL,NULL);
+-- Synthetic audit events, not actual admin authentication/network actions.
+INSERT INTO admin_audit_log(audit_id,actor_user_id,actor_username_snapshot,actor_full_name_snapshot,
+                            operation_id,event_type,outcome,target_user_id,target_report_id,event_at,detail)
+OVERRIDING SYSTEM VALUE VALUES
+(1,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000001','LOGIN_SUCCESS','SUCCESS',NULL,NULL,'2026-11-02 10:00:00+07','DB fixture only'),
+(2,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000002','USER_SOFT_DELETED','SUCCESS',7,NULL,'2026-11-08 08:00:00+07','Retained profile and identifiers; fixture'),
+(3,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000003','SPAM_RESOLVED','SUCCESS',7,3,'2026-11-07 10:00:00+07','Fixture report processing'),
+(4,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000004','SPAM_DISMISSED','SUCCESS',3,4,'2026-11-05 11:00:00+07','Fixture report processing'),
+(5,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000005','USER_LOCKED','SUCCESS',8,NULL,'2026-11-03 10:00:00+07','Fixture lock'),
+(6,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000005','CONTROL_REQUESTED','PENDING',8,NULL,'2026-11-03 10:00:01+07','Fixture, not actual delivery'),
+(7,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000005','CONTROL_FAILED','FAILED',8,NULL,'2026-11-03 10:00:02+07','Fixture, not actual failure'),
+(8,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000005','CONTROL_REQUESTED','PENDING',8,NULL,'2026-11-03 10:00:03+07','Fixture manual retry'),
+(9,9,'demo_admin','Demo Admin','00000000-0000-0000-0000-000000000005','CONTROL_ACKNOWLEDGED','SUCCESS',8,NULL,'2026-11-03 10:00:04+07','Fixture ACK, not actual server evidence');
+
+DO $fixture_check$
+BEGIN
+    IF EXISTS (SELECT 1 FROM conversations c WHERE conversation_type='GROUP'
+        AND (SELECT count(*) FROM membership_periods p WHERE p.conversation_id=c.conversation_id AND p.joined_at=c.created_at)<3) THEN
+        RAISE EXCEPTION 'Every fixture group must begin with at least three distinct members';
+    END IF;
+    IF EXISTS (SELECT 1 FROM spam_reports r WHERE NOT EXISTS (
+        SELECT 1 FROM messages m JOIN conversations c USING(conversation_id)
+        WHERE c.conversation_type='PRIVATE' AND m.sender_user_id=r.reported_user_id
+        AND c.private_user_low_id=LEAST(r.reporter_id,r.reported_user_id)
+        AND c.private_user_high_id=GREATEST(r.reporter_id,r.reported_user_id)
+        AND m.sent_at<=r.reported_at)) THEN
+        RAISE EXCEPTION 'Fixture report lacks earlier incoming PRIVATE evidence';
+    END IF;
+END;
+$fixture_check$;
+-- Built-in functions only: explicit fixture IDs must not leave identity defaults
+-- pointing at an existing row. Runtime negative cases use overriding IDs so
+-- their rollback does not consume nontransactional sequence values.
+SELECT setval(pg_get_serial_sequence('users','user_id'),(SELECT max(user_id) FROM users),true);
+SELECT setval(pg_get_serial_sequence('login_history','login_id'),(SELECT max(login_id) FROM login_history),true);
+SELECT setval(pg_get_serial_sequence('friend_requests','request_id'),(SELECT max(request_id) FROM friend_requests),true);
+SELECT setval(pg_get_serial_sequence('conversations','conversation_id'),(SELECT max(conversation_id) FROM conversations),true);
+SELECT setval(pg_get_serial_sequence('membership_periods','period_id'),(SELECT max(period_id) FROM membership_periods),true);
+SELECT setval(pg_get_serial_sequence('e2ee_devices','device_id'),(SELECT max(device_id) FROM e2ee_devices),true);
+SELECT setval(pg_get_serial_sequence('group_key_epochs','key_epoch_id'),(SELECT max(key_epoch_id) FROM group_key_epochs),true);
+SELECT setval(pg_get_serial_sequence('messages','message_id'),(SELECT max(message_id) FROM messages),true);
+SELECT setval(pg_get_serial_sequence('spam_reports','report_id'),(SELECT max(report_id) FROM spam_reports),true);
+SELECT setval(pg_get_serial_sequence('admin_audit_log','audit_id'),(SELECT max(audit_id) FROM admin_audit_log),true);
 COMMIT;
