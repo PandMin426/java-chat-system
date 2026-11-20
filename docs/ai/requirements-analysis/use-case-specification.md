@@ -18,7 +18,7 @@
 | K1 | **Tech stack mâu thuẫn trong repo** | `README.md` ghi Frontend **React** + **MySQL**; `work-log.md` ghi **JavaFX + Spring Boot + PostgreSQL**. `YeuCau.txt` bắt buộc frontend là **Java** → React **không hợp lệ**. | **Đã chốt (08/11):** JavaFX 21 + FXML (có sẵn `BarChart` cho A6/A9) + **PostgreSQL**. README đã sửa. |
 | K2 | **Bản mockup HTML không được tính là `src`** | Phiên bản 1 yêu cầu thư mục `src` chứa *mã nguồn các màn hình*. 15 file trong `design-ui/` là HTML, không phải mã Java. | Prototype chỉ dùng để duyệt UX; V1 phải nộp màn hình JavaFX (FXML + controller rỗng). |
 | K3 | **Kiến trúc & số file jar** | Yêu cầu: ≥2 jar (quản lý, người dùng) + 1 file cấu hình *lưu thông tin kết nối CSDL*. Nhưng chat realtime cần một **socket server** → thực tế có 3 tiến trình. Câu hỏi: admin.jar nối thẳng CSDL (JDBC) hay đi qua server? | **Đã chốt (08/11):** 3 jar: `server.jar`, `user.jar`, `admin.jar` + 1 `config.properties` dùng chung. Mọi client đi qua server (socket thuần) → khóa tài khoản có thể ngắt kết nối user ngay lập tức; API key LLM và mật khẩu SMTP chỉ nằm ở server, không lộ trong `user.jar`. |
-| K4 | **Mã hóa nhóm (U12g) xung đột với nhiều yêu cầu khác** | "Tham khảo Facebook" = mã hóa đầu-cuối (E2EE): server **không đọc được** nội dung. Hệ quả: (1) U3 reset mật khẩu ngẫu nhiên và A1d admin đặt mật khẩu → mất khóa riêng nếu khóa riêng được bảo vệ bằng mật khẩu; (2) U11g tìm kiếm phía server không tìm được tin mã hóa; (3) U11h gửi nội dung cho LLM bên ngoài phá vỡ E2EE; (4) admin không xem được nội dung (vốn không có yêu cầu xem → ổn). | **Đã chốt (08/11): phương án đơn giản** — server giữ khóa nhóm, tin nhắn được mã hóa khi lưu vào CSDL (xem UC-28). Vì server giải mã được nên reset mật khẩu, tìm kiếm và trợ lý AI hoạt động bình thường. Đổi lại đây **không phải** E2EE như Facebook: người có quyền trên server đọc được tin nhắn. |
+| K4 | **Mã hóa nhóm (U12g) xung đột với nhiều yêu cầu khác** | "Tham khảo Facebook" = mã hóa đầu-cuối (E2EE): server **không đọc được** nội dung. Hệ quả: (1) U3 reset mật khẩu ngẫu nhiên và A1d admin đặt mật khẩu → mất khóa riêng nếu khóa riêng được bảo vệ bằng mật khẩu; (2) U11g tìm kiếm phía server không tìm được tin mã hóa; (3) U11h gửi nội dung cho LLM bên ngoài phá vỡ E2EE; (4) admin không xem được nội dung (vốn không có yêu cầu xem → ổn). | **Đã chốt (08/11): phương án đơn giản** — server giữ khóa nhóm, tin nhắn được mã hóa khi lưu vào CSDL (xem UC-28). Vì server giải mã được nên reset mật khẩu, tìm kiếm và trợ lý AI hoạt động bình thường. Đổi lại đây **không phải** E2EE như Facebook: người có quyền trên server đọc được tin nhắn. **Cập nhật 20/11/2026 (D35/D36, CSDL):** thay bằng E2EE bắt buộc theo thiết bị; server không đọc được tin nhóm nên nhóm không có tìm kiếm và trợ lý AI (xem UC-28). |
 | K5 | **Deadline mâu thuẫn** | `README.md`: V1 = 18/10/2026; `project_roadmap.md`: V1 = 22/11, V2 = 12/12. | **Đã chốt (08/11):** V1 = 22/11/2026, V2 = 12/12/2026. README đã sửa. |
 | K6 | **Hai bộ luật AI khác nhau** | `.agent/rules/CLAUDE.md` (bản cũ) và `code/.agent/rules/rule.md` (bản mới, có thêm template). `rule.md` trỏ tới `docs/ai/templates/` nhưng thư mục thật là `docs/ai/_template/`. | Giữ 1 bản (`rule.md`), đổi tên thư mục cho khớp. |
 
@@ -33,17 +33,17 @@
 | M5 | A2 / A1e "danh sách đăng nhập" | Có ghi lần đăng nhập thất bại? | Chỉ ghi **đăng nhập thành công** (= 1 lần "mở ứng dụng", dùng cho A8/A9). |
 | M6 | A4 sau khi khóa tài khoản | Báo cáo có trạng thái không? | Báo cáo có trạng thái **Chờ xử lý / Đã khóa / Bỏ qua**. |
 | M7 | A7 "1 cột tính luôn số lượng bạn của bạn" | 3 cách hiểu: (a) số bạn của bạn (cấp 2, không trùng); (b) tổng số bạn của từng người bạn (có trùng); (c) bạn trực tiếp + bạn cấp 2. | Chữ "tính luôn" → **(c)**: số người khác nhau trong phạm vi 2 bước, không tính chính mình. Ví dụ: A–B, A–C, B–D, C–D → A: trực tiếp 2, tính luôn bạn của bạn 3 (B, C, D). |
-| M8 | A8 "người dùng hoạt động" | Thế nào là hoạt động? "Lọc theo số lượng hoạt động" là cột nào? | Hoạt động trong khoảng = có ≥1 lần mở app **hoặc** ≥1 tin nhắn gửi đi. Bộ lọc số lượng mặc định áp dụng cho **số lần mở ứng dụng**, có combobox chọn cột khác. |
+| M8 | A8 "người dùng hoạt động" | Thế nào là hoạt động? "Lọc theo số lượng hoạt động" là cột nào? | Hoạt động trong khoảng = có ≥1 lần đăng nhập thành công (D39). Bộ lọc số lượng áp dụng cho **số lần mở ứng dụng**; hai cột còn lại đếm số người / số nhóm mà người dùng **đã gửi tin** (D40) (cập nhật 20/11/2026). |
 | M9 | A9 "số lượng người có mở ứng dụng" | Đếm lượt hay đếm người? | Đếm **số người khác nhau** có ≥1 lần đăng nhập trong tháng. |
 | M10 | "Sắp xếp theo tên" (A1a, A3a, A5a, A7a, A8a) | Tên = họ tên hay tên đăng nhập? Sắp theo họ hay theo tên riêng (kiểu Việt)? | Sắp theo **họ tên đầy đủ**, collation tiếng Việt, kèm chiều tăng/giảm. |
 | M11 | U6b và U9 trùng nhau | U6b "tìm theo tên và yêu cầu kết bạn", U9 "tìm theo tên đăng nhập hoặc tên". | Gộp thành **một màn hình tìm người dùng** (UC-08). |
 | M12 | U6d Block | Người bị chặn còn nhắn tin được không? Có bỏ chặn không? Người chặn có còn thấy họ? | Chặn = hủy kết bạn + hủy lời mời chờ + **cấm nhắn tin 1-1 hai chiều**. Người bị chặn không tìm thấy người chặn (U9). Có danh sách **Đã chặn** để bỏ chặn. Trong nhóm chung vẫn thấy tin của nhau. |
 | M13 | U9 "có thể chat" với người lạ | Có cần là bạn mới chat được? | **Không cần** là bạn (nên mới cần U10 báo cáo spam). |
-| M14 | U10 điều kiện báo cáo | "khi người đó chat với mình". Báo cáo trong nhóm? | Chỉ báo cáo trong **chat 1-1**, đối phương phải đã gửi ≥1 tin. Lý do (tùy chọn). Mỗi cặp chỉ có 1 báo cáo đang chờ. |
+| M14 | U10 điều kiện báo cáo | "khi người đó chat với mình". Báo cáo trong nhóm? | Chỉ báo cáo trong **chat 1-1**, đối phương phải đã gửi ≥1 tin. Lý do: chọn một hoặc nhiều (D37). Mỗi cặp chỉ có 1 báo cáo đang chờ. |
 | M15 | U11d/U11e xóa lịch sử | Xóa phía mình hay cả hai phía? | **Chỉ phía mình** (người kia vẫn thấy). Áp dụng cho cả nhóm. |
-| M16 | U11g "tìm với tất cả mọi người" | Có gồm tin nhóm? | Gồm chat 1-1 **và** chat nhóm (nhóm mã hóa: tìm ở client). |
+| M16 | U11g "tìm với tất cả mọi người" | Có gồm tin nhóm? | Chỉ chat 1-1: mọi nhóm mã hóa đầu cuối nên server không tìm được tin nhóm (D26) (cập nhật 20/11/2026). |
 | M17 | U11h LLM | Nhà cung cấp? "chỉnh" và "gợi ý" là gì? Gửi bao nhiêu ngữ cảnh? | 2 chức năng: **Chỉnh câu** (sửa chính tả/giọng văn cho bản nháp) và **Gợi ý trả lời** (3 câu, dựa trên ≤10 tin gần nhất). Không bao giờ tự gửi — người dùng phải chọn. API key ở server. |
-| M18 | U12 quyền trong nhóm | Chỉ nói "xóa thành viên: chỉ admin". Đổi tên, thêm thành viên, gán admin thì ai? | Mọi thành viên: chat, đổi tên, thêm thành viên. Chỉ admin: gán/thu hồi admin, xóa thành viên. Nhóm luôn có ≥1 admin. |
+| M18 | U12 quyền trong nhóm | Chỉ nói "xóa thành viên: chỉ admin". Đổi tên, thêm thành viên, gán admin thì ai? | Mọi thành viên: chat, thêm thành viên. Chỉ admin: đổi tên, gán/thu hồi admin, xóa thành viên (D32) (cập nhật 20/11/2026). Nhóm luôn có ≥1 admin. |
 | M19 | U12a "thêm tối thiểu 1 tên đăng nhập" | Thêm người lạ được không? Người đã chặn mình? | Thêm bất kỳ người dùng hoạt động nào, trừ người có quan hệ chặn với người tạo. Nhóm tạo ra có ≥3 thành viên tính cả người tạo (người tạo + ≥2 người khác, theo CSDL). |
 | M20 | Rời nhóm / giải tán nhóm | Không có trong yêu cầu. | **Không làm** (ngoài phạm vi), ghi vào "chức năng làm thêm" nếu còn thời gian. |
 | M21 | U3 reset mật khẩu | Ai cũng có thể reset mật khẩu người khác nếu chỉ cần tên đăng nhập. | Yêu cầu nhập **tên đăng nhập + email khớp**. Mật khẩu ngẫu nhiên 10 ký tự; khuyến nghị đổi sau khi đăng nhập. |
@@ -213,7 +213,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 | BR-02 | Email đúng định dạng, duy nhất trong hệ thống. |
 | BR-03 | Mật khẩu ≥ 8 ký tự, có cả chữ và số; lưu bằng BCrypt. |
 | BR-04 | Tài khoản bị khóa hoặc đã xóa không đăng nhập được; nếu đang online thì bị ngắt kết nối ngay. |
-| BR-05 | Mỗi lần đăng nhập thành công ghi 1 dòng `login_history` (thời gian, IP) = 1 lần "mở ứng dụng". |
+| BR-05 | Mỗi lần đăng nhập thành công ghi 1 dòng `login_history` (thời gian, tên đăng nhập, họ tên) = 1 lần "mở ứng dụng". |
 | BR-06 | Quan hệ chặn A→B: xóa quan hệ bạn bè và lời mời chờ giữa A–B; cấm nhắn tin 1-1 hai chiều; B không tìm thấy A; B không gửi được lời mời cho A. Chỉ A bỏ chặn được. |
 | BR-07 | Chat 1-1 không yêu cầu là bạn bè (trừ khi có quan hệ chặn). |
 | BR-08 | Xóa tin nhắn / lịch sử chỉ ẩn ở phía người thực hiện. |
@@ -222,7 +222,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 | BR-11 | Chỉ báo cáo spam người đã gửi ≥1 tin 1-1 cho mình; mỗi cặp (người báo cáo, người bị báo cáo) có tối đa 1 báo cáo "Chờ xử lý". |
 | BR-12 | Xóa người dùng là xóa mềm (M2). |
 | BR-13 | "Bạn + bạn của bạn" = số người khác nhau cách ≤ 2 bước trên đồ thị bạn bè, không tính bản thân (M7). |
-| BR-14 | Người dùng hoạt động trong [từ, đến] = có ≥1 lần mở app hoặc ≥1 tin gửi đi trong khoảng (M8). |
+| BR-14 | Người dùng hoạt động trong [từ, đến] = có ≥1 lần đăng nhập thành công trong khoảng (M8, D39). |
 | BR-15 | Thời gian hiển thị theo múi giờ máy client, định dạng `dd/MM/yyyy HH:mm`. |
 
 ---
@@ -278,7 +278,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 - **Ngoại lệ:**
   - 3a. Không khớp → vẫn hiện thông báo chung "Nếu thông tin đúng, mật khẩu mới đã được gửi" (tránh dò tài khoản).
   - 4a. Gửi email thất bại → không đổi mật khẩu, báo "Không gửi được email, thử lại sau".
-- **HĐK:** Mật khẩu cũ hết hiệu lực. Không ảnh hưởng nhóm mã hóa (khóa nhóm do server giữ, UC-28).
+- **HĐK:** Mật khẩu cũ hết hiệu lực. Không ảnh hưởng nhóm mã hóa (khóa gắn với thiết bị, không gắn với mật khẩu, UC-28).
 
 #### UC-05 — Cập nhật thông tin tài khoản
 - **Yêu cầu:** U2 · **Màn hình:** S09 (tab Thông tin)
@@ -333,7 +333,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 #### UC-14 — Báo cáo spam
 - **Yêu cầu:** U10 · **Màn hình:** cửa sổ chat 1-1 → hộp thoại D02
 - **TĐK:** Đối phương đã gửi ≥1 tin trong cuộc trò chuyện (BR-11).
-- **Luồng chính:** Trong chat 1-1, bấm menu "⋯" → "Báo cáo spam" → hộp thoại chọn lý do (Quảng cáo / Quấy rối / Lừa đảo / Khác + ghi chú) và ô "Chặn luôn người này" → "Gửi báo cáo" → hệ thống lưu báo cáo trạng thái *Chờ xử lý* kèm thời gian → thông báo "Đã gửi báo cáo".
+- **Luồng chính:** Trong chat 1-1, bấm menu "⋯" → "Báo cáo spam" → hộp thoại chọn một hoặc nhiều lý do (Quảng cáo, bán hàng / Lừa đảo, giả mạo / Quấy rối, xúc phạm / Gửi tin nhắn hàng loạt / Khác; lưu nối bằng "; ", D37) và ô "Chặn luôn người này" → "Gửi báo cáo" → hệ thống lưu báo cáo trạng thái *Chờ xử lý* kèm thời gian → thông báo "Đã gửi báo cáo".
 - **Ngoại lệ:** Đã có báo cáo đang chờ với người này → "Bạn đã báo cáo người này, quản trị viên đang xem xét". Mục menu bị vô hiệu khi đối phương chưa gửi tin nào.
 
 ### 6.3. Chat 1-1
@@ -372,7 +372,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 #### UC-20 — Tìm trong tất cả cuộc trò chuyện
 - **Yêu cầu:** U11g · **Màn hình:** S08
 - **Luồng chính:** Ô "Tìm tin nhắn" ở đầu cột trò chuyện → gõ chuỗi, Enter → danh sách kết quả nhóm theo cuộc trò chuyện (tên người/nhóm, đoạn trích có tô sáng, thời gian) → bấm 1 kết quả → mở cuộc trò chuyện đó và cuộn tới tin, tô sáng.
-- **Ghi chú:** Tin trong nhóm mã hóa lưu dạng bản mã nên SQL `LIKE` không tìm được; server giải mã tin của các nhóm người dùng tham gia rồi tìm trong bộ nhớ (UC-28).
+- **Ghi chú:** Chỉ tìm trong chat 1-1. Tin nhóm lưu dạng bản mã đầu cuối nên server không tìm được (D26, UC-28) (cập nhật 20/11/2026).
 
 #### UC-21 — Dùng trợ lý AI khi soạn tin
 - **Tác nhân:** Người dùng, Dịch vụ LLM · **Yêu cầu:** U11h · **Màn hình:** S04 (khung AI bên phải)
@@ -382,7 +382,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
   3. Client gửi yêu cầu tới server kèm ≤10 tin gần nhất; server gọi LLM.
   4. Hiện 3 gợi ý; bấm 1 gợi ý → nội dung được chèn vào ô nhập (**không tự gửi**).
 - **Luồng chính — Chỉnh câu:** Người dùng gõ bản nháp → chọn "Chỉnh câu" và kiểu (Sửa chính tả / Lịch sự hơn / Ngắn gọn hơn) → hiện bản đã chỉnh so với bản gốc → "Dùng bản này" thay nội dung ô nhập.
-- **Ngoại lệ:** LLM lỗi/hết thời gian (15 giây) → "Trợ lý AI tạm thời không phản hồi". Bản nháp rỗng khi chọn "Chỉnh câu" → nút bị vô hiệu. `[ĐX]` Trong nhóm mã hóa vẫn dùng được (server giải mã được), kèm chú thích nội dung sẽ được gửi ra dịch vụ bên ngoài.
+- **Ngoại lệ:** LLM lỗi/hết thời gian (15 giây) → "Trợ lý AI tạm thời không phản hồi". Bản nháp rỗng khi chọn "Chỉnh câu" → nút bị vô hiệu. Trợ lý AI không có trong nhóm vì mọi nhóm mã hóa đầu cuối (D29, D35) (cập nhật 20/11/2026).
 - **Quy tắc:** Mỗi lần gọi hiện chú thích nhỏ "Nội dung được gửi tới dịch vụ AI bên ngoài".
 
 ### 6.4. Nhóm chat
@@ -392,18 +392,18 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 - **Luồng chính:**
   1. Người dùng bấm "Nhóm mới" (hoặc chọn nhiều bạn online → "Tạo nhóm").
   2. Nhập tên nhóm; tìm và thêm thành viên theo tên đăng nhập/họ tên (chip có nút ×).
-  3. Tùy chọn bật "Mã hóa tin nhắn" (không thể tắt sau khi tạo).
+  3. Nhóm luôn được mã hóa đầu cuối, không có tùy chọn bật/tắt (D36).
   4. Bấm "Tạo nhóm" (chỉ bật khi đã có ≥2 thành viên khác, tức ≥3 người tính cả người tạo (BR-09), và có tên).
   5. Hệ thống tạo nhóm, người tạo là admin (BR-09), thêm thành viên; thành viên online thấy nhóm mới realtime.
 - **Ngoại lệ:** Tên đăng nhập không tồn tại / có quan hệ chặn → không cho thêm vào chip (M19). Tên nhóm rỗng → dùng tên ghép các thành viên.
 
 #### UC-23 — Đổi tên nhóm
-- **Yêu cầu:** U12b · **Màn hình:** S05 (khung Thông tin nhóm)
+- **Tác nhân:** Admin nhóm (D32) · **Yêu cầu:** U12b · **Màn hình:** S05 (khung Thông tin nhóm)
 - **Luồng chính:** Bấm biểu tượng sửa cạnh tên nhóm → nhập tên mới (1–50 ký tự) → Lưu → mọi thành viên thấy tên mới và một dòng hệ thống "*A* đã đổi tên nhóm thành *X*".
 
 #### UC-24 — Thêm thành viên
 - **Yêu cầu:** U12c
-- **Luồng chính:** "Thêm thành viên" → hộp thoại tìm người dùng (loại người đã trong nhóm) → chọn → Thêm → dòng hệ thống "*A* đã thêm *B*". Thành viên mới xem được lịch sử nhóm (kể cả nhóm mã hóa).
+- **Luồng chính:** "Thêm thành viên" → hộp thoại tìm người dùng (loại người đã trong nhóm) → chọn → Thêm → dòng hệ thống "*A* đã thêm *B*". Thành viên mới chỉ xem được tin gửi từ lúc được thêm (D34).
 
 #### UC-25 — Gán / thu hồi quyền admin nhóm
 - **Tác nhân:** Admin nhóm · **Yêu cầu:** U12d
@@ -417,19 +417,18 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 
 #### UC-27 — Chat nhóm
 - **Yêu cầu:** U12f · **Màn hình:** S05
-- **Luồng chính:** Giống UC-15, nhưng server đẩy `GROUP_MSG` tới mọi thành viên online; thành viên offline nhận khi đăng nhập. Mỗi tin hiện tên người gửi. Các chức năng xem lịch sử, xóa, tìm kiếm (UC-16..20) áp dụng cho nhóm.
+- **Luồng chính:** Giống UC-15, nhưng server đẩy `GROUP_MSG` tới mọi thành viên online; thành viên offline nhận khi đăng nhập. Mỗi tin hiện tên người gửi. Xem lịch sử và xóa lịch sử phía mình (UC-16..18) áp dụng cho nhóm; tìm kiếm (UC-19, UC-20) và trợ lý AI (UC-21) không áp dụng vì nhóm mã hóa đầu cuối (D26, D29).
 
 #### UC-28 — Nhóm chat mã hóa
-- **Yêu cầu:** U12g · **Đã chốt (08/11):** phương án đơn giản — server giữ khóa, mã hóa khi lưu trữ (không phải E2EE).
+- **Yêu cầu:** U12g · **Cập nhật 20/11/2026 (D35/D36, CSDL):** mọi nhóm bắt buộc mã hóa đầu cuối (E2EE) theo thiết bị. Thay cho phương án 08/11 "server giữ khóa, mã hóa khi lưu trữ" (xem lịch sử git). Thiết kế chi tiết: `docs/database/design-baseline.md` mục 9.5.
 - **Thiết kế:**
-  - Khi tạo nhóm có bật mã hóa, server sinh 1 khóa AES-256 riêng cho nhóm.
-  - Khóa nhóm được lưu trong CSDL ở dạng đã mã hóa bằng **khóa chủ** (`crypto.masterKey`) đọc từ `config.properties` của server. Khóa chủ không nằm trong `user.jar` hay `admin.jar`.
-  - Mỗi tin nhắn nhóm được server mã hóa AES-GCM (lưu bản mã + IV) trước khi ghi vào bảng tin nhắn, và giải mã khi gửi cho thành viên hoặc khi tìm kiếm.
-- **Luồng chính:** Tạo nhóm với tùy chọn mã hóa bật (UC-22) → header nhóm hiện biểu tượng khóa + "Nhóm mã hóa" → bấm vào hiện giải thích ngắn: tin nhắn được mã hóa khi lưu trữ.
-- **Thêm / xóa thành viên:** Không đổi khóa; server kiểm tra quyền thành viên trước khi gửi tin.
-- **Đổi / reset mật khẩu (UC-04, UC-06, UC-36):** Không ảnh hưởng.
-- **Bảo vệ được:** Người đọc trộm CSDL (hoặc file dump) mà không có khóa chủ thì không đọc được tin nhóm mã hóa.
-- **Giới hạn (ghi rõ trong báo cáo):** Server giải mã được nên đây không phải mã hóa đầu-cuối như Facebook. Tin nhắn đi trên socket thuần **không được mã hóa trên đường truyền**. Mất khóa chủ = mất toàn bộ tin nhóm mã hóa. Quản trị viên chỉ thấy siêu dữ liệu (tên nhóm, thành viên) vì admin.jar không có màn hình xem nội dung.
+  - Mỗi thiết bị có một cặp khóa; khóa công khai lưu ở `e2ee_devices`, khóa riêng chỉ nằm trên máy.
+  - Mỗi nhóm có các thế hệ khóa (`group_key_epochs`). Client tạo khóa nhóm, bọc bằng khóa công khai của từng thiết bị thành viên rồi gửi lên (`group_key_grants`); server không giữ khóa nhóm dạng rõ.
+  - Tin nhóm lưu dạng bản mã (`messages.ciphertext`); server chỉ lưu và chuyển tiếp.
+- **Luồng chính:** Tạo nhóm (UC-22) là có mã hóa, không có tùy chọn bật/tắt → header nhóm hiện biểu tượng khóa + "Mã hóa đầu cuối" → khung Thông tin nhóm giải thích hệ quả.
+- **Thêm / xóa thành viên, đổi thiết bị:** đóng thế hệ khóa cũ, mở thế hệ mới; người mới không nhận khóa cũ nên chỉ đọc được tin từ lúc tham gia (D34).
+- **Đổi / reset mật khẩu (UC-04, UC-06, UC-36):** Không ảnh hưởng (khóa gắn với thiết bị, không gắn với mật khẩu).
+- **Giới hạn (ghi rõ trong báo cáo):** Nhóm không hỗ trợ tìm tin nhắn (UC-19, UC-20) và trợ lý AI (UC-21); đăng nhập trên máy khác không đọc được tin nhóm cũ; quản trị viên chỉ thấy siêu dữ liệu (tên nhóm, thành viên).
 
 ### 6.5. Quản trị
 
@@ -454,24 +453,24 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 - **Yêu cầu:** A1c, A4d · "Khóa" → xác nhận (kèm lý do tùy chọn) → trạng thái *Bị khóa*, người dùng bị ngắt kết nối nếu đang online (M22). "Mở khóa" → trạng thái *Hoạt động*.
 
 #### UC-36 — Đặt lại mật khẩu người dùng
-- **Yêu cầu:** A1d · "Đặt lại mật khẩu" → hộp thoại: nhập mật khẩu mới (hoặc "Tạo ngẫu nhiên"), ô "Gửi mật khẩu qua email" → Lưu.
+- **Yêu cầu:** A1d · "Đặt lại mật khẩu" → hộp thoại: nhập mật khẩu mới (hoặc "Tạo ngẫu nhiên") → Lưu. Không gửi email (D10).
 
 #### UC-37 — Xem lịch sử đăng nhập của một người dùng
-- **Yêu cầu:** A1e · Tab "Lịch sử đăng nhập" trong khung chi tiết: thời gian, địa chỉ IP, mới nhất trước.
+- **Yêu cầu:** A1e · Tab "Lịch sử đăng nhập" trong khung chi tiết: thời gian, mới nhất trước.
 
 #### UC-38 — Xem danh sách bạn bè của một người dùng
 - **Yêu cầu:** A1f · Tab "Bạn bè": họ tên, tên đăng nhập, ngày kết bạn.
 
 #### UC-39 — Xem nhật ký đăng nhập toàn hệ thống
-- **Yêu cầu:** A2 · **Màn hình:** S12 · Bảng: **thời gian, tên đăng nhập, họ tên** (+ IP), sắp theo thời gian mới nhất trước, có bộ lọc khoảng ngày; bấm tên → mở người dùng ở S11.
+- **Yêu cầu:** A2 · **Màn hình:** S12 · Bảng: **thời gian, tên đăng nhập, họ tên**, sắp theo thời gian mới nhất trước, có bộ lọc khoảng ngày; bấm tên → mở người dùng ở S11.
 
 #### UC-40 — Xem danh sách nhóm chat
 - **Yêu cầu:** A3a–A3d · **Màn hình:** S13
-- **Luồng chính:** Bảng nhóm: tên nhóm, số thành viên, mã hóa (có/không), ngày tạo. Lọc theo **tên** (A3b), sắp xếp theo **tên / ngày tạo** (A3a). Chọn 1 nhóm → khung phải 2 tab: **Thành viên** (A3c) và **Admin** (A3d). Không xem nội dung tin nhắn.
+- **Luồng chính:** Bảng nhóm: tên nhóm, số thành viên, trạng thái (hoạt động / đã đóng, D33), ngày tạo. Lọc theo **tên** (A3b), sắp xếp theo **tên / ngày tạo** (A3a). Chọn 1 nhóm → khung phải 2 tab: **Thành viên** (A3c) và **Admin** (A3d). Không xem nội dung tin nhắn.
 
 #### UC-41 — Xem & xử lý báo cáo spam
 - **Yêu cầu:** A4a–A4d · **Màn hình:** S14
-- **Luồng chính:** Bảng: thời gian, người bị báo cáo (tên đăng nhập, họ tên), người báo cáo, lý do, trạng thái. Sắp xếp theo **thời gian / tên đăng nhập** (A4a); lọc **khoảng thời gian** (A4b); lọc **tên đăng nhập** (A4c); lọc trạng thái. Chọn báo cáo → "Khóa tài khoản" (A4d → UC-35; mọi báo cáo chờ về người này chuyển *Đã khóa*) hoặc "Bỏ qua".
+- **Luồng chính:** Bảng: thời gian, người bị báo cáo (tên đăng nhập, họ tên), người báo cáo, lý do, trạng thái. Sắp xếp theo **thời gian / tên đăng nhập** (A4a); lọc **khoảng thời gian** (A4b); lọc **tên đăng nhập** (A4c); lọc trạng thái. Chọn báo cáo → "Khóa tài khoản" (A4d → UC-35; mọi báo cáo về người này chuyển *Đã xử lý*, D38) hoặc "Bỏ qua" (báo cáo đang chọn chuyển *Đã bỏ qua*).
 
 #### UC-42 — Xem người dùng đăng ký mới
 - **Yêu cầu:** A5, A5a, A5b · **Màn hình:** S15 (tab Danh sách)
@@ -488,7 +487,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 
 #### UC-45 — Xem người dùng hoạt động
 - **Yêu cầu:** A8a–A8c · **Màn hình:** S17 (tab Danh sách)
-- **Luồng chính:** Chọn khoảng thời gian → bảng người dùng hoạt động (BR-14) với các cột: **số lần mở ứng dụng**, **số người đã chat**, **số nhóm đã chat**. Lọc theo tên; lọc số lượng (= / < / >) trên cột được chọn (M8); sắp xếp theo tên / thời gian tạo.
+- **Luồng chính:** Chọn khoảng thời gian → bảng người dùng hoạt động (BR-14) với các cột: **số lần mở ứng dụng**, **số người đã chat**, **số nhóm đã chat**. Lọc theo tên; lọc số lần mở ứng dụng (= / < / >) (M8); sắp xếp theo tên / thời gian tạo.
 
 #### UC-46 — Biểu đồ người hoạt động theo năm
 - **Yêu cầu:** A9 · **Màn hình:** S17 (tab Biểu đồ) · Giống UC-43 nhưng trục tung là **số người khác nhau có mở ứng dụng** trong tháng (M9).
@@ -526,7 +525,7 @@ Không có màn hình "Dashboard" cho admin vì yêu cầu không đề cập; m
 
 1. ~~**K1** — Chốt stack~~ → **Đã chốt 08/11:** JavaFX + PostgreSQL, đã sửa README.
 2. ~~**K3** — Kiến trúc 3 jar~~ → **Đã chốt 08/11:** đồng ý.
-3. ~~**K4 / UC-28** — Phương án mã hóa nhóm~~ → **Đã chốt 08/11:** đơn giản (server giữ khóa, mã hóa khi lưu trữ).
+3. ~~**K4 / UC-28** — Phương án mã hóa nhóm~~ → **Đã chốt 08/11:** đơn giản (server giữ khóa, mã hóa khi lưu trữ). **Cập nhật 20/11/2026:** thay bằng E2EE bắt buộc (D35/D36), xem UC-28.
 4. ~~**K5** — Ngày nộp~~ → **Đã chốt 08/11:** V1 22/11/2026, V2 12/12/2026.
 
 Còn chờ trả lời:

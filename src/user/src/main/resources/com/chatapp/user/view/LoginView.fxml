@@ -21,7 +21,7 @@
         </VBox>
         <VBox spacing="6">
             <Label text="Tên đăng nhập" styleClass="small,strong"/>
-            <TextField fx:id="usernameField" text="an_nguyen"/>
+            <TextField fx:id="usernameField" promptText="an_nguyen"/>
         </VBox>
         <VBox spacing="6">
             <HBox alignment="CENTER_LEFT">
@@ -29,7 +29,7 @@
                 <Region HBox.hgrow="ALWAYS"/>
                 <Hyperlink text="Quên mật khẩu?" styleClass="small" onAction="#onForgotPassword"/>
             </HBox>
-            <PasswordField fx:id="passwordField" text="matkhau123"/>
+            <PasswordField fx:id="passwordField" promptText="Mật khẩu"/>
         </VBox>
         <Label fx:id="errorLabel" text="Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên." styleClass="error-text"
                wrapText="true" visible="false" managed="false"/>

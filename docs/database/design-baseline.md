@@ -15,7 +15,7 @@
 
 This approved design is reflected in [schema.sql](../../script/schema.sql), replacing the old trigger-based split model in that file. It has now run with matching fixtures, prepared queries and isolated checks in the new dedicated database identified in section 12. Prior runtime results for the old model are not reused as evidence. No business database was queried or changed; this is fresh-database work without migration/backfill.
 
-Minh's explicit decisions override conflicting Word and older documents. The Word source `docs/Phuong_an_da_chot_JAVA_CHAT_SYSTEM.docx` was successfully read in the initial review. Retain its non-conflicting decisions. Do not invent a D40 decision.
+Minh's explicit decisions override conflicting Word and older documents. The Word source `docs/Phuong_an_da_chot_JAVA_CHAT_SYSTEM.docx` was successfully read in the initial review. Retain its non-conflicting decisions. D40 (A8 metrics) is recorded in the analysis doc and matches the section 9.6 activity metrics (updated 20/11/2026, db-fe-conflict-fix).
 
 Confirmed choices are not reopened: S1 stores the ordered PRIVATE pair in conversations; Q1=B allows exceptional group closure when no eligible successor exists, preserving data/history; Q2=A uses administration audit/manual control retry, without an outbox; Q3=B uses a stable conversation_members row and membership_periods; Q4=A keeps clear time plus an ID watermark. Q8-A/O4 allow at most one currently authorized E2EE device per account, no historical key grants for newly authorized devices, no transfer/backup/recovery secrets. Same still-authorized installation re-login preserves local keys. Every group is E2EE at creation with at least three people, including the creator.
 
@@ -275,7 +275,7 @@ I01/I02 are global unique normalized indexes, including locked/deleted rows. Log
 | logged_in_at | timestamptz | NO | NOW | Successful authentication instant |
 | username_snapshot | text | NO | none | Username at login |
 | full_name_snapshot | text | NO | none | Name at login |
-| remote_ip | inet | YES | NULL | Optional source for existing admin UI |
+| remote_ip | inet | YES | NULL | Optional; no screen shows it and D14 does not require it (updated 20/11/2026) |
 
 PK(login_id); CHECK both snapshots nonblank. F01 preserves identity but cannot prove snapshot authenticity. Server writes one row per completed logical UserApp authentication, without duplicating network retries or counting reconnects without a new success. AdminApp writes audit instead. Later profile edits/deletion do not modify snapshots. Append-only semantics are application-owned.
 
@@ -781,4 +781,4 @@ This review maps the actual approved choices to written storage or explicit cons
 | C13; D9/D10 | users.password_hash/must_change_password; PASSWORD_RESET audit event | Random10 reset password/hash/SMTP/reminder and admin-entered replacement; no plaintext-password column. Flag is implemented storage within approved design, not an unanswered proposal. Email/real BCrypt NOT RUN |
 | C14; D43 and explicit scope limits | Fresh15-table DDL with identity/PK/FK/NOT NULL/UNIQUE/local CHECK/DEFAULT/indexes; no extensions/custom guards | No migration, fixed16-table preservation or SQL-based E2EE algorithm. JavaFX charts use Q04/report rows at integration; rendering/frontend work is outside this SQL feature |
 
-All Q1–Q4/R1–R2 answers remain B/A/B/A/B/A from Minh's explicit messages; O1–O4, Q8-A and S1 remain explicit overrides. Word D31's creator+three and D26/D34's normal-group assumptions are superseded by creator+two and mandatory E2EE. No nonexistent D40 rule or new default approval is introduced.
+All Q1–Q4/R1–R2 answers remain B/A/B/A/B/A from Minh's explicit messages; O1–O4, Q8-A and S1 remain explicit overrides. Word D31's creator+three and D26/D34's normal-group assumptions are superseded by creator+two and mandatory E2EE. D40 matches the section 9.6 activity metrics; no new default approval is introduced.

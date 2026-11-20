@@ -21,8 +21,11 @@ public final class SampleData {
     public record LoginRow(LocalDateTime time, String username, String fullName) {
     }
 
-    /** Every group is end-to-end encrypted; the creator is not stored (only the current admins are). */
-    public record GroupRow(String name, int members, LocalDate created, int admins) {
+    /**
+     * Every group is end-to-end encrypted. S13 shows the current admins, not the creator.
+     * {@code closed} is null while the group is open (D33: closed when no member can take over as admin).
+     */
+    public record GroupRow(String name, int members, LocalDate created, int admins, LocalDate closed) {
     }
 
     public record GroupMember(String initials, String fullName, String username, boolean admin) {
@@ -98,14 +101,14 @@ public final class SampleData {
             new LoginRow(t(7, 11, 9, 5), "bich_tran", "Trần Thị Bích"));
 
     public static final List<GroupRow> GROUPS = List.of(
-            new GroupRow("Đồ án Java", 4, d(2, 11, 2026), 2),
-            new GroupRow("CLB Guitar K22", 18, d(21, 10, 2026), 3),
-            new GroupRow("Lớp 22CTT3", 64, d(15, 9, 2026), 2),
-            new GroupRow("Ban cán sự khoa", 9, d(30, 9, 2026), 1),
-            new GroupRow("Bóng đá thứ 7", 22, d(5, 11, 2026), 1),
-            new GroupRow("Nhóm học CTDL", 6, d(12, 10, 2026), 2),
-            new GroupRow("Gia đình", 5, d(18, 9, 2026), 1),
-            new GroupRow("Ôn thi cuối kỳ", 31, d(7, 11, 2026), 2));
+            new GroupRow("Đồ án Java", 4, d(2, 11, 2026), 2, null),
+            new GroupRow("CLB Guitar K22", 18, d(21, 10, 2026), 3, null),
+            new GroupRow("Lớp 22CTT3", 64, d(15, 9, 2026), 2, null),
+            new GroupRow("Ban cán sự khoa", 9, d(30, 9, 2026), 1, null),
+            new GroupRow("Bóng đá thứ 7", 22, d(5, 11, 2026), 1, null),
+            new GroupRow("Nhóm học CTDL", 2, d(12, 10, 2026), 0, d(6, 11, 2026)),
+            new GroupRow("Gia đình", 5, d(18, 9, 2026), 1, null),
+            new GroupRow("Ôn thi cuối kỳ", 31, d(7, 11, 2026), 2, null));
 
     public static final List<GroupMember> GROUP_MEMBERS = List.of(
             new GroupMember("AN", "Nguyễn Văn An", "an_nguyen", true),

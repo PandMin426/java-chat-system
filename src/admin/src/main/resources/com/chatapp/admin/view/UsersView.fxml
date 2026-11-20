@@ -95,6 +95,12 @@
                 <Label fx:id="statusBadge" styleClass="badge"/>
                 <Label fx:id="onlineBadge" styleClass="badge"/>
             </HBox>
+            <!-- D12: hidden until V2 gets no ACK from ChatServer after a lock (admin_audit_log CONTROL_FAILED / CONTROL_UNKNOWN) -->
+            <HBox fx:id="kickFailedNote" styleClass="note,warn" spacing="8" alignment="CENTER_LEFT"
+                  visible="false" managed="false">
+                <Label text="Đã khóa nhưng chưa ngắt được kết nối của người này." wrapText="true" HBox.hgrow="ALWAYS"/>
+                <Button text="Thử lại" styleClass="sm"/>
+            </HBox>
             <FlowPane hgap="6" vgap="6">
                 <Button text="Sửa" styleClass="sm" onAction="#onEdit"/>
                 <Button text="Đặt lại mật khẩu" styleClass="sm" onAction="#onResetPassword"/>

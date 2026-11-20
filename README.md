@@ -24,7 +24,7 @@
 | ----------------------- | ---------------------------------------------------------------- |
 | Frontend                | JavaFX (giao diện desktop Windows, viết bằng Java)               |
 | Database                | PostgreSQL                                                       |
-| Backend (giai đoạn sau) | Java — framework chưa thống nhất                                 |
+| Backend (giai đoạn sau) | Java — `server.jar` dùng `java.net.ServerSocket`, JSON mỗi dòng (D1, D2) |
 | Kết nối mạng            | Socket Java thuần (`java.net.Socket` / `ServerSocket`), **không dùng WebSocket** |
 | Version Control         | Git + GitHub                                                     |
 

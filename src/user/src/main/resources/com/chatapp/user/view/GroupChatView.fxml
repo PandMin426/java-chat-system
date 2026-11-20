@@ -54,6 +54,10 @@
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
             <VBox fx:id="messageBox" styleClass="messages"/>
         </ScrollPane>
+        <!-- D33: hidden until V2 opens a group closed because no member could take over as admin -->
+        <HBox fx:id="closedNote" styleClass="note,warn" visible="false" managed="false">
+            <Label text="Nhóm đã đóng vì không còn thành viên nào nhận quyền admin. Bạn vẫn xem được tin nhắn cũ nhưng không gửi được tin mới." wrapText="true"/>
+        </HBox>
         <HBox styleClass="composer">
             <TextArea promptText="Nhắn tin tới nhóm…" prefRowCount="1" wrapText="true" HBox.hgrow="ALWAYS"/>
             <Button text="Gửi" styleClass="primary" defaultButton="true" minWidth="-Infinity">

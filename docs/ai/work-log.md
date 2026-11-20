@@ -448,6 +448,32 @@ Trang
 [20/11/2026 19:28] | COMMIT_REMINDER | docs-restructure | AI commits at user's request: feat(docs-restructure): split docs into frontend, backend and database
 [20/11/2026 19:28] | SESSION_END | docs-restructure | Three features committed (ui-username-group-size, docs-db-rule-sync, docs-restructure); nothing pushed; target/ build outputs left unstaged
 
+[20/11/2026 20:19] | SESSION_START | db-fe-conflict-fix | Final DB <-> FE <-> Part 3 (D1-D43) conflict check on main 4e17308, then fix approved items
+[20/11/2026 20:19] | FILE_CREATED | db-fe-conflict-fix | docs/ai/db-fe-conflict-fix/diff.md - approved conflict list A1-A5, B1-B3, C1-C5, E1-E6 (Vietnamese)
+[20/11/2026 20:19] | PLAN_CREATED | db-fe-conflict-fix | Created docs/ai/db-fe-conflict-fix/plan.md - repo cleanup E1-E5, FE fixes A3/A4/B1-B3/C4, doc fixes A2/C3/C5, Part 3 Claude Doc fixes A1/A2/A4/A5/C1/C2
+[20/11/2026 20:19] | PLAN_APPROVED | db-fe-conflict-fix | User approved diff.md: delete section E files, fix conflicts, add FE gaps; user makes the commit
+[20/11/2026 20:19] | DECISION | db-fe-conflict-fix | No schema change: A5 reason stays optional text with labels joined by "; ", C3 fixed in design-baseline; E6 branch deletion left to the user (outward-facing git)
+[20/11/2026 20:19] | QUESTION | db-fe-conflict-fix | Assumptions recorded in plan section 4 (diff.md placement, editing the shared Part 3 doc, A5 format, A4 display-only, .gitkeep for Rule 6 folders, A3 must_change_password deferred)
+[20/11/2026 20:19] | CODE_START | db-fe-conflict-fix | Started repository cleanup and FE fixes
+[20/11/2026 20:23] | FILE_MODIFIED | db-fe-conflict-fix | E1: git rm -r --cached src/admin/target src/common/target src/user/target (52 files untracked, kept on disk); E5: .gitignore trimmed to logs/.env/Java block
+[20/11/2026 20:23] | FILE_MODIFIED | db-fe-conflict-fix | E2/E3: deleted 3 docs/database/reports/*.md and 4 research_notes/Xung đột màn hình và CSDL/*.md (old schema); E4: deleted src/admin, src/user, script, docs/ai/_template .gitkeep
+[20/11/2026 20:23] | FILE_CREATED | db-fe-conflict-fix | docs/database/reports/.gitkeep, docs/database/research_notes/.gitkeep - keep Rule 6 folders
+[20/11/2026 20:23] | FILE_MODIFIED | db-fe-conflict-fix | A3: ResetPasswordDialog.fxml email CheckBox removed, ResetPasswordController javadoc; A4: GroupChatView.fxml hidden closedNote, GroupsView.fxml + GroupsController 'Trạng thái' column and closed date, admin SampleData GroupRow.closed (Nhóm học CTDL closed 06/11, 0 admins)
+[20/11/2026 20:23] | FILE_MODIFIED | db-fe-conflict-fix | B1: UsersView.fxml and SpamView.fxml hidden kickFailedNote with 'Thử lại'; B2: LoginView/AdminLoginView credentials -> promptText; B3: AdminLoginView footer 'CSDL localhost:5432'; C4: GroupRow and SEARCH_USERS javadocs
+[20/11/2026 20:23] | VERIFIED | db-fe-conflict-fix | ./mvnw -B -q test: user 29/29, admin 23/23 PASS; git status shows only the 52 staged target untracking entries after the run (criterion 1 PASS)
+[20/11/2026 20:23] | VERIFIED | db-fe-conflict-fix | ScreenshotTool: S01, S10, S11c, S13 regenerated and reviewed (prompts, DB footer, no email checkbox, one 'Đã đóng' row); S05/S11/S14 unchanged because the new notes are hidden (criterion 4 PASS)
+[20/11/2026 20:25] | FILE_MODIFIED | db-fe-conflict-fix | A2/C3: docs/database/design-baseline.md - two 'no D40' sentences now say D40 matches section 9.6; remote_ip purpose 'no screen shows it'
+[20/11/2026 20:25] | FILE_MODIFIED | db-fe-conflict-fix | C5: use-case-specification.md - K4 note, M8/M14/M16/M18, BR-05/BR-14, UC-06 HĐK, report reasons, UC-20/21/22/23/24/27, UC-28 rewritten for mandatory E2EE, UC-36/37/39/40/41/45, section 8 item 3
+[20/11/2026 20:25] | FILE_MODIFIED | db-fe-conflict-fix | C5: ui-align-decisions.md section 4 resolved notes (spam reason/status, app_open_events gone, must_change_password); README.md backend row (server.jar, ServerSocket, JSON lines)
+[20/11/2026 20:25] | VERIFIED | db-fe-conflict-fix | grep: no 'Do not invent a D40', no IP in BR-05/UC-37/UC-39, every 'server giữ khóa' carries a 20/11 update note, no 'chưa thống nhất' in README tech table (criterion 5 PASS)
+[20/11/2026 20:27] | FILE_MODIFIED | db-fe-conflict-fix | Claude Doc 'Đồ án Java – Hệ thống Chat' section 3 (rev 155->156): D3, D4, D7, D14, D15, D18, D26, D31, D33, D34, D35, D36, D37, D40 (2 bullets), D42 cells aligned with schema
+[20/11/2026 20:27] | VERIFIED | db-fe-conflict-fix | Update ack shows all 16 cells rewritten with code marks kept (criterion 6 PASS); criterion 2 PASS by listing deleted paths and .gitignore
+[20/11/2026 20:27] | NOTE | db-fe-conflict-fix | Claude Doc outside section 3 still stale (SD7/SD9 group search and member rename, RSA model note, open question 9 on E2EE); left unchanged, request covered Part 3
+[20/11/2026 20:27] | CODE_DONE | db-fe-conflict-fix | Implementation finished
+[20/11/2026 20:27] | DOC_CREATED | db-fe-conflict-fix | Created docs/ai/db-fe-conflict-fix/db-fe-conflict-fix.md; plan.md status DONE
+[20/11/2026 20:27] | COMMIT_REMINDER | db-fe-conflict-fix | Reminded user: feat(db-fe-conflict-fix): resolve DB, FE and Part 3 conflicts and remove stale files (deletions/untracking already staged; user commits)
+[20/11/2026 20:27] | SESSION_END | db-fe-conflict-fix | All approved items fixed, tests 29/29 + 23/23 PASS, 4 screenshots regenerated, no commit made, E6 branches left to the user
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -490,5 +516,6 @@ Trang
 | ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ✅ |
 | docs-db-rule-sync | ✅ | ✅ | ✅ | ✅ | ✅ |
 | docs-restructure | ✅ | ✅ | ✅ | ✅ | ✅ |
+| db-fe-conflict-fix | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.

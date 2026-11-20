@@ -27,6 +27,8 @@ public class GroupsController {
     @FXML
     private TableColumn<GroupRow, Integer> membersColumn;
     @FXML
+    private TableColumn<GroupRow, Boolean> statusColumn;
+    @FXML
     private TableColumn<GroupRow, LocalDate> createdColumn;
     @FXML
     private Label groupNameLabel;
@@ -46,6 +48,8 @@ public class GroupsController {
         Tables.text(nameColumn, GroupRow::name, false);
         nameColumn.setComparator(Collator.getInstance(AdminNavigator.LOCALE)::compare);
         Tables.number(membersColumn, GroupRow::members);
+        Tables.graphic(statusColumn, g -> g.closed() != null,
+                closed -> closed ? Tables.badge("Đã đóng", "warn") : Tables.badge("Hoạt động", "ok"));
         Tables.date(createdColumn, GroupRow::created, Tables.DATE);
 
         table.getItems().setAll(SampleData.GROUPS);
@@ -68,7 +72,8 @@ public class GroupsController {
 
     private void showDetail(GroupRow g) {
         groupNameLabel.setText(g.name());
-        groupInfoLabel.setText("Tạo ngày " + Tables.DATE.format(g.created()));
+        groupInfoLabel.setText("Tạo ngày " + Tables.DATE.format(g.created())
+                + (g.closed() == null ? "" : " · Đóng ngày " + Tables.DATE.format(g.closed())));
         membersTab.setText("Thành viên · " + g.members());
         adminsTab.setText("Admin · " + g.admins());
     }

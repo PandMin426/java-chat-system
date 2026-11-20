@@ -133,7 +133,7 @@ public final class SampleData {
     public static final List<Person> BLOCKED = List.of(
             new Person("KT", "Kevin Trần", "kevin_tran", "Hai bên không nhắn tin 1-1 được với nhau", false));
 
-    /** Results for "nguyễn": full names match case-insensitively but with accents, usernames match exactly. */
+    /** Results for "nguyễn": full names and usernames match case-insensitively; full names must keep their accents. */
     public static final List<SearchUser> SEARCH_USERS = List.of(
             new SearchUser("NH", "Nguyễn Thị Hoa", "hoa_nguyen", " · 2 bạn chung", Relation.NONE),
             new SearchUser("NT", "Nguyễn Minh Tuấn", "tuan_nguyen", "", Relation.SENT),

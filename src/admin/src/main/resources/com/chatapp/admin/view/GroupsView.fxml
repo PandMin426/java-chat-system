@@ -40,6 +40,7 @@
                 <columns>
                     <TableColumn fx:id="nameColumn" text="Tên nhóm" prefWidth="240"/>
                     <TableColumn fx:id="membersColumn" text="Thành viên" sortable="false" prefWidth="110"/>
+                    <TableColumn fx:id="statusColumn" text="Trạng thái" sortable="false" prefWidth="120"/>
                     <TableColumn fx:id="createdColumn" text="Ngày tạo"/>
                 </columns>
             </TableView>

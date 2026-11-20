@@ -22,16 +22,16 @@
         </VBox>
         <VBox spacing="6">
             <Label text="Tên đăng nhập" styleClass="small,strong"/>
-            <TextField text="admin"/>
+            <TextField promptText="Tên đăng nhập quản trị"/>
         </VBox>
         <VBox spacing="6">
             <Label text="Mật khẩu" styleClass="small,strong"/>
-            <PasswordField text="admin@2026"/>
+            <PasswordField promptText="Mật khẩu"/>
         </VBox>
         <Button text="Đăng nhập" styleClass="primary,lg" maxWidth="Infinity" defaultButton="true"
                 onAction="#onLogin"/>
         <HBox alignment="CENTER">
-            <Label text="Máy chủ localhost:9999 · config.properties" styleClass="xs,muted,mono"/>
+            <Label text="CSDL localhost:5432 · config.properties" styleClass="xs,muted,mono"/>
         </HBox>
     </VBox>
 </StackPane>

@@ -66,9 +66,9 @@ Updates the V1 JavaFX screens of both apps so they match the business decisions 
 ### Database changes
 N/A - no database changes. The screens now differ from `script/schema.sql` in these points, to be handled by the database owner:
 - D31: groups need the creator + at least 3 members (schema comment says at least one other member). **Superseded 20/11/2026 by ui-username-group-size:** the approved DB baseline requires at least 3 people including the creator; screens follow it.
-- D37/D38: `spam_reports` has no reason and no status (PENDING / RESOLVED / DISMISSED) columns.
-- D39: "mở ứng dụng" = one successful login, while the schema also has `app_open_events`.
-- D9: no flag to show the "đổi mật khẩu" reminder after a login with a reset password.
+- D37/D38: `spam_reports` has no reason and no status (PENDING / RESOLVED / DISMISSED) columns. **Resolved 20/11/2026 (db-fe-conflict-fix):** the current schema has `reason` and `status` with these three values.
+- D39: "mở ứng dụng" = one successful login, while the schema also has `app_open_events`. **Resolved 20/11/2026 (db-fe-conflict-fix):** `app_open_events` is gone; app opens are counted from `login_history`.
+- D9: no flag to show the "đổi mật khẩu" reminder after a login with a reset password. **Resolved 20/11/2026 (db-fe-conflict-fix):** `users.must_change_password` now exists.
 
 ### Socket messages
 N/A - no network communication (V1 screens only).
