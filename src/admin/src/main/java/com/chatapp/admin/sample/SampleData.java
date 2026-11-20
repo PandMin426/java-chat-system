@@ -58,44 +58,44 @@ public final class SampleData {
     }
 
     public static final List<UserRow> USERS = List.of(
-            new UserRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), true, false, "bich.tran@gmail.com", "Nữ", d(21, 3, 2004), "Thủ Đức, TP.HCM"),
-            new UserRow("an.nguyen", "Nguyễn Văn An", d(12, 9, 2026), true, false, "an.nguyen@gmail.com", "Nam", d(12, 5, 2004), "Quận 5, TP.HCM"),
-            new UserRow("minh.vo", "Võ Minh", d(14, 9, 2026), true, false, "minh.vo@gmail.com", "Nam", d(2, 1, 2004), "Bình Thạnh, TP.HCM"),
-            new UserRow("ha.do", "Đỗ Hà", d(20, 9, 2026), false, false, "ha.do@gmail.com", "Nữ", d(30, 8, 2004), "Gò Vấp, TP.HCM"),
-            new UserRow("camly.le", "Lê Cẩm Ly", d(1, 10, 2026), true, false, "camly.le@gmail.com", "Nữ", d(11, 11, 2004), "Quận 7, TP.HCM"),
-            new UserRow("dung.pham", "Phạm Quốc Dũng", d(5, 10, 2026), false, false, "dung.pham@gmail.com", "Nam", d(9, 9, 2003), "Biên Hòa, Đồng Nai"),
-            new UserRow("kevin.tran", "Kevin Trần", d(28, 10, 2026), false, true, "kevin.t@mail.com", "Nam", d(1, 1, 2000), "—"),
-            new UserRow("thu.huynh", "Huỳnh Thư", d(2, 11, 2026), false, false, "thu.huynh@gmail.com", "Nữ", d(17, 2, 2005), "Quận 10, TP.HCM"),
-            new UserRow("spam.bot99", "Khuyến Mãi 99", d(4, 11, 2026), false, true, "km99@mail.com", "Khác", null, "—"),
-            new UserRow("hoa.nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), false, false, "hoa.nguyen@gmail.com", "Nữ", d(25, 12, 2004), "Thủ Dầu Một, Bình Dương"));
+            new UserRow("bich_tran", "Trần Thị Bích", d(12, 9, 2026), true, false, "bich.tran@gmail.com", "Nữ", d(21, 3, 2004), "Thủ Đức, TP.HCM"),
+            new UserRow("an_nguyen", "Nguyễn Văn An", d(12, 9, 2026), true, false, "an.nguyen@gmail.com", "Nam", d(12, 5, 2004), "Quận 5, TP.HCM"),
+            new UserRow("minh_vo", "Võ Minh", d(14, 9, 2026), true, false, "minh.vo@gmail.com", "Nam", d(2, 1, 2004), "Bình Thạnh, TP.HCM"),
+            new UserRow("ha_do", "Đỗ Hà", d(20, 9, 2026), false, false, "ha.do@gmail.com", "Nữ", d(30, 8, 2004), "Gò Vấp, TP.HCM"),
+            new UserRow("camly_le", "Lê Cẩm Ly", d(1, 10, 2026), true, false, "camly.le@gmail.com", "Nữ", d(11, 11, 2004), "Quận 7, TP.HCM"),
+            new UserRow("dung_pham", "Phạm Quốc Dũng", d(5, 10, 2026), false, false, "dung.pham@gmail.com", "Nam", d(9, 9, 2003), "Biên Hòa, Đồng Nai"),
+            new UserRow("kevin_tran", "Kevin Trần", d(28, 10, 2026), false, true, "kevin.t@mail.com", "Nam", d(1, 1, 2000), "—"),
+            new UserRow("thu_huynh", "Huỳnh Thư", d(2, 11, 2026), false, false, "thu.huynh@gmail.com", "Nữ", d(17, 2, 2005), "Quận 10, TP.HCM"),
+            new UserRow("spam_bot99", "Khuyến Mãi 99", d(4, 11, 2026), false, true, "km99@mail.com", "Khác", null, "—"),
+            new UserRow("hoa_nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), false, false, "hoa.nguyen@gmail.com", "Nữ", d(25, 12, 2004), "Thủ Dầu Một, Bình Dương"));
 
     /** Login history and friends of the selected user in the detail pane (same rows for every user in V1). */
     public static final List<LoginRow> USER_LOGINS = List.of(
-            new LoginRow(t(8, 11, 14, 1), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(8, 11, 8, 12), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(7, 11, 21, 30), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(7, 11, 9, 5), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(5, 11, 19, 44), "bich.tran", "Trần Thị Bích"));
+            new LoginRow(t(8, 11, 14, 1), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(8, 11, 8, 12), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(7, 11, 21, 30), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(7, 11, 9, 5), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(5, 11, 19, 44), "bich_tran", "Trần Thị Bích"));
 
     public static final List<GroupMember> USER_FRIENDS = List.of(
-            new GroupMember("VM", "Võ Minh", "minh.vo", false),
-            new GroupMember("CL", "Lê Cẩm Ly", "camly.le", false),
-            new GroupMember("ĐH", "Đỗ Hà", "ha.do", false),
-            new GroupMember("AN", "Nguyễn Văn An", "an.nguyen", false));
+            new GroupMember("VM", "Võ Minh", "minh_vo", false),
+            new GroupMember("CL", "Lê Cẩm Ly", "camly_le", false),
+            new GroupMember("ĐH", "Đỗ Hà", "ha_do", false),
+            new GroupMember("AN", "Nguyễn Văn An", "an_nguyen", false));
 
     public static final List<LoginRow> LOGINS = List.of(
-            new LoginRow(t(8, 11, 14, 1), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(8, 11, 13, 47), "an.nguyen", "Nguyễn Văn An"),
-            new LoginRow(t(8, 11, 12, 55), "ha.do", "Đỗ Hà"),
-            new LoginRow(t(8, 11, 11, 2), "minh.vo", "Võ Minh"),
-            new LoginRow(t(8, 11, 9, 15), "camly.le", "Lê Cẩm Ly"),
-            new LoginRow(t(8, 11, 8, 12), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(7, 11, 23, 1), "kevin.tran", "Kevin Trần"),
-            new LoginRow(t(7, 11, 21, 30), "bich.tran", "Trần Thị Bích"),
-            new LoginRow(t(7, 11, 20, 10), "dung.pham", "Phạm Quốc Dũng"),
-            new LoginRow(t(7, 11, 19, 58), "hoa.nguyen", "Nguyễn Thị Hoa"),
-            new LoginRow(t(7, 11, 18, 44), "an.nguyen", "Nguyễn Văn An"),
-            new LoginRow(t(7, 11, 9, 5), "bich.tran", "Trần Thị Bích"));
+            new LoginRow(t(8, 11, 14, 1), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(8, 11, 13, 47), "an_nguyen", "Nguyễn Văn An"),
+            new LoginRow(t(8, 11, 12, 55), "ha_do", "Đỗ Hà"),
+            new LoginRow(t(8, 11, 11, 2), "minh_vo", "Võ Minh"),
+            new LoginRow(t(8, 11, 9, 15), "camly_le", "Lê Cẩm Ly"),
+            new LoginRow(t(8, 11, 8, 12), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(7, 11, 23, 1), "kevin_tran", "Kevin Trần"),
+            new LoginRow(t(7, 11, 21, 30), "bich_tran", "Trần Thị Bích"),
+            new LoginRow(t(7, 11, 20, 10), "dung_pham", "Phạm Quốc Dũng"),
+            new LoginRow(t(7, 11, 19, 58), "hoa_nguyen", "Nguyễn Thị Hoa"),
+            new LoginRow(t(7, 11, 18, 44), "an_nguyen", "Nguyễn Văn An"),
+            new LoginRow(t(7, 11, 9, 5), "bich_tran", "Trần Thị Bích"));
 
     public static final List<GroupRow> GROUPS = List.of(
             new GroupRow("Đồ án Java", 4, d(2, 11, 2026), 2),
@@ -108,20 +108,20 @@ public final class SampleData {
             new GroupRow("Ôn thi cuối kỳ", 31, d(7, 11, 2026), 2));
 
     public static final List<GroupMember> GROUP_MEMBERS = List.of(
-            new GroupMember("AN", "Nguyễn Văn An", "an.nguyen", true),
-            new GroupMember("VM", "Võ Minh", "minh.vo", true),
-            new GroupMember("TB", "Trần Thị Bích", "bich.tran", false),
-            new GroupMember("ĐH", "Đỗ Hà", "ha.do", false));
+            new GroupMember("AN", "Nguyễn Văn An", "an_nguyen", true),
+            new GroupMember("VM", "Võ Minh", "minh_vo", true),
+            new GroupMember("TB", "Trần Thị Bích", "bich_tran", false),
+            new GroupMember("ĐH", "Đỗ Hà", "ha_do", false));
 
-    /** Matches USERS: kevin.tran and spam.bot99 are locked, so all their reports are RESOLVED. */
+    /** Matches USERS: kevin_tran and spam_bot99 are locked, so all their reports are RESOLVED. */
     public static final List<SpamRow> SPAM_REPORTS = List.of(
-            new SpamRow(t(8, 11, 10, 21), "kevin.tran", "Kevin Trần", "an.nguyen", "Quảng cáo, bán hàng", SpamStatus.RESOLVED),
-            new SpamRow(t(8, 11, 9, 47), "hoa.nguyen", "Nguyễn Thị Hoa", "bich.tran", "Gửi tin nhắn hàng loạt", SpamStatus.PENDING),
-            new SpamRow(t(7, 11, 22, 40), "kevin.tran", "Kevin Trần", "camly.le", "Quảng cáo, bán hàng; Lừa đảo, giả mạo", SpamStatus.RESOLVED),
-            new SpamRow(t(7, 11, 15, 5), "spam.bot99", "Khuyến Mãi 99", "minh.vo", "Quảng cáo, bán hàng; Gửi tin nhắn hàng loạt", SpamStatus.RESOLVED),
-            new SpamRow(t(6, 11, 19, 30), "spam.bot99", "Khuyến Mãi 99", "ha.do", "Lừa đảo, giả mạo", SpamStatus.RESOLVED),
-            new SpamRow(t(5, 11, 8, 12), "dung.pham", "Phạm Quốc Dũng", "thu.huynh", "Khác", SpamStatus.DISMISSED),
-            new SpamRow(t(2, 11, 11, 30), "kevin.tran", "Kevin Trần", "minh.vo", "Quấy rối, xúc phạm", SpamStatus.RESOLVED));
+            new SpamRow(t(8, 11, 10, 21), "kevin_tran", "Kevin Trần", "an_nguyen", "Quảng cáo, bán hàng", SpamStatus.RESOLVED),
+            new SpamRow(t(8, 11, 9, 47), "hoa_nguyen", "Nguyễn Thị Hoa", "bich_tran", "Gửi tin nhắn hàng loạt", SpamStatus.PENDING),
+            new SpamRow(t(7, 11, 22, 40), "kevin_tran", "Kevin Trần", "camly_le", "Quảng cáo, bán hàng; Lừa đảo, giả mạo", SpamStatus.RESOLVED),
+            new SpamRow(t(7, 11, 15, 5), "spam_bot99", "Khuyến Mãi 99", "minh_vo", "Quảng cáo, bán hàng; Gửi tin nhắn hàng loạt", SpamStatus.RESOLVED),
+            new SpamRow(t(6, 11, 19, 30), "spam_bot99", "Khuyến Mãi 99", "ha_do", "Lừa đảo, giả mạo", SpamStatus.RESOLVED),
+            new SpamRow(t(5, 11, 8, 12), "dung_pham", "Phạm Quốc Dũng", "thu_huynh", "Khác", SpamStatus.DISMISSED),
+            new SpamRow(t(2, 11, 11, 30), "kevin_tran", "Kevin Trần", "minh_vo", "Quấy rối, xúc phạm", SpamStatus.RESOLVED));
 
     /** Self-registered accounts per month (index 0 = January); null = no data yet. Same years as ACTIVE_BY_MONTH. */
     public static final Map<Integer, Integer[]> NEW_USERS_BY_MONTH = Map.of(
@@ -129,36 +129,36 @@ public final class SampleData {
             2026, new Integer[]{42, 38, 55, 61, 47, 70, 66, 58, 132, 118, 49, null});
 
     public static final List<NewUserRow> NEW_USERS = List.of(
-            new NewUserRow("hoa.nguyen", "Nguyễn Thị Hoa", "hoa.nguyen@gmail.com", t(7, 11, 19, 40)),
-            new NewUserRow("thao.le", "Lê Phương Thảo", "thao.le@gmail.com", t(6, 11, 8, 2)),
-            new NewUserRow("spam.bot99", "Khuyến Mãi 99", "km99@mail.com", t(4, 11, 2, 13)),
-            new NewUserRow("quang.ho", "Hồ Đăng Quang", "quang.ho@gmail.com", t(3, 11, 15, 27)),
-            new NewUserRow("thu.huynh", "Huỳnh Thư", "thu.huynh@gmail.com", t(2, 11, 10, 55)),
-            new NewUserRow("bao.quach", "Quách Bảo", "bao.quach@gmail.com", t(1, 11, 21, 8)));
+            new NewUserRow("hoa_nguyen", "Nguyễn Thị Hoa", "hoa.nguyen@gmail.com", t(7, 11, 19, 40)),
+            new NewUserRow("thao_le", "Lê Phương Thảo", "thao.le@gmail.com", t(6, 11, 8, 2)),
+            new NewUserRow("spam_bot99", "Khuyến Mãi 99", "km99@mail.com", t(4, 11, 2, 13)),
+            new NewUserRow("quang_ho", "Hồ Đăng Quang", "quang.ho@gmail.com", t(3, 11, 15, 27)),
+            new NewUserRow("thu_huynh", "Huỳnh Thư", "thu.huynh@gmail.com", t(2, 11, 10, 55)),
+            new NewUserRow("bao_quach", "Quách Bảo", "bao.quach@gmail.com", t(1, 11, 21, 8)));
 
-    /** bich.tran has the 4 friends of USER_FRIENDS; an.nguyen has the 7 friends shown in the user app. */
+    /** bich_tran has the 4 friends of USER_FRIENDS; an_nguyen has the 7 friends shown in the user app. */
     public static final List<FriendStatRow> FRIEND_STATS = List.of(
-            new FriendStatRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), 4, 22),
-            new FriendStatRow("an.nguyen", "Nguyễn Văn An", d(12, 9, 2026), 7, 34),
-            new FriendStatRow("minh.vo", "Võ Minh", d(14, 9, 2026), 15, 56),
-            new FriendStatRow("ha.do", "Đỗ Hà", d(20, 9, 2026), 7, 32),
-            new FriendStatRow("camly.le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 28),
-            new FriendStatRow("dung.pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 18),
-            new FriendStatRow("kevin.tran", "Kevin Trần", d(28, 10, 2026), 0, 0),
-            new FriendStatRow("thu.huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 22),
-            new FriendStatRow("khang.nguyen", "Nguyễn Khang", d(18, 9, 2026), 8, 36),
-            new FriendStatRow("hoa.nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 1, 8));
+            new FriendStatRow("bich_tran", "Trần Thị Bích", d(12, 9, 2026), 4, 22),
+            new FriendStatRow("an_nguyen", "Nguyễn Văn An", d(12, 9, 2026), 7, 34),
+            new FriendStatRow("minh_vo", "Võ Minh", d(14, 9, 2026), 15, 56),
+            new FriendStatRow("ha_do", "Đỗ Hà", d(20, 9, 2026), 7, 32),
+            new FriendStatRow("camly_le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 28),
+            new FriendStatRow("dung_pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 18),
+            new FriendStatRow("kevin_tran", "Kevin Trần", d(28, 10, 2026), 0, 0),
+            new FriendStatRow("thu_huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 22),
+            new FriendStatRow("khang_nguyen", "Nguyễn Khang", d(18, 9, 2026), 8, 36),
+            new FriendStatRow("hoa_nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 1, 8));
 
     public static final List<ActiveRow> ACTIVE_USERS = List.of(
-            new ActiveRow("bich.tran", "Trần Thị Bích", d(12, 9, 2026), 14, 6, 3),
-            new ActiveRow("an.nguyen", "Nguyễn Văn An", d(12, 9, 2026), 11, 5, 2),
-            new ActiveRow("minh.vo", "Võ Minh", d(14, 9, 2026), 9, 4, 3),
-            new ActiveRow("ha.do", "Đỗ Hà", d(20, 9, 2026), 6, 3, 2),
-            new ActiveRow("camly.le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 2, 1),
-            new ActiveRow("dung.pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 2, 0),
-            new ActiveRow("kevin.tran", "Kevin Trần", d(28, 10, 2026), 7, 12, 0),
-            new ActiveRow("thu.huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 1, 1),
-            new ActiveRow("hoa.nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 2, 1, 0));
+            new ActiveRow("bich_tran", "Trần Thị Bích", d(12, 9, 2026), 14, 6, 3),
+            new ActiveRow("an_nguyen", "Nguyễn Văn An", d(12, 9, 2026), 11, 5, 2),
+            new ActiveRow("minh_vo", "Võ Minh", d(14, 9, 2026), 9, 4, 3),
+            new ActiveRow("ha_do", "Đỗ Hà", d(20, 9, 2026), 6, 3, 2),
+            new ActiveRow("camly_le", "Lê Cẩm Ly", d(1, 10, 2026), 5, 2, 1),
+            new ActiveRow("dung_pham", "Phạm Quốc Dũng", d(5, 10, 2026), 3, 2, 0),
+            new ActiveRow("kevin_tran", "Kevin Trần", d(28, 10, 2026), 7, 12, 0),
+            new ActiveRow("thu_huynh", "Huỳnh Thư", d(2, 11, 2026), 4, 1, 1),
+            new ActiveRow("hoa_nguyen", "Nguyễn Thị Hoa", d(7, 11, 2026), 2, 1, 0));
 
     /** Distinct users who opened the app per month. */
     public static final Map<Integer, Integer[]> ACTIVE_BY_MONTH = Map.of(

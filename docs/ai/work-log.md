@@ -16,7 +16,7 @@
    ```
    - Use exactly one space on each side of every `|`. Do NOT pad or align columns.
    - `<ACTION_TYPE>` MUST be one of the types in section 2. Do NOT invent new types.
-   - `<feature-name>` MUST match the folder name in `docs/ai/` (kebab-case). For actions that belong to no feature, use `setup` (project initialization) or `global` (anything else).
+   - `<feature-name>` MUST match the feature folder name (kebab-case) in `docs/<area>/ai/` or `docs/ai/` (see rule.md Rule 6). For actions that belong to no feature, use `setup` (project initialization) or `global` (anything else).
    - `<details>` MUST be written in English, concise, and specific (file paths, error messages, reasons).
 4. **Timestamps MUST be real.** Use the real current local time in 24-hour format. If you can run commands, get it from the system (for example `date '+%d/%m/%Y %H:%M'`). If you cannot access a clock, ASK the user for the current date and time. NEVER guess or invent a timestamp.
 5. **Daily headings.** Group entries under a heading `### [DD/MM/YYYY]`. When the date changes, add a new heading at the end of the log.
@@ -55,7 +55,7 @@
 
 <!--
 [DD/MM/YYYY HH:MM] | SESSION_START | <feature-name> | <session goal>
-[DD/MM/YYYY HH:MM] | PLAN_CREATED | <feature-name> | Created docs/ai/<feature-name>/plan.md - approach: <short summary>
+[DD/MM/YYYY HH:MM] | PLAN_CREATED | <feature-name> | Created <feature-dir>/plan.md - approach: <short summary>
 [DD/MM/YYYY HH:MM] | QUESTION | <feature-name> | Asked user: <question or assumption>
 [DD/MM/YYYY HH:MM] | PLAN_APPROVED | <feature-name> | User approved the plan
 [DD/MM/YYYY HH:MM] | CODE_START | <feature-name> | Started implementing <class/module>
@@ -67,7 +67,7 @@
 [DD/MM/YYYY HH:MM] | PLAN_UPDATED | <feature-name> | Approach changed because: <reason>. Iteration 2
 [DD/MM/YYYY HH:MM] | CODE_DONE | <feature-name> | Implementation finished
 [DD/MM/YYYY HH:MM] | VERIFIED | <feature-name> | Checked <criterion> by <method> - result: <pass/fail>
-[DD/MM/YYYY HH:MM] | DOC_CREATED | <feature-name> | Created docs/ai/<feature-name>/<feature-name>.md
+[DD/MM/YYYY HH:MM] | DOC_CREATED | <feature-name> | Created <feature-dir>/<feature-name>.md
 [DD/MM/YYYY HH:MM] | COMMIT_REMINDER | <feature-name> | Reminded user: feat(<feature-name>): <message>
 [DD/MM/YYYY HH:MM] | SESSION_END | <feature-name> | <summary of session result>
 -->
@@ -392,6 +392,62 @@ Trang
 [19/11/2026 14:03] | COMMIT_REMINDER | database-schema | Minh requested separate commit message: feat(database-schema): redesign PostgreSQL schema for approved decisions; include plan/feature/work-log. No commit/push/merge/reset performed.
 [19/11/2026 14:03] | SESSION_END | database-schema | Final review and four-document handoff complete; feature remains IN_PROGRESS with required V2/V4-V9 acceptance incomplete. Prior new-model A48/B40/C11 PASS retained with bounded claims, D NOT RUN; no new DDL decision required. SQL/application/external sources/Word/previous logs/approval history/Git state preserved; no runtime rerun.
 
+### [20/11/2026]
+[20/11/2026 19:03] | SESSION_START | ui-username-group-size | Align screens with DB username rule ^[A-Za-z0-9_]{3,30}$ (case-insensitive) and group minimum of 3 people including creator
+[20/11/2026 19:03] | PLAN_CREATED | ui-username-group-size | Created docs/ai/ui-username-group-size/plan.md - rename dotted sample usernames to _, fix S02/S11a hints, D01 minPicked 3->2
+[20/11/2026 19:03] | QUESTION | ui-username-group-size | Asked user: "tối đa 3 người tính cả admin" vs DB "at least 3 including creator"; plan assumes minimum
+[20/11/2026 19:08] | PLAN_APPROVED | ui-username-group-size | User approved the plan; answered Q1: minimum 3 people including creator (creator + 2), no maximum, D04 stays >= 1
+[20/11/2026 19:08] | CODE_START | ui-username-group-size | Started renaming sample usernames and fixing hints/D01 minimum
+[20/11/2026 19:08] | FILE_MODIFIED | ui-username-group-size | src/user/.../sample/SampleData.java, src/admin/.../sample/SampleData.java - usernames '.' -> '_' (emails unchanged); user GROUP_PICKED reduced to 2 people
+[20/11/2026 19:08] | FILE_MODIFIED | ui-username-group-size | LoginView.fxml, RegisterView.fxml, ProfileView.fxml, ChatView.fxml, ResetPasswordDialog.fxml - username texts '.' -> '_'
+[20/11/2026 19:08] | BUG_FOUND | ui-username-group-size | Dotted-username sed also changed an.nguyen@gmail.com in ProfileView.fxml and RegisterView.fxml
+[20/11/2026 19:08] | BUG_FIXED | ui-username-group-size | Restored both emails to an.nguyen@gmail.com
+[20/11/2026 19:09] | PLAN_UPDATED | ui-username-group-size | Iteration 1: verification grep found kevin.tran in ReportSpamDialog.fxml and dotted names in two admin SampleData comments; S11a hint needs wrapText in UserFormDialog.fxml
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | RegisterView.fxml - hint: letters, digits and _ only, case-insensitive; ReportSpamDialog.fxml - kevin_tran
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | UserFormController.java - usernameHint shows the rule in add mode and "Không đổi được." in edit mode; UserFormDialog.fxml - wrapText on usernameHint
+[20/11/2026 19:09] | FILE_MODIFIED | ui-username-group-size | CreateGroupController.java - MemberPicker minimum 3 -> 2; CreateGroupDialog.fxml - subtitle "ít nhất 3 người, tính cả bạn"; NavigationTest.java - D31 comment
+[20/11/2026 19:09] | DECISION | ui-username-group-size | Hint says usernames are not case-sensitive because uniqueness/login use lower(username) (users_username_ci_uidx); supersedes old F-01 wording
+[20/11/2026 19:10] | CODE_DONE | ui-username-group-size | Implementation finished
+[20/11/2026 19:10] | VERIFIED | ui-username-group-size | ./mvnw -B -q test: user 29/29, admin 23/23 PASS (criteria 3, 4)
+[20/11/2026 19:10] | VERIFIED | ui-username-group-size | Grep of sample record usernames and FXML: none outside ^[A-Za-z0-9_]{3,30}$ (criterion 1 PASS); 20 screenshots regenerated, S02/S11a/S11b/D01/D02 reviewed (criterion 2 PASS)
+[20/11/2026 19:10] | NOTE | ui-username-group-size | docs/ai/ui-align-decisions plan/feature docs still say D31 creator + 3; historical docs left unchanged
+[20/11/2026 19:11] | DOC_CREATED | ui-username-group-size | Created docs/ai/ui-username-group-size/ui-username-group-size.md
+[20/11/2026 19:11] | COMMIT_REMINDER | ui-username-group-size | Reminded user: feat(ui-username-group-size): align usernames and group minimum with DB rules
+[20/11/2026 19:11] | SESSION_END | ui-username-group-size | Done: usernames follow DB regex on all screens, hints state the rule, D01 needs creator + 2; tests and screenshots updated; no commit made
+
+[20/11/2026 19:18] | SESSION_START | docs-db-rule-sync | Sync docs with DB username/group-size rules and restructure docs/ into frontend/backend/database
+[20/11/2026 19:18] | PLAN_CREATED | docs-db-rule-sync | Created docs/ai/docs-db-rule-sync/plan.md - update use-case BR-01/BR-09/M19/UC-22 and add superseded notes to historical feature docs
+[20/11/2026 19:18] | PLAN_CREATED | docs-restructure | Created docs/ai/docs-restructure/plan.md - git mv screens->frontend, reports/research_notes->database, brief->general, add backend; update links and ScreenshotTool path
+[20/11/2026 19:18] | QUESTION | docs-restructure | Asked user: rule.md Rule 6 requires docs/ai; keep docs/ai or split feature folders by layer (rule change)? Where do general docs go?
+[20/11/2026 19:18] | QUESTION | docs-db-rule-sync | Asked user: "các điểm khác liên quan" = only username/group-size rules, or full use-case sync with all DB decisions?
+[20/11/2026 19:24] | PLAN_APPROVED | docs-db-rule-sync | User approved; Q1 answered: only username + group-size rules; AI to commit each feature (no push)
+[20/11/2026 19:24] | PLAN_APPROVED | docs-restructure | User approved; Q1: split feature folders into docs/<area>/ai and update rule.md; Q2: course brief stays at docs root
+[20/11/2026 19:24] | COMMIT_REMINDER | ui-username-group-size | At user's request AI committed 3039631 feat(ui-username-group-size): align usernames and group minimum with DB rules (branch fix_FE_v2, not pushed; target/ files left unstaged)
+[20/11/2026 19:24] | CODE_START | docs-db-rule-sync | Started documentation sync
+[20/11/2026 19:24] | FILE_MODIFIED | docs-db-rule-sync | docs/ai/requirements-analysis/use-case-specification.md - BR-01 3-30 [A-Za-z0-9_] case-insensitive; BR-09/M19 >=3 incl. creator; UC-22 step 4 >=2 others
+[20/11/2026 19:24] | FILE_MODIFIED | docs-db-rule-sync | ui-align-decisions plan.md/ui-align-decisions.md - superseded notes on D8/D31; database-schema.md - resolved note on CreateGroupController handoff; ui-username-group-size.md - removed stale known issue
+[20/11/2026 19:24] | VERIFIED | docs-db-rule-sync | grep: no old username/group rule in use-case spec; every remaining old-rule mention outside work-log/reports/research_notes is annotated - criteria 1-2 PASS
+[20/11/2026 19:24] | NOTE | docs-db-rule-sync | Use-case spec still differs from DB on E2EE option, admin-only rename, closure, D38, activity; left unchanged per user's scope choice
+[20/11/2026 19:24] | CODE_DONE | docs-db-rule-sync | Implementation finished
+[20/11/2026 19:24] | DOC_CREATED | docs-db-rule-sync | Created docs/ai/docs-db-rule-sync/docs-db-rule-sync.md
+[20/11/2026 19:24] | COMMIT_REMINDER | docs-db-rule-sync | AI commits at user's request: feat(docs-db-rule-sync): sync username and group-size rules in docs
+[20/11/2026 19:28] | COMMIT_REMINDER | docs-db-rule-sync | At user's request AI committed 2c6d73b feat(docs-db-rule-sync): sync username and group-size rules in docs (not pushed)
+[20/11/2026 19:28] | CODE_START | docs-restructure | Started moving docs folders
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | git mv docs/screens -> docs/frontend/screens; docs/ai/ui-user-screens, ui-admin-screens, ui-align-decisions, ui-username-group-size -> docs/frontend/ai/; docs/ai/database-schema -> docs/database/ai/; docs/reports, docs/research_notes -> docs/database/
+[20/11/2026 19:28] | FILE_CREATED | docs-restructure | docs/backend/.gitkeep
+[20/11/2026 19:28] | BUG_FOUND | docs-restructure | First link rewrite dropped the './' prefix of unchanged links (e.g. ./plan.md -> plan.md) and the path-rename pass also rewrote the 'Current' column of docs-restructure/plan.md
+[20/11/2026 19:28] | BUG_FIXED | docs-restructure | Restored moved md contents from the index, kept links whose target is unchanged, re-ran; restored plan old-path column by hand and removed a duplicated '| MOVE |' cell
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | 20 markdown files - relative links recomputed and docs/... mentions renamed; research_notes user_tai_khoan.md 3 workspace-style links renamed by hand
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | .agent/rules/rule.md - <feature-dir> rule (docs/<area>/ai/<feature> or docs/ai/<feature>), Rule 6 tree, templates/ -> _template/; _template/*.md copy-to paths; work-log header rule 3 and template entries
+[20/11/2026 19:28] | DECISION | docs-restructure | Fixed rule.md 'docs/ai/templates/' -> 'docs/ai/_template/' (NOTE 08/11/2026) since those lines were rewritten for the new layout
+[20/11/2026 19:28] | FILE_MODIFIED | docs-restructure | README.md docs/ tree; user/admin ScreenshotTool.java default output ../../docs/frontend/screens/<app>
+[20/11/2026 19:28] | VERIFIED | docs-restructure | Link check: no new broken links (459 pre-existing workspace-style links in 2 research notes unchanged); stale-path grep clean outside old log entries and the plan; mvnw test user 29/29 admin 23/23; ScreenshotTool writes byte-identical PNGs to docs/frontend/screens - criteria 1-4 PASS
+[20/11/2026 19:28] | NOTE | docs-restructure | README/rule.md still list script/create_db.sql (real: schema.sql, seed.sql, queries.sql); left unchanged, already in database-schema handoff
+[20/11/2026 19:28] | CODE_DONE | docs-restructure | Implementation finished
+[20/11/2026 19:28] | DOC_CREATED | docs-restructure | Created docs/ai/docs-restructure/docs-restructure.md
+[20/11/2026 19:28] | COMMIT_REMINDER | docs-restructure | AI commits at user's request: feat(docs-restructure): split docs into frontend, backend and database
+[20/11/2026 19:28] | SESSION_END | docs-restructure | Three features committed (ui-username-group-size, docs-db-rule-sync, docs-restructure); nothing pushed; target/ build outputs left unstaged
+
 <!-- APPEND NEW ENTRIES -->
 
 ---
@@ -431,5 +487,8 @@ Trang
 | group-e2ee-database | ⬜ | ✅ | ⬜ | ⬜ | ⬜ |
 | ui-align-decisions | ✅ | ✅ | ✅ | ✅ | ⬜ |
 | database-schema | ✅ | ✅ | 🔄 | ✅ | ⬜ |
+| ui-username-group-size | ✅ | ✅ | ✅ | ✅ | ✅ |
+| docs-db-rule-sync | ✅ | ✅ | ✅ | ✅ | ✅ |
+| docs-restructure | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 **database-schema current phase:** IN_PROGRESS after final documentation review; approved SQL/test sources unchanged. Recorded new-model execution on jcs_schema_test_20261119_120407_2ed14e (PostgreSQL17.11) has A48/B40/C11 SQL simulations PASS and unchanged rollback fingerprint; not rerun in review. Required V2/V4-V9 boundary/writer/committed-race acceptance remains incomplete; downstream D application/E2EE NOT RUN. Decision coverage and README/use-case/UI handoff documented. Plan/Code/Doc complete; Verified in progress; Committed unconfirmed by user despite visible Git history.

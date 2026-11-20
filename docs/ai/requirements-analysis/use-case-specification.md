@@ -44,7 +44,7 @@
 | M16 | U11g "tìm với tất cả mọi người" | Có gồm tin nhóm? | Gồm chat 1-1 **và** chat nhóm (nhóm mã hóa: tìm ở client). |
 | M17 | U11h LLM | Nhà cung cấp? "chỉnh" và "gợi ý" là gì? Gửi bao nhiêu ngữ cảnh? | 2 chức năng: **Chỉnh câu** (sửa chính tả/giọng văn cho bản nháp) và **Gợi ý trả lời** (3 câu, dựa trên ≤10 tin gần nhất). Không bao giờ tự gửi — người dùng phải chọn. API key ở server. |
 | M18 | U12 quyền trong nhóm | Chỉ nói "xóa thành viên: chỉ admin". Đổi tên, thêm thành viên, gán admin thì ai? | Mọi thành viên: chat, đổi tên, thêm thành viên. Chỉ admin: gán/thu hồi admin, xóa thành viên. Nhóm luôn có ≥1 admin. |
-| M19 | U12a "thêm tối thiểu 1 tên đăng nhập" | Thêm người lạ được không? Người đã chặn mình? | Thêm bất kỳ người dùng hoạt động nào, trừ người có quan hệ chặn với người tạo. Nhóm tạo ra có ≥2 thành viên. |
+| M19 | U12a "thêm tối thiểu 1 tên đăng nhập" | Thêm người lạ được không? Người đã chặn mình? | Thêm bất kỳ người dùng hoạt động nào, trừ người có quan hệ chặn với người tạo. Nhóm tạo ra có ≥3 thành viên tính cả người tạo (người tạo + ≥2 người khác, theo CSDL). |
 | M20 | Rời nhóm / giải tán nhóm | Không có trong yêu cầu. | **Không làm** (ngoài phạm vi), ghi vào "chức năng làm thêm" nếu còn thời gian. |
 | M21 | U3 reset mật khẩu | Ai cũng có thể reset mật khẩu người khác nếu chỉ cần tên đăng nhập. | Yêu cầu nhập **tên đăng nhập + email khớp**. Mật khẩu ngẫu nhiên 10 ký tự; khuyến nghị đổi sau khi đăng nhập. |
 | M22 | Tài khoản bị khóa đang online | Không nói. | Server ngắt kết nối ngay, client hiện thông báo "Tài khoản đã bị khóa". |
@@ -209,7 +209,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 
 | ID | Quy tắc |
 |---|---|
-| BR-01 | Tên đăng nhập 4–30 ký tự `[a-z0-9_.]`, duy nhất, **không đổi được** sau khi tạo. |
+| BR-01 | Tên đăng nhập 3–30 ký tự `[A-Za-z0-9_]` (chữ cái không dấu, số, dấu `_`), duy nhất **không phân biệt hoa/thường** (đăng nhập cũng không phân biệt), **không đổi được** sau khi tạo. |
 | BR-02 | Email đúng định dạng, duy nhất trong hệ thống. |
 | BR-03 | Mật khẩu ≥ 8 ký tự, có cả chữ và số; lưu bằng BCrypt. |
 | BR-04 | Tài khoản bị khóa hoặc đã xóa không đăng nhập được; nếu đang online thì bị ngắt kết nối ngay. |
@@ -217,7 +217,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
 | BR-06 | Quan hệ chặn A→B: xóa quan hệ bạn bè và lời mời chờ giữa A–B; cấm nhắn tin 1-1 hai chiều; B không tìm thấy A; B không gửi được lời mời cho A. Chỉ A bỏ chặn được. |
 | BR-07 | Chat 1-1 không yêu cầu là bạn bè (trừ khi có quan hệ chặn). |
 | BR-08 | Xóa tin nhắn / lịch sử chỉ ẩn ở phía người thực hiện. |
-| BR-09 | Nhóm khi tạo có ≥ 2 thành viên; người tạo là admin đầu tiên; nhóm luôn có ≥ 1 admin. |
+| BR-09 | Nhóm khi tạo có ≥ 3 thành viên tính cả người tạo (người tạo + ≥ 2 người khác); người tạo là admin đầu tiên; nhóm luôn có ≥ 1 admin. |
 | BR-10 | Thành viên: chat, đổi tên nhóm, thêm thành viên. Admin nhóm: thêm quyền gán/thu hồi admin, xóa thành viên. |
 | BR-11 | Chỉ báo cáo spam người đã gửi ≥1 tin 1-1 cho mình; mỗi cặp (người báo cáo, người bị báo cáo) có tối đa 1 báo cáo "Chờ xử lý". |
 | BR-12 | Xóa người dùng là xóa mềm (M2). |
@@ -393,7 +393,7 @@ Tất cả 38 mục (A1–A9c, U1–U12g) đều có use case tương ứng. UC-
   1. Người dùng bấm "Nhóm mới" (hoặc chọn nhiều bạn online → "Tạo nhóm").
   2. Nhập tên nhóm; tìm và thêm thành viên theo tên đăng nhập/họ tên (chip có nút ×).
   3. Tùy chọn bật "Mã hóa tin nhắn" (không thể tắt sau khi tạo).
-  4. Bấm "Tạo nhóm" (chỉ bật khi đã có ≥1 thành viên khác và có tên).
+  4. Bấm "Tạo nhóm" (chỉ bật khi đã có ≥2 thành viên khác, tức ≥3 người tính cả người tạo (BR-09), và có tên).
   5. Hệ thống tạo nhóm, người tạo là admin (BR-09), thêm thành viên; thành viên online thấy nhóm mới realtime.
 - **Ngoại lệ:** Tên đăng nhập không tồn tại / có quan hệ chặn → không cho thêm vào chip (M19). Tên nhóm rỗng → dùng tên ghép các thành viên.
 

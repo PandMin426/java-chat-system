@@ -117,48 +117,47 @@ public final class SampleData {
 
     /** Only online/offline is known: no last-seen time is stored. */
     public static final List<Person> FRIENDS = List.of(
-            new Person("TB", "Trần Thị Bích", "bich.tran", "Đang online", true),
-            new Person("CL", "Lê Cẩm Ly", "camly.le", "Đang online", true),
-            new Person("VM", "Võ Minh", "minh.vo", "Đang online", true),
-            new Person("ĐH", "Đỗ Hà", "ha.do", "Đang online", true),
-            new Person("PD", "Phạm Quốc Dũng", "dung.pham", "Offline", false),
-            new Person("NK", "Nguyễn Khang", "khang.nguyen", "Offline", false),
-            new Person("HT", "Huỳnh Thư", "thu.huynh", "Offline", false));
+            new Person("TB", "Trần Thị Bích", "bich_tran", "Đang online", true),
+            new Person("CL", "Lê Cẩm Ly", "camly_le", "Đang online", true),
+            new Person("VM", "Võ Minh", "minh_vo", "Đang online", true),
+            new Person("ĐH", "Đỗ Hà", "ha_do", "Đang online", true),
+            new Person("PD", "Phạm Quốc Dũng", "dung_pham", "Offline", false),
+            new Person("NK", "Nguyễn Khang", "khang_nguyen", "Offline", false),
+            new Person("HT", "Huỳnh Thư", "thu_huynh", "Offline", false));
 
     public static final List<Person> FRIEND_REQUESTS = List.of(
-            new Person("LP", "Lâm Phong", "phong.lam", "Gửi lúc 14:02 hôm nay", false),
-            new Person("MT", "Mai Trâm", "tram.mai", "Gửi lúc 09:40 hôm nay", false),
-            new Person("QB", "Quách Bảo", "bao.quach", "Gửi ngày 06/11", false));
+            new Person("LP", "Lâm Phong", "phong_lam", "Gửi lúc 14:02 hôm nay", false),
+            new Person("MT", "Mai Trâm", "tram_mai", "Gửi lúc 09:40 hôm nay", false),
+            new Person("QB", "Quách Bảo", "bao_quach", "Gửi ngày 06/11", false));
 
     public static final List<Person> BLOCKED = List.of(
-            new Person("KT", "Kevin Trần", "kevin.tran", "Hai bên không nhắn tin 1-1 được với nhau", false));
+            new Person("KT", "Kevin Trần", "kevin_tran", "Hai bên không nhắn tin 1-1 được với nhau", false));
 
     /** Results for "nguyễn": full names match case-insensitively but with accents, usernames match exactly. */
     public static final List<SearchUser> SEARCH_USERS = List.of(
-            new SearchUser("NH", "Nguyễn Thị Hoa", "hoa.nguyen", " · 2 bạn chung", Relation.NONE),
-            new SearchUser("NT", "Nguyễn Minh Tuấn", "tuan.nguyen", "", Relation.SENT),
-            new SearchUser("NL", "Nguyễn Gia Linh", "linh.ng", " · đã gửi lời mời cho bạn", Relation.INCOMING),
-            new SearchUser("NK", "Nguyễn Khang", "khang.nguyen", "", Relation.FRIEND));
+            new SearchUser("NH", "Nguyễn Thị Hoa", "hoa_nguyen", " · 2 bạn chung", Relation.NONE),
+            new SearchUser("NT", "Nguyễn Minh Tuấn", "tuan_nguyen", "", Relation.SENT),
+            new SearchUser("NL", "Nguyễn Gia Linh", "linh_ng", " · đã gửi lời mời cho bạn", Relation.INCOMING),
+            new SearchUser("NK", "Nguyễn Khang", "khang_nguyen", "", Relation.FRIEND));
 
-    /** Members already picked in the create-group dialog (at least 3 besides the creator, D31), then suggestions for "h". */
+    /** Members already picked in the create-group dialog (at least 2 besides the creator, D31), then suggestions for "h". */
     public static final List<Person> GROUP_PICKED = List.of(
-            new Person("VM", "Võ Minh", "minh.vo", "", true),
-            new Person("TB", "Trần Thị Bích", "bich.tran", "", true),
-            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false));
+            new Person("VM", "Võ Minh", "minh_vo", "", true),
+            new Person("TB", "Trần Thị Bích", "bich_tran", "", true));
 
     public static final List<Person> GROUP_SUGGESTIONS = List.of(
-            new Person("ĐH", "Đỗ Hà", "ha.do", "Đang online", true),
-            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false),
-            new Person("NH", "Nguyễn Thị Hoa", "hoa.nguyen", "Chưa là bạn", false));
+            new Person("ĐH", "Đỗ Hà", "ha_do", "Đang online", true),
+            new Person("HT", "Huỳnh Thư", "thu_huynh", "", false),
+            new Person("NH", "Nguyễn Thị Hoa", "hoa_nguyen", "Chưa là bạn", false));
 
     /** D04: anyone not in "Đồ án Java" yet and not blocked with you, friend or not (D20); members are never offered. */
     public static final List<Person> ADD_MEMBER_PICKED = List.of(
-            new Person("CL", "Lê Cẩm Ly", "camly.le", "Đang online", true));
+            new Person("CL", "Lê Cẩm Ly", "camly_le", "Đang online", true));
 
     public static final List<Person> ADD_MEMBER_SUGGESTIONS = List.of(
-            new Person("CL", "Lê Cẩm Ly", "camly.le", "Đang online", true),
-            new Person("PD", "Phạm Quốc Dũng", "dung.pham", "", false),
-            new Person("NK", "Nguyễn Khang", "khang.nguyen", "", false),
-            new Person("HT", "Huỳnh Thư", "thu.huynh", "", false),
-            new Person("NH", "Nguyễn Thị Hoa", "hoa.nguyen", "Chưa là bạn", false));
+            new Person("CL", "Lê Cẩm Ly", "camly_le", "Đang online", true),
+            new Person("PD", "Phạm Quốc Dũng", "dung_pham", "", false),
+            new Person("NK", "Nguyễn Khang", "khang_nguyen", "", false),
+            new Person("HT", "Huỳnh Thư", "thu_huynh", "", false),
+            new Person("NH", "Nguyễn Thị Hoa", "hoa_nguyen", "Chưa là bạn", false));
 }

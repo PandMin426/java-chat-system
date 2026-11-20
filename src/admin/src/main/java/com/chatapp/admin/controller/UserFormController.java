@@ -46,8 +46,8 @@ public class UserFormController {
         titleLabel.setText(edit ? "Sửa thông tin người dùng" : "Thêm người dùng");
         saveButton.setText(edit ? "Lưu thay đổi" : "Tạo tài khoản");
         usernameField.setDisable(edit);
-        usernameHint.setVisible(edit);
-        usernameHint.setManaged(edit);
+        usernameHint.setText(edit ? "Không đổi được."
+                : "3–30 ký tự: chữ cái không dấu, số và dấu _. Không phân biệt chữ hoa/thường, không đổi được về sau.");
         passwordRow.setVisible(!edit);
         passwordRow.setManaged(!edit);
         if (edit) {

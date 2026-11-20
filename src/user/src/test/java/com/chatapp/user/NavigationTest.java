@@ -122,7 +122,7 @@ class NavigationTest {
         assertDialog("Xóa khỏi nhóm?");
     }
 
-    /** D31: the creator plus at least 3 people; the sample has exactly 3 picked. */
+    /** D31: at least 3 people including the creator; the sample has exactly 2 others picked. */
     @Test
     void createGroupNeedsThreeMembers() throws Exception {
         click("Đăng nhập");

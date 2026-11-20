@@ -2,7 +2,7 @@
 
 <!--
 TEMPLATE INSTRUCTIONS (the AI MUST delete this comment and every other HTML comment in the real plan.md):
-1. Copy this file to docs/ai/<feature-name>/plan.md. Never edit the template itself.
+1. Copy this file to <feature-dir>/plan.md (docs/<area>/ai/<feature-name>/ with area = frontend, backend or database; docs/ai/<feature-name>/ for a cross-cutting feature; see rule.md Rule 6). Never edit the template itself.
 2. Replace EVERY <placeholder>. Never leave "...", "<...>", or example text in the real plan.md.
 3. Never leave a section empty. If a section does not apply, write "N/A - <reason>".
 4. Use the real current date (get it from the system, or ask the user). Never guess it.
@@ -94,7 +94,7 @@ This list is the boundary of the change (Rule 11). To touch a file that is not l
 |---|---|---|
 | CREATE | `src/.../<ClassName>.java` | <what the class does> |
 | MODIFY | `src/.../<ExistingClass>.java` | <exactly what is added or changed> |
-| CREATE | `docs/ai/<feature-name>/<feature-name>.md` | Feature description document (Rule 2) |
+| CREATE | `<feature-dir>/<feature-name>.md` | Feature description document (Rule 2) |
 | MODIFY | `docs/ai/work-log.md` | Log entries and progress tracker (Rule 3) |
 
 ---

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 /**
  * Saves a PNG of every admin screen for the V1 report. Not part of the normal test run; start it with
- * {@code .\mvnw.cmd -pl src/admin test -Dtest=ScreenshotTool}. Output: {@code docs/screens/admin/}.
+ * {@code .\mvnw.cmd -pl src/admin test -Dtest=ScreenshotTool}. Output: {@code docs/frontend/screens/admin/}.
  */
 class ScreenshotTool {
 
@@ -28,7 +28,7 @@ class ScreenshotTool {
 
     @Test
     void saveAllScreens() throws Exception {
-        Path out = Path.of(System.getProperty("screens.dir", "../../docs/screens/admin"));
+        Path out = Path.of(System.getProperty("screens.dir", "../../docs/frontend/screens/admin"));
         Files.createDirectories(out);
         double w = AdminNavigator.WIDTH;
         double h = AdminNavigator.HEIGHT;

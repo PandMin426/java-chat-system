@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 /**
  * Saves a PNG of every user screen for the V1 report. Not part of the normal test run; start it with
- * {@code .\mvnw.cmd -pl src/user test -Dtest=ScreenshotTool}. Output: {@code docs/screens/user/}.
+ * {@code .\mvnw.cmd -pl src/user test -Dtest=ScreenshotTool}. Output: {@code docs/frontend/screens/user/}.
  */
 class ScreenshotTool {
 
@@ -31,7 +31,7 @@ class ScreenshotTool {
 
     @Test
     void saveAllScreens() throws Exception {
-        Path out = Path.of(System.getProperty("screens.dir", "../../docs/screens/user"));
+        Path out = Path.of(System.getProperty("screens.dir", "../../docs/frontend/screens/user"));
         Files.createDirectories(out);
 
         Map<String, Supplier<Parent>> windows = new LinkedHashMap<>();

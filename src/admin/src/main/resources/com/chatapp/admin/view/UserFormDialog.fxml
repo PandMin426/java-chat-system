@@ -25,7 +25,7 @@
         <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <Label text="Tên đăng nhập *" styleClass="small,strong"/>
             <TextField fx:id="usernameField" styleClass="mono"/>
-            <Label fx:id="usernameHint" text="Không đổi được." styleClass="hint"/>
+            <Label fx:id="usernameHint" text="Không đổi được." styleClass="hint" wrapText="true"/>
         </VBox>
         <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <Label text="Họ tên *" styleClass="small,strong"/>

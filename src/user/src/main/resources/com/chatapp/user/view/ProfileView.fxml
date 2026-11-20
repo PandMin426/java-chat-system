@@ -26,7 +26,7 @@
                 <Label text="AN" styleClass="avatar,lg"/>
                 <VBox spacing="4">
                     <Label text="Nguyễn Văn An" styleClass="h1"/>
-                    <Label text="an.nguyen · tham gia 12/09/2026" styleClass="small,muted"/>
+                    <Label text="an_nguyen · tham gia 12/09/2026" styleClass="small,muted"/>
                 </VBox>
             </HBox>
             <VBox styleClass="card">
@@ -41,7 +41,7 @@
                                 </columnConstraints>
                                 <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                     <Label text="Tên đăng nhập" styleClass="small,strong"/>
-                                    <TextField text="an.nguyen" disable="true" styleClass="mono"/>
+                                    <TextField text="an_nguyen" disable="true" styleClass="mono"/>
                                     <Label text="Không đổi được." styleClass="hint"/>
                                 </VBox>
                                 <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">

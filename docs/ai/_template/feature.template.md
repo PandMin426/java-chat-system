@@ -2,7 +2,7 @@
 
 <!--
 TEMPLATE INSTRUCTIONS (the AI MUST delete this comment and every other HTML comment in the real feature doc):
-1. Copy this file to docs/ai/<feature-name>/<feature-name>.md. Never edit the template itself.
+1. Copy this file to <feature-dir>/<feature-name>.md (the same folder as its plan.md; see rule.md Rule 6). Never edit the template itself.
 2. Create it right after the feature is finished (Rule 2), BEFORE reporting "done".
 3. Describe ONLY what was actually implemented. Do not copy from plan.md. Compare against the real code and files first.
 4. Replace EVERY <placeholder>. Never leave "...", "<...>", or example text in the real document.

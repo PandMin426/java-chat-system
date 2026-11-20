@@ -12,7 +12,7 @@
       fx:controller="com.chatapp.user.controller.ReportSpamController" styleClass="dialog-root" prefWidth="460">
     <VBox styleClass="dialog-head">
         <Label text="Báo cáo spam" styleClass="h2"/>
-        <Label text="Báo cáo kevin.tran tới quản trị viên. Người này không được thông báo."
+        <Label text="Báo cáo kevin_tran tới quản trị viên. Người này không được thông báo."
                styleClass="small,muted" wrapText="true"/>
     </VBox>
     <VBox styleClass="dialog-body">
