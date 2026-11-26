@@ -1,7 +1,7 @@
 # 🗺️ ROADMAP ĐỒ ÁN CUỐI KỲ — HỆ THỐNG CHAT JAVA
 > **Môn:** Lập trình ứng dụng Java | **Nhóm:** 2 người: TM1 = Minh (CSDL + Backend), TM2 = Trang (Frontend + AdminApp)
 > **V1 (20%):** ✅ đã nộp 22/11 | **Hoàn thành toàn bộ V2:** **10/12** | **Nộp V2 (80%):** 12/12 (T7)
-> *Cập nhật lần cuối: 26/11/2026 (bản 3: sau review PM, đối chiếu repo `main` @ `f415ecc`). Bản này thay toàn bộ phần Phase 2 cũ.*
+> *Cập nhật lần cuối: 26/11/2026 (bản 3: sau review PM, đối chiếu repo `main` @ `f415ecc`; bản 3.1: Timeline viết lại theo tính năng). Bản này thay toàn bộ phần Phase 2 cũ.*
 
 **Mục lục:** [Thay đổi](#-thay-đổi-so-với-roadmap-cũ) · [Kiến trúc](#️-kiến-trúc-chốt) · [**Cấu hình project — code ở đâu**](#-cấu-hình-project--code-ở-đâu) · [Phân công](#-phân-công-phase-2) · [Quyết định cần chốt](#-quyết-định-cần-chốt) · [Hợp đồng tích hợp](#-hợp-đồng-tích-hợp) · [Timeline](#️-timeline-phase-2-2611--1012) · [Definition of Done](#-definition-of-done) · [Kịch bản demo](#-kịch-bản-demo-chuẩn-k1k8) · [Cắt giảm](#️-cắt-giảm-khi-trễ) · [File nộp](#-cấu-trúc-file-nộp-v2-checklist) · [AI docs](#-ai-documentation-theo-feature) · [Risk](#️-risk--mitigation) · [Tracking](#-tracking-v2)
 
@@ -356,46 +356,235 @@ Quy ước dòng: UTF-8, mỗi message 1 dòng kết thúc `\n`, `reqId` là s�
 
 > Bản 3 đổi so với bản trước: ngày 26/11 nhẹ đi (bỏ entity JPA, protocol chia đợt); DAO admin sang TM2; **E2EE phía server làm sớm từ 04/12** và quyết định có dùng phương án dự phòng vào **trưa 06/12**; có buffer nửa ngày; báo cáo viết dần từ 07/12. Tính tới 26/11, repo chưa có code V2 (chưa có `src/server`, chưa có `protocol.md`).
 
+> 📖 **Cách đọc timeline:** mỗi sprint có 1 **bảng tổng quan** (hôm đó mỗi người làm tính năng gì, cuối ngày phải chạy được gì) và phần **chi tiết từng ngày** (danh sách việc cụ thể). Mỗi việc ghi theo dạng *làm gì → người dùng thấy gì*; phần trong ngoặc ở cuối dòng (`LỆNH`, `File`, SDx, Dx, Qx) chỉ để tra kỹ thuật, file nằm ở đâu thì xem mục [Cấu hình project](#-cấu-hình-project--code-ở-đâu). Tên nhánh (`auth-server`…) trùng tên feature trong bảng [Tracking](#-tracking-v2).
+
 ### Sprint 2.A — Nền tảng + Tài khoản + Bạn bè + Chat 1-1 (26/11 – 30/11)
 
-| Ngày | 🔵 TM1 (Minh) | 🟠 TM2 (Trang) |
-|---|---|---|
-| **26/11** (T5) | *Chung:* chốt Q1–Q3, `protocol.md` đợt 1. Parent POM + module `src/server` (ServerApp, ChatServer nhận kết nối, Dispatcher, ClientSession), `config.example.properties`, `.gitignore`, gói `common/protocol` (Request/Response/Push, ErrorCode, JsonCodec). Server kết nối được DB (`SELECT 1`). Chạy thử mục 7 | *Chung:* `protocol.md` đợt 1. `common/config/AppConfig`, JavaFX `optional` trong `common`. `user/net`: `ServerConnection`, `TcpServerConnection`, `MockServerConnection`, `AppSession`. Chạy lại mục 7 trên máy mình |
-| **27/11** (T6) | `REGISTER`, `LOGIN`, `LOGOUT` (BCrypt qua `Passwords`, tên đăng nhập không phân biệt hoa/thường, từ chối LOCKED/đã xóa, ghi `login_history` kèm snapshot), `SessionRegistry` 1 phiên/tài khoản + `FORCE_LOGOUT`. `TestClient`. `demo_data.sql` tối thiểu — **SD1, SD2** | S01, S02, cửa sổ chính, `AuthApi`. Xử lý `FORCE_LOGOUT`, mất kết nối |
-| **28/11** (T7) | Bạn bè: `GET_FRIENDS`, `SEARCH_USERS` (Q08, D18), `FRIEND_REQUEST_SEND/RESPOND`, `GET_FRIEND_REQUESTS`, `FRIEND_REMOVE`, `BLOCK_USER` (hủy kết bạn + hủy lời mời + cấm chat 1-1 hai chiều, 1 transaction), `UNBLOCK_USER`, `GET_BLOCKED`. Push `FRIEND_STATUS`, `FRIEND_REQUEST_NEW`, `FRIEND_LIST_CHANGED` — **SD4, SD5** | S06 (Tất cả / Đang online với chấm xanh realtime / Lời mời / Đã chặn + Bỏ chặn), S07, D05 |
-| **29/11** (CN) | Chat 1-1: `GET_CONVERSATIONS` (số tin chưa đọc), `OPEN_CONVERSATION`, `SEND_MESSAGE`, push `MESSAGE_NEW`, `MARK_READ`, `LOAD_HISTORY` (50 tin/lần, Q01) — **SD6**. Chốt Q4 | S04 khung chat, danh sách hội thoại, badge chưa đọc, cuộn lên để tải thêm |
-| **30/11** (T2) | `UPDATE_PROFILE`, `CHANGE_PASSWORD` (tắt `must_change_password`). *Chung:* `protocol.md` đợt 2, chốt Q5, Q6. **Chiều: buffer** | S09, banner D9 ở MainView. Build thử `user.jar` (shade) 1 lần. **Chiều: buffer** |
+| Ngày | 🔵 Minh làm gì | 🟠 Trang làm gì | 🎯 Cuối ngày chạy được |
+|---|---|---|---|
+| **26/11** (T5) | Dựng server chat: nhận kết nối từ app, nối được DB<br>`socket-server` | Cho UserApp kết nối tới server (thật hoặc giả)<br>`socket-client` | Bật server, mở UserApp kết nối được; server đọc được DB |
+| **27/11** (T6) | Server: đăng ký, đăng nhập, đăng xuất<br>`auth-server` · `demo-data` | Màn hình Đăng nhập, Đăng ký<br>`auth-ui` | Đăng ký → đăng nhập → đăng xuất bằng app thật; đăng nhập máy thứ 2 thì máy 1 bị đá ra |
+| **28/11** (T7) | Server: kết bạn, hủy bạn, chặn / bỏ chặn<br>`friend-server` | Màn hình Bạn bè, Tìm người<br>`friend-ui` | Tìm người, gửi/nhận lời mời, thấy bạn online realtime, chặn/bỏ chặn (K2) |
+| **29/11** (CN) | Server: nhắn tin 1-1 realtime<br>`chat-1-1-server` | Khung chat 1-1, danh sách hội thoại<br>`chat-1-1-ui` | 2 người nhắn tin realtime; offline rồi vào lại vẫn thấy tin + số tin chưa đọc (K3) |
+| **30/11** (T2) | Server: sửa hồ sơ, đổi mật khẩu · *chiều buffer*<br>`auth-server` | Màn hình Hồ sơ, banner nhắc đổi mật khẩu, build thử `user.jar` · *chiều buffer*<br>`auth-ui` | Sửa hồ sơ, đổi mật khẩu · **Checkpoint 1** |
+
+#### 26/11 (T5) — Dựng nền tảng kết nối
+*Chung:* chốt Q1–Q3; viết `protocol.md` đợt 1 (định dạng các lệnh tài khoản, bạn bè, chat 1-1).
+
+**🔵 Minh: dựng server chat**
+- Thêm module server vào project, chạy được server (parent POM + module `src/server`, `ServerApp`)
+- Server mở cổng chờ app kết nối, mỗi app 1 luồng riêng, nhận lệnh rồi chuyển tới đúng chỗ xử lý (`ChatServer`, `ClientSession`, `Dispatcher`)
+- Định nghĩa khung tin nhắn dùng chung cho server và app: gói yêu cầu / trả lời / thông báo đẩy, mã lỗi, đọc–ghi JSON (`common/protocol`: `Request`, `Response`, `Push`, `ErrorCode`, `JsonCodec`)
+- Tạo file cấu hình mẫu, không cho commit file cấu hình thật (`config.example.properties`, `.gitignore`)
+- Server kết nối được PostgreSQL (chạy được `SELECT 1`)
+- Chạy thử đủ 7 bước dựng môi trường (mục 7)
+
+**🟠 Trang: nối UserApp với server**
+- Đọc file cấu hình chung cho cả 3 app (`common/config/AppConfig`)
+- Không để `common` kéo JavaFX vào `server.jar` (đánh dấu JavaFX `optional` trong `common`)
+- Lớp kết nối: gửi lệnh lên server, nhận kết quả, lắng nghe thông báo server đẩy về (`user/net/ServerConnection`, `TcpServerConnection`)
+- Server giả trả dữ liệu mẫu để làm giao diện trong lúc backend chưa xong (`MockServerConnection`, bật bằng `chat.mock=true`)
+- Giữ kết nối và thông tin người đang đăng nhập trong app (`AppSession`)
+- Chạy lại mục 7 trên máy mình
+
+#### 27/11 (T6) — Đăng ký, đăng nhập, đăng xuất
+
+**🔵 Minh: xử lý tài khoản phía server** (SD1, SD2)
+- Đăng ký tài khoản mới, mật khẩu băm BCrypt trước khi lưu (`REGISTER`, `Passwords`)
+- Đăng nhập: tên đăng nhập không phân biệt hoa/thường; từ chối tài khoản đang bị khóa hoặc đã xóa; ghi lịch sử đăng nhập kèm snapshot (`LOGIN`, bảng `login_history`)
+- Đăng xuất (`LOGOUT`)
+- Mỗi tài khoản chỉ 1 phiên: đăng nhập ở máy khác thì máy cũ bị đá ra (`SessionRegistry`, push `FORCE_LOGOUT`)
+- Client giả để tự test lệnh mà không cần giao diện (`TestClient`)
+- Dữ liệu demo tối thiểu (1 admin + 3 user) để cả 2 đăng nhập thử (`demo_data.sql`)
+
+**🟠 Trang: màn hình tài khoản**
+- Màn hình Đăng nhập (S01) và Đăng ký (S02) gọi server thật (`LoginController`, `RegisterController`, `AuthApi`)
+- Đăng nhập xong thì vào cửa sổ chính (`MainController`)
+- Bị đăng nhập từ máy khác thì app thoát về màn đăng nhập (`FORCE_LOGOUT`)
+- Mất kết nối server thì báo cho người dùng
+
+#### 28/11 (T7) — Bạn bè
+
+**🔵 Minh: xử lý bạn bè phía server** (SD4, SD5)
+- Lấy danh sách bạn bè (`GET_FRIENDS`)
+- Tìm người dùng để kết bạn (`SEARCH_USERS`, Q08, D18)
+- Gửi lời mời; chấp nhận/từ chối lời mời; xem lời mời đang chờ (`FRIEND_REQUEST_SEND`, `FRIEND_REQUEST_RESPOND`, `GET_FRIEND_REQUESTS`)
+- Hủy kết bạn (`FRIEND_REMOVE`)
+- Chặn người dùng: tự hủy kết bạn + hủy lời mời + cấm chat 1-1 cả 2 chiều, làm trong 1 transaction (`BLOCK_USER`)
+- Bỏ chặn, xem danh sách đã chặn (`UNBLOCK_USER`, `GET_BLOCKED`)
+- Báo realtime về app: bạn vừa online/offline, có lời mời mới, danh sách bạn vừa đổi (push `FRIEND_STATUS`, `FRIEND_REQUEST_NEW`, `FRIEND_LIST_CHANGED`)
+
+**🟠 Trang: màn hình bạn bè**
+- Màn hình Bạn bè (S06) với 4 tab: Tất cả · Đang online (chấm xanh cập nhật realtime) · Lời mời · Đã chặn (có nút Bỏ chặn) (`FriendsController`)
+- Màn hình Tìm người (S07): tìm, gửi lời mời, mở chat (`SearchUsersController`)
+- Hộp thoại xác nhận chặn (D05)
+
+#### 29/11 (CN) — Chat 1-1 realtime
+*Chung:* chốt Q4 (nhà cung cấp LLM).
+
+**🔵 Minh: nhắn tin 1-1 phía server** (SD6)
+- Danh sách hội thoại kèm số tin chưa đọc (`GET_CONVERSATIONS`)
+- Mở (hoặc tạo) cuộc chat 1-1 với 1 người (`OPEN_CONVERSATION`)
+- Gửi tin; người nhận đang online thấy ngay (`SEND_MESSAGE`, push `MESSAGE_NEW`)
+- Đánh dấu đã đọc (`MARK_READ`)
+- Tải lịch sử chat, mỗi lần 50 tin (`LOAD_HISTORY`, Q01)
+
+**🟠 Trang: giao diện chat 1-1**
+- Khung chat (S04): gửi và nhận tin realtime
+- Danh sách hội thoại bên trái có badge số tin chưa đọc
+- Cuộn lên đầu khung chat thì tải thêm tin cũ
+
+#### 30/11 (T2) — Hồ sơ cá nhân + đổi mật khẩu
+*Chung:* viết `protocol.md` đợt 2; chốt Q5 (Gmail gửi mail), Q6 (lưu lý do báo cáo spam). **Chiều: buffer** cho cả 2.
+
+**🔵 Minh**
+- Cập nhật hồ sơ (`UPDATE_PROFILE`)
+- Đổi mật khẩu; đổi xong thì bỏ cờ "bắt buộc đổi mật khẩu" (`CHANGE_PASSWORD`, `must_change_password`)
+
+**🟠 Trang**
+- Màn hình Hồ sơ (S09): sửa thông tin, đổi mật khẩu
+- Banner nhắc đổi mật khẩu trên cửa sổ chính khi tài khoản đang bị bắt đổi (D9)
+- Build thử `user.jar` 1 lần để phát hiện sớm lỗi đóng gói JavaFX (shade)
 
 > 📌 **Checkpoint 1 — 30/11 tối:** chạy K1–K3 với 2 UserApp từ IDE.
 
 ### Sprint 2.B — Chat nâng cao + Ngoại vi + Nhóm + Admin (01/12 – 05/12)
 
-| Ngày | 🔵 TM1 (Minh) | 🟠 TM2 (Trang) |
-|---|---|---|
-| **01/12** (T3) | `HIDE_MESSAGES`, `CLEAR_HISTORY` (chỉ phía mình, D25), `SEARCH_MESSAGES` (chỉ chat 1-1, D26), `LOAD_AROUND` — **SD7** | S04b, D03, tìm trong hội thoại, S08, nhảy tới tin và tô sáng |
-| **02/12** (T4) | `RESET_PASSWORD` (tên đăng nhập + email khớp, mật khẩu ngẫu nhiên 10 ký tự, gửi mail trước rồi mới ghi DB, bật `must_change_password`), `LLM_REWRITE`/`LLM_SUGGEST` (timeout, giới hạn số lần gọi), `REPORT_SPAM` (chỉ chat 1-1, đối phương đã gửi ≥ 1 tin, mỗi cặp 1 báo cáo PENDING) — **SD3, SD8, SD12 (nửa đầu)**. Chốt Q7 | S03, khung trợ lý AI, D02. **`CryptoUtil` + unit test** (bọc/mở khóa RSA-OAEP, mã hóa/giải mã AES-GCM) |
-| **03/12** (T5) | Quản lý nhóm: `GROUP_CREATE` (người tạo + ≥ 2 người khác, không ai có quan hệ chặn với người tạo; D31, D20), `GET_GROUP_MEMBERS`, `GROUP_RENAME` / `GROUP_SET_ADMIN` / `GROUP_REMOVE_MEMBER` (chỉ admin nhóm), `GROUP_ADD_MEMBER` (mọi thành viên, D32), `GROUP_LEAVE`; push `GROUP_UPDATED`, `GROUP_REMOVED_YOU` — **SD9, SD10**. `ADMIN_KICK` (kiểm tra `admin.token`, trả ACK). *Chung:* `protocol.md` đợt 3, chốt Q8 | Admin A1–A3: `db/Db`, `model/`, `AdminAuthDao` + S10 (audit LOGIN_SUCCESS, không ghi `login_history`), `UserDao` + S11, S11a/b, S11c (admin tự gõ mật khẩu, D10), `LoginHistoryDao` + S12, `GroupDao` + S13 |
-| **04/12** (T6) | **E2EE phía server**: `UPLOAD_PUBLIC_KEY` (1 thiết bị/tài khoản, máy mới thu hồi máy cũ), epoch PENDING → ACTIVE, `GET_MEMBER_KEYS`, `UPLOAD_KEY_GRANTS`, `GET_KEY_GRANTS`, `SEND_MESSAGE` GROUP (kiểm tra epoch ACTIVE, chỉ nhận ciphertext). Test bằng `TestClient` + `CryptoUtil` — **SD11**. Đưa TM2 SQL khóa từ báo cáo (D38) | Admin A4–A9: `SpamDao` + S14 (khóa → RESOLVED tất cả, Bỏ qua → DISMISSED), `KickClient` + audit CONTROL_* + `kickFailedNote` "Thử lại" ở S11/S14 (diff.md B1), `StatsDao` + S15, S16, S17, biểu đồ A6, A9 |
-| **05/12** (T7) | Xoay khóa khi đổi thành viên, push `GROUP_KEY_ROTATED`. D33: admin cuối rời nhóm → chuyển quyền, hoặc **đóng nhóm** (`closed_at`) khi không còn ai đủ điều kiện, push `GROUP_CLOSED`. Đưa TM2 SQL xóa mềm user là admin cuối. **Chiều: buffer** | Nhóm: D01, D04, khung thông tin S05, D06; `DeviceKeyStore` + `UPLOAD_PUBLIC_KEY` khi đăng nhập. **Chiều: buffer** |
+| Ngày | 🔵 Minh làm gì | 🟠 Trang làm gì | 🎯 Cuối ngày chạy được |
+|---|---|---|---|
+| **01/12** (T3) | Server: xóa tin, xóa lịch sử, tìm tin nhắn<br>`chat-1-1-server` | Chọn tin để xóa, xóa lịch sử, tìm kiếm + nhảy tới tin<br>`chat-1-1-ui` | Xóa vài tin, xóa lịch sử phía mình (bên kia vẫn thấy), tìm và nhảy tới tin (K4 phần đầu) |
+| **02/12** (T4) | Server: quên mật khẩu qua email, trợ lý AI, báo cáo spam<br>`auth-server` · `llm-server` · `spam-server` | Màn hình Quên mật khẩu, khung trợ lý AI, hộp thoại báo cáo spam; bộ hàm mã hóa cho E2EE<br>`auth-ui` · `llm-ui` · `spam-ui` · `e2ee-client` | Quên mật khẩu → nhận email → đăng nhập → đổi mật khẩu (K5); dùng trợ lý AI; gửi báo cáo spam |
+| **03/12** (T5) | Server: quản lý nhóm chat; nhận lệnh đá user từ AdminApp<br>`group-server` · `admin-kick-server` | AdminApp: đăng nhập, quản lý người dùng, nhật ký đăng nhập, danh sách nhóm<br>`admin-user-mgmt` | Lệnh nhóm chạy được qua `TestClient`; AdminApp quản lý user trên DB thật |
+| **04/12** (T6) | Server: mã hóa đầu-cuối (E2EE) cho tin nhóm<br>`e2ee-server` | AdminApp: xử lý báo cáo spam, đá user đang online, thống kê + 2 biểu đồ<br>`admin-spam` · `admin-stats` | `TestClient` gửi được tin nhóm đã mã hóa; admin khóa user từ báo cáo → user bị đá ra (K6); xem thống kê (K8) |
+| **05/12** (T7) | Server: đổi khóa nhóm khi đổi thành viên; admin cuối rời nhóm · *chiều buffer*<br>`e2ee-server` · `group-server` | Giao diện nhóm: tạo nhóm, thêm người, chuyển quyền admin; tạo khóa thiết bị · *chiều buffer*<br>`group-ui` · `e2ee-client` | Quản lý nhóm trên UserApp · **Checkpoint 2** |
+
+#### 01/12 (T3) — Chat 1-1 nâng cao: xóa tin, xóa lịch sử, tìm kiếm
+
+**🔵 Minh** (SD7)
+- Ẩn các tin nhắn đã chọn (`HIDE_MESSAGES`)
+- Xóa toàn bộ lịch sử chat, chỉ mất ở phía mình, người kia vẫn thấy (`CLEAR_HISTORY`, D25)
+- Tìm tin nhắn theo từ khóa, chỉ trong chat 1-1 (`SEARCH_MESSAGES`, D26)
+- Lấy các tin quanh 1 tin để app nhảy tới đúng chỗ (`LOAD_AROUND`)
+
+**🟠 Trang**
+- Chế độ chọn tin để xóa (S04b) + hộp thoại xóa lịch sử (D03)
+- Ô tìm kiếm trong 1 hội thoại
+- Màn hình Tìm trong tất cả hội thoại (S08)
+- Bấm vào kết quả tìm → nhảy tới tin đó và tô sáng
+
+#### 02/12 (T4) — Quên mật khẩu, trợ lý AI, báo cáo spam
+*Chung:* chốt Q7 (admin đặt lại mật khẩu có bắt user đổi không).
+
+**🔵 Minh**
+- Quên mật khẩu: kiểm tra tên đăng nhập + email khớp → sinh mật khẩu ngẫu nhiên 10 ký tự → **gửi email trước, gửi được mới ghi DB** → bật cờ bắt buộc đổi mật khẩu (`RESET_PASSWORD`, `MailService`, SD3)
+- Trợ lý AI: sửa câu và gợi ý nội dung, gọi API LLM có timeout và giới hạn số lần gọi (`LLM_REWRITE`, `LLM_SUGGEST`, SD8)
+- Báo cáo spam: chỉ trong chat 1-1, đối phương phải đã gửi ít nhất 1 tin, mỗi cặp chỉ có 1 báo cáo đang chờ xử lý (`REPORT_SPAM`, SD12 nửa đầu)
+
+**🟠 Trang**
+- Màn hình Quên mật khẩu (S03)
+- Khung trợ lý AI trong khung chat (S04)
+- Hộp thoại Báo cáo spam (D02)
+- Chuẩn bị cho E2EE: bộ hàm bọc/mở khóa (RSA-OAEP) và mã hóa/giải mã tin (AES-GCM), có unit test (`CryptoUtil`)
+
+#### 03/12 (T5) — Quản lý nhóm (server) + AdminApp quản lý người dùng
+*Chung:* viết `protocol.md` đợt 3 (các lệnh E2EE); chốt Q8 (phạm vi "E2EE tối thiểu").
+
+**🔵 Minh: quản lý nhóm phía server** (SD9, SD10)
+- Tạo nhóm: người tạo + ít nhất 2 người khác, không ai trong đó có quan hệ chặn với người tạo (`GROUP_CREATE`, D31, D20)
+- Xem danh sách thành viên (`GET_GROUP_MEMBERS`)
+- Đổi tên nhóm, đặt admin, xóa thành viên: **chỉ admin nhóm** được làm (`GROUP_RENAME`, `GROUP_SET_ADMIN`, `GROUP_REMOVE_MEMBER`)
+- Thêm thành viên: **thành viên nào cũng** được thêm (`GROUP_ADD_MEMBER`, D32)
+- Rời nhóm (`GROUP_LEAVE`)
+- Báo realtime khi nhóm thay đổi hoặc khi mình bị xóa khỏi nhóm (push `GROUP_UPDATED`, `GROUP_REMOVED_YOU`)
+- Nhận lệnh "đá user" từ AdminApp: kiểm tra mã bí mật, đá phiên, trả xác nhận (`ADMIN_KICK`, `admin.token`, ACK)
+
+**🟠 Trang: AdminApp phần người dùng (A1–A3)**
+- Cho AdminApp kết nối DB; chuyển các record từ dữ liệu mẫu sang `model/` (`db/Db`, `model/`)
+- Đăng nhập admin (S10): chỉ tài khoản ADMIN; ghi audit LOGIN_SUCCESS, không ghi `login_history` (`AdminAuthDao`)
+- Quản lý người dùng (S11): lọc, sắp xếp, khóa/mở khóa, xóa mềm, xem lịch sử đăng nhập và bạn bè của từng user (`UserDao`)
+- Thêm/Sửa user (S11a/S11b); Đặt lại mật khẩu (S11c), admin tự gõ mật khẩu mới (D10)
+- Nhật ký đăng nhập (S12) (`LoginHistoryDao`, Q03)
+- Danh sách nhóm chat (S13) (`GroupDao`, Q09)
+
+#### 04/12 (T6) — E2EE phía server + AdminApp spam & thống kê
+
+**🔵 Minh: mã hóa đầu-cuối cho tin nhóm** (SD11)
+- Đăng ký khóa công khai của thiết bị: mỗi tài khoản 1 thiết bị, đăng nhập máy mới thì thu hồi máy cũ (`UPLOAD_PUBLIC_KEY`)
+- Quản lý phiên bản khóa nhóm (epoch) đi từ PENDING sang ACTIVE
+- Phát khóa nhóm: cho lấy khóa công khai của các thành viên, nhận và trả lại khóa nhóm đã bọc cho từng người (`GET_MEMBER_KEYS`, `UPLOAD_KEY_GRANTS`, `GET_KEY_GRANTS`)
+- Gửi tin nhóm: server chỉ nhận bản đã mã hóa, kiểm tra epoch đang ACTIVE (`SEND_MESSAGE` GROUP)
+- Test cả luồng bằng `TestClient` + `CryptoUtil`
+- Đưa Trang câu SQL "khóa user từ báo cáo spam" (D38)
+
+**🟠 Trang: AdminApp phần spam + thống kê (A4–A9)**
+- Màn hình Báo cáo spam (S14): **Khóa** → mọi báo cáo về user đó thành "Đã xử lý" (RESOLVED); **Bỏ qua** → DISMISSED (`SpamDao`)
+- Admin khóa user đang online → gửi lệnh đá sang server, ghi audit CONTROL_*; đá không được thì hiện ghi chú + nút "Thử lại" ở S11/S14 (`KickClient`, `kickFailedNote`, diff.md B1)
+- Thống kê: Đăng ký mới (S15), Bạn bè (S16), Người dùng hoạt động (S17), 2 biểu đồ theo tháng A6, A9 (`StatsDao`, `MonthlyChart`)
+
+#### 05/12 (T7) — Đổi khóa nhóm + giao diện nhóm
+**Chiều: buffer** cho cả 2.
+
+**🔵 Minh**
+- Mỗi lần thêm/xóa/rời thành viên thì đổi khóa nhóm và báo app (push `GROUP_KEY_ROTATED`)
+- Admin cuối cùng rời nhóm: chuyển quyền cho người khác; không còn ai đủ điều kiện thì **đóng nhóm** (`closed_at`, push `GROUP_CLOSED`, D33)
+- Đưa Trang câu SQL xóa mềm user đang là admin cuối của nhóm
+
+**🟠 Trang**
+- Hộp thoại Tạo nhóm (D01), Thêm thành viên (D04), Chuyển quyền admin (D06)
+- Khung thông tin nhóm trong S05: đổi tên, xem/xóa thành viên, rời nhóm (`GroupChatController`)
+- Tạo khóa cho thiết bị, lưu trên máy, gửi khóa công khai lên server khi đăng nhập (`DeviceKeyStore`, `UPLOAD_PUBLIC_KEY`)
 
 > 📌 **Checkpoint 2 — 05/12 tối:** chạy K1–K6 và K8 (U1–U11, A1–A9, email, LLM, khóa user đang online thì bị đá ra ngay).
 
 ### Sprint 2.C — Tích hợp E2EE + Ổn định (06/12 – 08/12) 🔴
 
-| Ngày | 🔵 TM1 (Minh) | 🟠 TM2 (Trang) |
-|---|---|---|
-| **06/12** (CN) | *Chung sáng:* tích hợp E2EE với client. **12h: quyết định có dùng phương án dự phòng không** (tiêu chí: 2 client gửi và đọc được 1 tin nhóm mã hóa). Chiều: `demo_data.sql` đầy đủ + `create_db.sql` | Luồng khóa: nhận `GROUP_KEY_ROTATED` → lấy khóa thành viên → sinh khóa nhóm → bọc → upload; mở grant bằng khóa riêng (`GroupKeyCache`); mã hóa/giải mã trong S05. `closedNote` + khóa ô soạn tin, nhãn "Đã đóng" ở S13; gắn SQL xóa mềm admin cuối vào `UserDao` |
-| **07/12** (T2) | **Buffer**: sửa E2EE hoặc làm phương án dự phòng. Viết phần **Thiết kế CSDL** cho báo cáo (từ `design-baseline.md`) | **Buffer**: sửa lỗi tích hợp. Dựng khung báo cáo, chụp ảnh màn hình đã ổn định cho Hướng dẫn sử dụng (`ScreenshotTool`) |
-| **08/12** (T3) | *Chung:* bug bash theo K1–K8 và UC01–UC31. BE chốt `create_db.sql` | *Chung:* bug bash. FE chỉnh thông báo lỗi, CSS |
+| Ngày | 🔵 Minh làm gì | 🟠 Trang làm gì | 🎯 Cuối ngày chạy được |
+|---|---|---|---|
+| **06/12** (CN) | Sáng: ghép E2EE với app (cùng Trang). Chiều: dữ liệu demo đầy đủ + file tạo DB để nộp<br>`e2ee-server` · `demo-data` | Mã hóa / giải mã tin nhóm trên UserApp; hiển thị nhóm đã đóng; xóa mềm admin cuối trong AdminApp<br>`e2ee-client` · `group-ui` · `admin-user-mgmt` | **12h: quyết định có dùng phương án dự phòng không** · **Checkpoint 3**: chat nhóm mã hóa (K7) |
+| **07/12** (T2) | *Buffer*: sửa E2EE hoặc làm phương án dự phòng; viết phần Thiết kế CSDL | *Buffer*: sửa lỗi tích hợp; dựng khung báo cáo, chụp ảnh cho Hướng dẫn sử dụng | Chat nhóm mã hóa chạy được (bản chính hoặc dự phòng) |
+| **08/12** (T3) | Bug bash; chốt file tạo DB | Bug bash; chỉnh câu báo lỗi, CSS | Chạy trọn K1–K8 không lỗi |
+
+#### 06/12 (CN) — Ghép E2EE giữa app và server 🔴
+*Chung sáng:* chạy thử E2EE giữa app và server. **12h: quyết định có dùng phương án dự phòng không**. Tiêu chí: 2 app gửi và đọc được 1 tin nhóm đã mã hóa. Không đạt thì xem mục [Cắt giảm](#️-cắt-giảm-khi-trễ).
+
+**🔵 Minh (chiều)**
+- Dữ liệu demo đầy đủ để quay video và để thầy chấm (`demo_data.sql`)
+- Gộp schema + dữ liệu demo thành 1 file tạo DB để nộp (`create_db.sql`)
+
+**🟠 Trang**
+- Phát khóa nhóm phía app: nhận báo đổi khóa → lấy khóa công khai của các thành viên → sinh khóa nhóm mới → bọc cho từng người → gửi lên server (`GROUP_KEY_ROTATED`)
+- Mở khóa nhóm bằng khóa riêng của thiết bị, giữ lại dùng trong phiên (`GroupKeyCache`)
+- Mã hóa trước khi gửi, giải mã khi nhận trong màn hình nhóm (S05)
+- Nhóm đã đóng: hiện ghi chú + khóa ô soạn tin trên UserApp (`closedNote`); AdminApp hiện nhãn "Đã đóng" ở S13
+- Gắn SQL xóa mềm user đang là admin cuối của nhóm vào AdminApp (`UserDao`)
+
+#### 07/12 (T2) — Buffer + bắt đầu báo cáo
+- **🔵 Minh:** sửa E2EE hoặc làm phương án dự phòng; viết phần **Thiết kế CSDL** cho báo cáo (lấy từ `design-baseline.md`)
+- **🟠 Trang:** sửa lỗi tích hợp; dựng khung báo cáo; chụp ảnh các màn hình đã ổn định cho Hướng dẫn sử dụng (`ScreenshotTool`)
+
+#### 08/12 (T3) — Bug bash
+*Chung:* chạy lần lượt K1–K8 và UC01–UC31, ghi lỗi, sửa.
+- **🔵 Minh:** chốt bản cuối `create_db.sql`
+- **🟠 Trang:** chỉnh câu báo lỗi cho dễ hiểu, chỉnh CSS
 
 > 📌 **Checkpoint 3 — 06/12 tối:** chạy K7 (3 client chat nhóm realtime; DB chỉ thấy ciphertext; thành viên mới không đọc được tin cũ).
 
 ### Sprint 2.D — Release + Báo cáo (09/12 – 10/12)
 
-| Ngày | 🔵 TM1 (Minh) | 🟠 TM2 (Trang) |
-|---|---|---|
-| **09/12** (T4) | Build `server.jar`; chạy thử trên máy sạch, chỉ sửa `db.*`. Viết phần **Thiết kế hệ thống** (kiến trúc 3 jar, giao thức, D1–D43, SD1–SD12) | Build `user.jar`, `admin.jar` (`UserLauncher`, `AdminLauncher`). Viết **Hướng dẫn sử dụng**, kịch bản video (lấy từ K1–K8) |
-| **10/12** (T5) | *Chung:* quay video YouTube, ghép `BaoCao_V2.pdf`, `BaoCaoTuDanhGia.pdf` (**thiếu là 0đ**), bảng công việc + đóng góp (lấy từ bảng Tracking), ảnh commit, rà tài liệu AI | *Chung* |
+| Ngày | 🔵 Minh làm gì | 🟠 Trang làm gì | 🎯 Cuối ngày chạy được |
+|---|---|---|---|
+| **09/12** (T4) | Đóng gói `server.jar`, chạy thử trên máy sạch; viết Thiết kế hệ thống<br>`release-server` | Đóng gói `user.jar`, `admin.jar`; viết Hướng dẫn sử dụng, kịch bản video<br>`release-client` | 3 file jar chạy được trên máy sạch, chỉ cần sửa `db.*` |
+| **10/12** (T5) | *Chung:* quay video, ghép báo cáo | *Chung* | Đủ file nộp |
+
+#### 09/12 (T4) — Đóng gói + viết báo cáo
+- **🔵 Minh:** build `server.jar`, chạy thử trên máy sạch, chỉ sửa `db.*` trong `config.properties`; viết phần **Thiết kế hệ thống** (kiến trúc 3 jar, giao thức, D1–D43, SD1–SD12)
+- **🟠 Trang:** build `user.jar`, `admin.jar` (`UserLauncher`, `AdminLauncher`); viết **Hướng dẫn sử dụng**, kịch bản video (lấy từ K1–K8)
+
+#### 10/12 (T5) — Hoàn thiện bài nộp (làm chung)
+- Quay video demo, đăng YouTube
+- Ghép `BaoCao_V2.pdf` và `BaoCaoTuDanhGia.pdf` (**thiếu file tự đánh giá là 0đ**)
+- Bảng công việc + đóng góp (lấy từ bảng Tracking), chụp ảnh commit
+- Rà lại tài liệu AI
 
 > ✅ **10/12: xong toàn bộ.** 11/12 dự phòng + đóng zip, kiểm checklist 2 lần (mỗi người 1 lần). **12/12 nộp.**
 
